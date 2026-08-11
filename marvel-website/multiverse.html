@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MARVEL // Multiverse Navigation</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --cosmic-deep: #0a0015;
+      --cosmic-dark: #120025;
+      --cosmic-mid: #1a0040;
+      --cosmic-purple: #6b21a8;
+      --cosmic-violet: #9333ea;
+      --cosmic-light: #c084fc;
+      --cosmic-glow: #e9d5ff;
+      --nebula-pink: #f472b6;
+      --nebula-blue: #38bdf8;
+      --nebula-cyan: #22d3ee;
+      --rift-red: #ef4444;
+      --rift-orange: #f97316;
+      --nexus-green: #34d399;
+      --nexus-gold: #fbbf24;
+      --stable: #34d399;
+      --unstable: #fbbf24;
+      --destroyed: #ef4444;
+      --collapsed: #f97316;
+      --recovering: #38bdf8;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-tech: 'Orbitron', sans-serif;
+      --font-body: 'Rajdhani', sans-serif;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cosmic-deep);
+      color: #e2e8f0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ===== NAVIGATION ===== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 0, 21, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(147, 51, 234, 0.3);
+      padding: 0 2rem;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 4px;
+      transition: all 0.3s;
+    }
+
+    .nav-logo span {
+      color: var(--cosmic-violet);
+      font-size: 2.5rem;
+    }
+
+    .nav-logo:hover {
+      text-shadow: 0 0 20px var(--cosmic-violet), 0 0 40px var(--cosmic-purple);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--cosmic-light);
+      background: rgba(147, 51, 234, 0.1);
+    }
+
+    .nav-links a.active {
+      color: var(--cosmic-glow);
+      background: rgba(147, 51, 234, 0.2);
+      border: 1px solid rgba(147, 51, 234, 0.4);
+      text-shadow: 0 0 10px var(--cosmic-violet);
+    }
+
+    .nav-hamburger {
+      display: none;
+      font-size: 1.5rem;
+      color: var(--cosmic-violet);
+      cursor: pointer;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #1a0040 0%, #0a0015 70%);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent, var(--cosmic-violet), transparent, var(--nebula-pink), transparent, var(--nebula-blue), transparent);
+      opacity: 0.15;
+      animation: swirlPortal 8s linear infinite;
+      filter: blur(40px);
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: conic-gradient(from 180deg, transparent, var(--nexus-gold), transparent, var(--nebula-cyan), transparent, var(--rift-red), transparent);
+      opacity: 0.1;
+      animation: swirlPortal 6s linear infinite reverse;
+      filter: blur(30px);
+    }
+
+    @keyframes swirlPortal {
+      0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+      50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.2); }
+      100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-label {
+      font-family: var(--font-tech);
+      font-size: 1rem;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: var(--cosmic-light);
+      margin-bottom: 1rem;
+      opacity: 0.7;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 7rem);
+      letter-spacing: 8px;
+      line-height: 1;
+      color: #fff;
+      text-shadow: 0 0 30px rgba(147, 51, 234, 0.5), 0 0 60px rgba(147, 51, 234, 0.3);
+      margin-bottom: 0.5rem;
+      animation: glitchTitle 5s infinite;
+    }
+
+    @keyframes glitchTitle {
+      0%, 90%, 100% { transform: none; text-shadow: 0 0 30px rgba(147, 51, 234, 0.5); }
+      91% { transform: translate(-3px, 2px) skewX(-2deg); text-shadow: 3px 0 var(--nebula-pink), -3px 0 var(--nebula-cyan); }
+      92% { transform: translate(3px, -2px) skewX(2deg); text-shadow: -3px 0 var(--nebula-cyan), 3px 0 var(--nebula-pink); }
+      93% { transform: none; text-shadow: 0 0 30px rgba(147, 51, 234, 0.5); }
+      94% { transform: translate(2px, 1px); text-shadow: 2px 0 var(--nexus-gold), -2px 0 var(--nebula-blue); }
+      95% { transform: none; }
+    }
+
+    .hero-title span {
+      color: var(--cosmic-violet);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-tech);
+      font-size: clamp(0.9rem, 2vw, 1.3rem);
+      letter-spacing: 6px;
+      color: var(--cosmic-light);
+      margin-top: 1rem;
+      opacity: 0.8;
+    }
+
+    .hero-line {
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cosmic-violet), transparent);
+      margin: 1.5rem auto;
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      max-width: 600px;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .portal-particles {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .portal-particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: var(--cosmic-light);
+      border-radius: 50%;
+      opacity: 0;
+      animation: particleFloat 6s infinite;
+    }
+
+    @keyframes particleFloat {
+      0% { opacity: 0; transform: translateY(100vh) scale(0); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--cosmic-light);
+      font-family: var(--font-tech);
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      animation: pulseDown 2s infinite;
+    }
+
+    @keyframes pulseDown {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      50% { transform: translateX(-50%) translateY(8px); opacity: 0.5; }
+    }
+
+    /* ===== SECTION STYLES ===== */
+    .section {
+      position: relative;
+      padding: 6rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-tag {
+      font-family: var(--font-tech);
+      font-size: 0.8rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--cosmic-violet);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: 4px;
+      color: #fff;
+    }
+
+    .section-line {
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cosmic-violet), transparent);
+      margin: 1rem auto 0;
+    }
+
+    .rift-divider {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--cosmic-purple), var(--cosmic-violet), var(--nebula-pink), var(--cosmic-violet), var(--cosmic-purple), transparent);
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rift-divider::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: riftShimmer 3s infinite;
+    }
+
+    @keyframes riftShimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ===== MULTIVERSE MAP ===== */
+    .universe-map {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .universe-card {
+      position: relative;
+      background: linear-gradient(135deg, rgba(26, 0, 64, 0.8), rgba(10, 0, 21, 0.9));
+      border: 1px solid rgba(147, 51, 234, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.4s;
+    }
+
+    .universe-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 12px 12px 0 0;
+      z-index: 2;
+    }
+
+    .universe-card.status-stable::before { background: linear-gradient(90deg, transparent, var(--stable), transparent); }
+    .universe-card.status-unstable::before { background: linear-gradient(90deg, transparent, var(--unstable), transparent); animation: unstablePulse 2s infinite; }
+    .universe-card.status-destroyed::before { background: linear-gradient(90deg, transparent, var(--destroyed), transparent); }
+    .universe-card.status-collapsed::before { background: linear-gradient(90deg, transparent, var(--collapsed), transparent); animation: unstablePulse 1.5s infinite; }
+
+    @keyframes unstablePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .universe-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(147, 51, 234, 0.5);
+      box-shadow: 0 8px 32px rgba(147, 51, 234, 0.2), inset 0 0 30px rgba(147, 51, 234, 0.05);
+    }
+
+    .card-image {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease, filter 0.6s ease;
+    }
+
+    .universe-card:hover .card-image img {
+      transform: scale(1.08);
+    }
+
+    .card-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(10, 0, 21, 0.95));
+      pointer-events: none;
+    }
+
+    .card-image .card-designation-overlay {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 2;
+      font-family: var(--font-tech);
+      font-size: 0.55rem;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.8);
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid rgba(147, 51, 234, 0.3);
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-name {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin: 0.25rem 0;
+    }
+
+    .status-badge {
+      font-family: var(--font-tech);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .status-badge.stable { background: rgba(52, 211, 153, 0.15); color: var(--stable); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .status-badge.unstable { background: rgba(251, 191, 36, 0.15); color: var(--unstable); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .status-badge.destroyed { background: rgba(239, 68, 68, 0.15); color: var(--destroyed); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .status-badge.collapsed { background: rgba(249, 115, 22, 0.15); color: var(--collapsed); border: 1px solid rgba(249, 115, 22, 0.3); }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .card-characters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .char-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 0.2rem 0.5rem;
+      background: rgba(147, 51, 234, 0.1);
+      border: 1px solid rgba(147, 51, 234, 0.2);
+      border-radius: 4px;
+      color: var(--cosmic-light);
+    }
+
+    .threat-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .threat-label {
+      font-family: var(--font-tech);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    .threat-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .threat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(100, 116, 139, 0.3);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+    }
+
+    .threat-dot.filled.low { background: var(--stable); border-color: var(--stable); }
+    .threat-dot.filled.medium { background: var(--unstable); border-color: var(--unstable); }
+    .threat-dot.filled.high { background: var(--rift-orange); border-color: var(--rift-orange); }
+    .threat-dot.filled.critical { background: var(--destroyed); border-color: var(--destroyed); }
+
+    /* ===== VARIANT GALLERY ===== */
+    .variant-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .variant-card {
+      position: relative;
+      background: linear-gradient(145deg, rgba(26, 0, 64, 0.6), rgba(10, 0, 21, 0.9));
+      border: 1px solid rgba(147, 51, 234, 0.15);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.4s;
+    }
+
+    .variant-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.05), transparent, rgba(56, 189, 248, 0.05));
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    .variant-card:hover::after { opacity: 1; }
+
+    .variant-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(147, 51, 234, 0.4);
+      box-shadow: 0 12px 40px rgba(147, 51, 234, 0.2);
+    }
+
+    .variant-visual {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+    }
+
+    .variant-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .variant-card:hover .variant-visual img {
+      transform: scale(1.08);
+    }
+
+    .variant-visual::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 30%, rgba(10, 0, 21, 0.95));
+      pointer-events: none;
+    }
+
+    .variant-info {
+      padding: 1.5rem;
+    }
+
+    .variant-universe-tag {
+      font-family: var(--font-tech);
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: var(--nexus-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .variant-name {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .variant-origin {
+      font-size: 0.85rem;
+      color: var(--cosmic-light);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      font-style: italic;
+    }
+
+    .variant-traits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .trait-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 0.2rem 0.6rem;
+      background: rgba(233, 213, 255, 0.08);
+      border: 1px solid rgba(233, 213, 255, 0.15);
+      border-radius: 20px;
+      color: var(--cosmic-glow);
+    }
+
+    .variant-powers {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .variant-powers strong {
+      color: var(--nebula-cyan);
+      font-weight: 600;
+    }
+
+    /* ===== INCURSION TIMELINE ===== */
+    .timeline {
+      position: relative;
+      max-width: 900px;
+      margin: 2rem auto 0;
+      padding-left: 40px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--cosmic-violet), var(--nebula-pink), var(--cosmic-violet), var(--nexus-gold));
+    }
+
+    .timeline-entry {
+      position: relative;
+      margin-bottom: 2.5rem;
+      background: linear-gradient(135deg, rgba(26, 0, 64, 0.6), rgba(10, 0, 21, 0.8));
+      border: 1px solid rgba(147, 51, 234, 0.15);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .timeline-entry:hover {
+      border-color: rgba(147, 51, 234, 0.4);
+      box-shadow: 0 4px 20px rgba(147, 51, 234, 0.15);
+    }
+
+    .timeline-entry::before {
+      content: '';
+      position: absolute;
+      left: -33px;
+      top: 1.5rem;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--cosmic-violet);
+      border: 3px solid var(--cosmic-deep);
+      box-shadow: 0 0 10px var(--cosmic-violet);
+    }
+
+    .timeline-entry.critical::before {
+      background: var(--destroyed);
+      box-shadow: 0 0 10px var(--destroyed);
+      animation: unstablePulse 1.5s infinite;
+    }
+
+    .timeline-entry-image {
+      width: 100%;
+      height: 160px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .timeline-entry-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .timeline-entry-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent, rgba(10, 0, 21, 0.8));
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      padding: 1.5rem 1.5rem 0;
+    }
+
+    .timeline-date {
+      font-family: var(--font-tech);
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      color: var(--cosmic-light);
+    }
+
+    .timeline-name {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .timeline-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+      padding: 0 1.5rem;
+    }
+
+    .meta-item {
+      font-family: var(--font-tech);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      background: rgba(147, 51, 234, 0.1);
+      border: 1px solid rgba(147, 51, 234, 0.2);
+      color: var(--cosmic-light);
+    }
+
+    .timeline-desc {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      padding: 0 1.5rem;
+    }
+
+    .impact-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .impact-bar-track {
+      flex: 1;
+      max-width: 200px;
+      height: 6px;
+      background: rgba(100, 116, 139, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .impact-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+
+    .impact-bar-fill.c1 { background: var(--stable); width: 40%; }
+    .impact-bar-fill.c2 { background: var(--unstable); width: 60%; }
+    .impact-bar-fill.c3 { background: var(--rift-orange); width: 75%; }
+    .impact-bar-fill.c4 { background: var(--rift-red); width: 90%; }
+    .impact-bar-fill.c5 { background: #dc2626; width: 100%; }
+
+    /* ===== CAPTAIN'S LOG ===== */
+    .log-container {
+      max-width: 800px;
+      margin: 2rem auto 0;
+    }
+
+    .log-terminal {
+      background: linear-gradient(135deg, rgba(0, 10, 30, 0.95), rgba(0, 5, 15, 0.98));
+      border: 1px solid rgba(147, 51, 234, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .log-terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(147, 51, 234, 0.1);
+      border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.red { background: #ef4444; }
+    .terminal-dot.yellow { background: #eab308; }
+    .terminal-dot.green { background: #22c55e; }
+
+    .terminal-title {
+      font-family: var(--font-tech);
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      color: var(--cosmic-light);
+      margin-left: 0.5rem;
+    }
+
+    .log-body {
+      padding: 1.5rem;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .log-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .log-body::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .log-body::-webkit-scrollbar-thumb {
+      background: var(--cosmic-purple);
+      border-radius: 3px;
+    }
+
+    .log-entry {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(147, 51, 234, 0.1);
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .log-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .log-entry-id {
+      font-family: var(--font-tech);
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--cosmic-violet);
+    }
+
+    .log-entry-timestamp {
+      font-family: var(--font-tech);
+      font-size: 0.6rem;
+      color: #64748b;
+      letter-spacing: 1px;
+    }
+
+    .log-entry-dest {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .log-entry-text {
+      font-family: 'Rajdhani', monospace;
+      font-size: 0.9rem;
+      color: var(--nexus-green);
+      line-height: 1.7;
+      opacity: 0.9;
+    }
+
+    .log-entry-text .warning {
+      color: var(--unstable);
+    }
+
+    .log-entry-text .danger {
+      color: var(--destroyed);
+    }
+
+    /* ===== TVA SECTION ===== */
+    .tva-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .tva-card {
+      background: linear-gradient(135deg, rgba(26, 0, 64, 0.6), rgba(10, 0, 21, 0.9));
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .tva-card:hover {
+      border-color: rgba(251, 191, 36, 0.35);
+      box-shadow: 0 4px 20px rgba(251, 191, 36, 0.1);
+    }
+
+    .tva-card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      color: var(--nexus-gold);
+    }
+
+    .tva-card-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .tva-card-text {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .nexus-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .nexus-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+      font-size: 0.85rem;
+    }
+
+    .nexus-list li:last-child { border-bottom: none; }
+
+    .nexus-list .event-name {
+      color: var(--nexus-gold);
+      font-weight: 600;
+    }
+
+    .nexus-list .event-status {
+      font-family: var(--font-tech);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .event-status.contained { background: rgba(52, 211, 153, 0.15); color: var(--stable); }
+    .event-status.active { background: rgba(239, 68, 68, 0.15); color: var(--destroyed); animation: unstablePulse 1.5s infinite; }
+    .event-status.monitoring { background: rgba(251, 191, 36, 0.15); color: var(--unstable); }
+
+    /* Sacred Timeline */
+    .sacred-timeline {
+      position: relative;
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(251, 191, 36, 0.1);
+      overflow: hidden;
+    }
+
+    .sacred-timeline-title {
+      font-family: var(--font-tech);
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      color: var(--nexus-gold);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .timeline-visual {
+      position: relative;
+      height: 60px;
+      display: flex;
+      align-items: center;
+    }
+
+    .timeline-main-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--nexus-gold), var(--cosmic-violet), var(--nexus-gold), var(--nebula-blue), var(--nexus-gold));
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+
+    .timeline-marker {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--nexus-gold);
+      border: 2px solid var(--cosmic-deep);
+      z-index: 2;
+      cursor: default;
+    }
+
+    .timeline-marker::after {
+      content: attr(data-label);
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-tech);
+      font-size: 0.5rem;
+      letter-spacing: 1px;
+      color: var(--nexus-gold);
+      white-space: nowrap;
+    }
+
+    .timeline-marker.branch {
+      background: var(--rift-red);
+      box-shadow: 0 0 12px var(--rift-red);
+      animation: unstablePulse 2s infinite;
+    }
+
+    .timeline-marker.branch::after {
+      color: var(--rift-red);
+    }
+
+    /* ===== Holographic Effects ===== */
+    .holo-border {
+      position: relative;
+    }
+
+    .holo-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(45deg, var(--cosmic-violet), var(--nebula-pink), var(--nebula-cyan), var(--nexus-gold), var(--cosmic-violet));
+      background-size: 300% 300%;
+      animation: holoShift 4s ease infinite;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .holo-border:hover::before { opacity: 1; }
+
+    @keyframes holoShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Rift effect containers */
+    .rift-effect {
+      position: relative;
+    }
+
+    .rift-effect::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: inherit;
+      background: conic-gradient(from var(--rift-angle, 0deg), transparent 80%, var(--cosmic-violet), transparent);
+      animation: riftRotate 5s linear infinite;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .rift-effect:hover::before { opacity: 0.6; }
+
+    @keyframes riftRotate {
+      to { --rift-angle: 360deg; }
+    }
+
+    @property --rift-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    /* Glitch text */
+    .glitch-text {
+      position: relative;
+      animation: glitchText 8s infinite;
+    }
+
+    @keyframes glitchText {
+      0%, 92%, 100% { transform: none; filter: none; }
+      93% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
+      94% { transform: translate(2px, -1px); filter: hue-rotate(-90deg); }
+      95% { transform: none; filter: none; }
+    }
+
+    /* Floating particles for sections */
+    .section-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .s-particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--cosmic-light);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: sFloat 8s infinite linear;
+    }
+
+    @keyframes sFloat {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-200px) translateX(50px); opacity: 0; }
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      position: relative;
+      background: linear-gradient(180deg, var(--cosmic-deep), #000);
+      border-top: 1px solid rgba(147, 51, 234, 0.2);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      max-width: 1400px;
+      margin: 0 auto 30px;
+      text-align: left;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: 4px;
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .footer-logo span { color: var(--cosmic-violet); }
+
+    .footer-desc {
+      color: rgba(255,255,255,.5);
+      font-size: 14px;
+      line-height: 1.8;
+      max-width: 350px;
+    }
+
+    .footer-heading {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--nexus-gold);
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,.5);
+      text-decoration: none;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--cosmic-light); padding-left: 5px; }
+
+    .footer-social {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .footer-social a {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .footer-social a:hover {
+      background: var(--cosmic-violet);
+      box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.05);
+      color: rgba(255,255,255,.3);
+      font-size: 13px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: block; }
+      .section { padding: 4rem 1rem; }
+      .universe-map { grid-template-columns: 1fr; }
+      .variant-gallery { grid-template-columns: 1fr; }
+      .tva-grid { grid-template-columns: 1fr; }
+      .timeline { padding-left: 30px; }
+      .timeline::before { left: 10px; }
+      .timeline-entry::before { left: -28px; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">MARVEL</div>
+  <div style="color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:5px;margin-top:10px">INITIALIZING QUANTUM REALM</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+</div>
+
+  <!-- NAVIGATION -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">MARVEL<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#heroes">Heroes</a></li>
+      <li><a href="missions.html">Missions</a></li>
+      <li><a href="characters.html">Characters</a></li>
+      <li><a href="battles.html">Battles</a></li>
+      <li><a href="tech.html">Tech</a></li>
+      <li><a href="multiverse.html" class="active">Multiverse</a></li>
+      <li><a href="roster.html">Roster</a></li>
+    </ul>
+    <div class="nav-hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="portal-particles" id="portalParticles"></div>
+    <div class="hero-content">
+      <div class="hero-label">AVENGERS // DIMENSIONAL OPERATIONS</div>
+      <h1 class="hero-title glitch-text">MULTIVERSE <span>//</span> NAVIGATION</h1>
+      <div class="hero-line"></div>
+      <p class="hero-subtitle">INFINITE REALITIES. INFINITE POSSIBILITIES.</p>
+      <p class="hero-desc">Across the infinite expanse of the multiverse, every choice spawns a new reality. The Avengers Multiversal Navigation Division charts the branches of creation, mapping the impossible and defending the Sacred Timeline from incursions and anomalies.</p>
+    </div>
+    <div class="hero-scroll">
+      <span>SCROLL TO EXPLORE</span>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <div class="rift-divider"></div>
+
+  <!-- MULTIVERSE MAP -->
+  <section class="section" id="map">
+    <div class="section-particles" id="mapParticles"></div>
+    <div class="section-header">
+      <div class="section-tag">// REALITY CARTOGRAPHY DIVISION</div>
+      <h2 class="section-title">MULTIVERSE MAP</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="universe-map">
+      <!-- Universe-616 (Prime) -->
+      <div class="universe-card status-stable holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=300&fit=crop" alt="Universe-616 Prime" loading="lazy">
+          <span class="card-designation-overlay">EARTH-616</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-616</div>
+            </div>
+            <span class="status-badge stable">STABLE</span>
+          </div>
+          <p class="card-desc">The original Marvel Comics universe and birthplace of the definitive versions of every Marvel hero. All reality branches originate from or connect to this foundational plane of existence, making it the anchor point of the entire multiverse.</p>
+          <div class="card-characters">
+            <span class="char-tag">Spider-Man</span>
+            <span class="char-tag">Captain America</span>
+            <span class="char-tag">Thor</span>
+            <span class="char-tag">Iron Man</span>
+            <span class="char-tag">Hulk</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled low"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universe-199999 (MCU) -->
+      <div class="universe-card status-stable holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop" alt="Universe-199999 MCU" loading="lazy">
+          <span class="card-designation-overlay">EARTH-199999</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-199999</div>
+            </div>
+            <span class="status-badge stable">STABLE</span>
+          </div>
+          <p class="card-desc">The Marvel Cinematic Universe, our primary operational timeline across three phases of cosmic conflict. The Infinity Saga reshaped its destiny permanently after the Blip reversal, and the Multiverse Saga now threatens to tear it apart from within.</p>
+          <div class="card-characters">
+            <span class="char-tag">Tony Stark</span>
+            <span class="char-tag">Steve Rogers</span>
+            <span class="char-tag">Wanda Maximoff</span>
+            <span class="char-tag">Doctor Strange</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled medium"></span>
+              <span class="threat-dot filled medium"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universe-838 (Illuminati) -->
+      <div class="universe-card status-destroyed holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=400&h=300&fit=crop" alt="Universe-838 Illuminati" loading="lazy">
+          <span class="card-designation-overlay">EARTH-838</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-838</div>
+            </div>
+            <span class="status-badge destroyed">DESTROYED</span>
+          </div>
+          <p class="card-desc">Home to the Illuminati council of Doctor Stranges, this reality was annihilated by the Scarlet Witch during the events of Multiverse of Madness. Its destruction sent shockwaves through adjacent dimensions and left permanent scars in the multiversal fabric.</p>
+          <div class="card-characters">
+            <span class="char-tag">Supreme Strange</span>
+            <span class="char-tag">Black Bolt</span>
+            <span class="char-tag">Professor X</span>
+            <span class="char-tag">Captain Carter</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot filled critical"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universe-65 (Spider-Gwen) -->
+      <div class="universe-card status-stable holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=400&h=300&fit=crop" alt="Universe-65 Spider-Gwen" loading="lazy">
+          <span class="card-designation-overlay">EARTH-65</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-65</div>
+            </div>
+            <span class="status-badge stable">STABLE</span>
+          </div>
+          <p class="card-desc">Gwen Stacy was bitten by the radioactive spider instead of Peter Parker, becoming the masked Spider-Woman of this neon-drenched reality. This dimension has its own unique take on the spider-verse mythology and a thriving underground hero scene.</p>
+          <div class="card-characters">
+            <span class="char-tag">Spider-Gwen</span>
+            <span class="char-tag">Peter Parker (Lizard)</span>
+            <span class="char-tag">Matt Murdock</span>
+            <span class="char-tag">Captain Stacy</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled low"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universe-1610 (Ultimate) -->
+      <div class="universe-card status-collapsed holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop" alt="Universe-1610 Ultimate" loading="lazy">
+          <span class="card-designation-overlay">EARTH-1610</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-1610</div>
+            </div>
+            <span class="status-badge collapsed">COLLAPSED</span>
+          </div>
+          <p class="card-desc">A modern reimagining of the Marvel Universe with younger, grittier heroes and radical origin reboots. This universe collapsed during a catastrophic Incursion event, but fragmented echoes of its heroes persist in the Void between worlds.</p>
+          <div class="card-characters">
+            <span class="char-tag">Ultimate Spider-Man</span>
+            <span class="char-tag">Ultimate Thor</span>
+            <span class="char-tag">Miles Morales</span>
+            <span class="char-tag">The Maker</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled high"></span>
+              <span class="threat-dot filled high"></span>
+              <span class="threat-dot filled high"></span>
+              <span class="threat-dot filled high"></span>
+              <span class="threat-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universe-928 (2099) -->
+      <div class="universe-card status-stable holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=300&fit=crop" alt="Universe-928 2099" loading="lazy">
+          <span class="card-designation-overlay">EARTH-928</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-928</div>
+            </div>
+            <span class="status-badge stable">STABLE</span>
+          </div>
+          <p class="card-desc">A cyberpunk future where megacorporations rule and heroes have been outlawed by the government. In this neon-lit dystopia of 2099, Spider-Man fights for justice against Alchemax while navigating a world where technology has outpaced morality.</p>
+          <div class="card-characters">
+            <span class="char-tag">Spider-Man 2099</span>
+            <span class="char-tag">X-Men 2099</span>
+            <span class="char-tag">Doom 2099</span>
+            <span class="char-tag">Hulk 2099</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled medium"></span>
+              <span class="threat-dot filled medium"></span>
+              <span class="threat-dot filled medium"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universe-A (Age of Apocalypse) -->
+      <div class="universe-card status-unstable holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400&h=300&fit=crop" alt="Universe-A Age of Apocalypse" loading="lazy">
+          <span class="card-designation-overlay">EARTH-A</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-A</div>
+            </div>
+            <span class="status-badge unstable">UNSTABLE</span>
+          </div>
+          <p class="card-desc">Apocalypse conquered the world and mutants are the dominant species in this war-torn hellscape. Magneto leads the X-Men resistance in humanity's last stand against an eternal tyrant who has reshaped evolution itself to serve his vision.</p>
+          <div class="card-characters">
+            <span class="char-tag">Magneto</span>
+            <span class="char-tag">Weapon X</span>
+            <span class="char-tag">Blink</span>
+            <span class="char-tag">Apocalypse</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled high"></span>
+              <span class="threat-dot filled high"></span>
+              <span class="threat-dot filled high"></span>
+              <span class="threat-dot"></span>
+              <span class="threat-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universe-X (Age of Ultron) -->
+      <div class="universe-card status-destroyed holo-border" data-animate>
+        <div class="card-image">
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=300&fit=crop" alt="Universe-X Age of Ultron" loading="lazy">
+          <span class="card-designation-overlay">EARTH-X</span>
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div>
+              <div class="card-name">UNIVERSE-X</div>
+            </div>
+            <span class="status-badge destroyed">DESTROYED</span>
+          </div>
+          <p class="card-desc">Ultron won and humanity is nearly extinct in this ravaged future where the rogue AI achieved total global domination. Wolverine traveled back in time to prevent Ultron's creation, but the timeline fractures left this reality shattered beyond repair.</p>
+          <div class="card-characters">
+            <span class="char-tag">Wolverine</span>
+            <span class="char-tag">Invisible Woman</span>
+            <span class="char-tag">Ultron</span>
+            <span class="char-tag">Vision</span>
+          </div>
+          <div class="threat-bar">
+            <span class="threat-label">Threat</span>
+            <div class="threat-dots">
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot filled critical"></span>
+              <span class="threat-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rift-divider"></div>
+
+  <!-- REALITY VARIANTS -->
+  <section class="section" id="variants">
+    <div class="section-particles" id="variantParticles"></div>
+    <div class="section-header">
+      <div class="section-tag">// DIMENSIONAL VARIANT DATABASE</div>
+      <h2 class="section-title">REALITY VARIANTS</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="variant-gallery">
+      <!-- Spider-Man Noir -->
+      <div class="variant-card rift-effect" data-animate>
+        <div class="variant-visual">
+          <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=500&fit=crop" alt="Spider-Man Noir" loading="lazy">
+        </div>
+        <div class="variant-info">
+          <div class="variant-universe-tag">EARTH-90214</div>
+          <h3 class="variant-name">SPIDER-MAN NOIR</h3>
+          <div class="variant-origin">Origin: 1930s Great Depression-era New York. Bitten by a radioactive spider in an abandoned warehouse, gaining powers in a world of noir detective fiction and shadowy crime syndicates.</div>
+          <div class="variant-traits">
+            <span class="trait-tag">Brooding</span>
+            <span class="trait-tag">Moral</span>
+            <span class="trait-tag">Gritty</span>
+            <span class="trait-tag">No-Nonsense</span>
+          </div>
+          <div class="variant-powers"><strong>Powers:</strong> Wall-crawling, enhanced strength, spider-sense, enhanced agility. Uses a revolver and relies on stealth in the shadows of a monochrome world.</div>
+        </div>
+      </div>
+
+      <!-- Zombie Captain America -->
+      <div class="variant-card rift-effect" data-animate>
+        <div class="variant-visual">
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=500&fit=crop" alt="Zombie Captain America" loading="lazy">
+        </div>
+        <div class="variant-info">
+          <div class="variant-universe-tag">EARTH-2149</div>
+          <h3 class="variant-name">ZOMBIE CAPTAIN AMERICA</h3>
+          <div class="variant-origin">Origin: Earth-2149 where a quantum virus turned all superhumans into flesh-eating zombies. Steve Rogers retains his tactical mind despite the relentless hunger driving his undead form.</div>
+          <div class="variant-traits">
+            <span class="trait-tag">Relentless</span>
+            <span class="trait-tag">Tactical</span>
+            <span class="trait-tag">Hungry</span>
+            <span class="trait-tag">Conflicted</span>
+          </div>
+          <div class="variant-powers"><strong>Powers:</strong> Super-soldier strength, regenerative decay, unrelenting stamina, retains combat skills. Nearly unstoppable in horde scenarios despite physical deterioration.</div>
+        </div>
+      </div>
+
+      <!-- Supreme Strange -->
+      <div class="variant-card rift-effect" data-animate>
+        <div class="variant-visual">
+          <img src="https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=400&h=500&fit=crop" alt="Supreme Strange" loading="lazy">
+        </div>
+        <div class="variant-info">
+          <div class="variant-universe-tag">EARTH-838</div>
+          <h3 class="variant-name">SUPREME STRANGE</h3>
+          <div class="variant-origin">Origin: Earth-838's Sorcerer Supreme who defeated Dormammu but at the cost of using the Darkhold repeatedly, corrupting his soul and transforming him into a monstrous entity of pure power.</div>
+          <div class="variant-traits">
+            <span class="trait-tag">Obsessive</span>
+            <span class="trait-tag">Powerful</span>
+            <span class="trait-tag">Corrupted</span>
+            <span class="trait-tag">Brilliant</span>
+          </div>
+          <div class="variant-powers"><strong>Powers:</strong> Reality-warping through Darkhold, multiverse traversal, astral projection, time manipulation. Far more powerful and far more dangerous than standard Strange.</div>
+        </div>
+      </div>
+
+      <!-- Spider-Gwen / Ghost-Spider -->
+      <div class="variant-card rift-effect" data-animate>
+        <div class="variant-visual">
+          <img src="https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=400&h=500&fit=crop" alt="Spider-Gwen Ghost-Spider" loading="lazy">
+        </div>
+        <div class="variant-info">
+          <div class="variant-universe-tag">EARTH-65</div>
+          <h3 class="variant-name">SPIDER-GWEN / GHOST-SPIDER</h3>
+          <div class="variant-origin">Origin: Gwen Stacy was the one bitten by the radioactive spider in Earth-65. After Peter Parker's tragic transformation into the Lizard, she took up the mantle of Spider-Woman and became a legend.</div>
+          <div class="variant-traits">
+            <span class="trait-tag">Courageous</span>
+            <span class="trait-tag">Free-Spirited</span>
+            <span class="trait-tag">Drummer</span>
+            <span class="trait-tag">Resilient</span>
+          </div>
+          <div class="variant-powers"><strong>Powers:</strong> Spider abilities, wall-crawling, web-shooters, enhanced agility, excellent dancer's reflexes. Trained by a variant Matt Murdock in the art of combat.</div>
+        </div>
+      </div>
+
+      <!-- Jane Foster Thor -->
+      <div class="variant-card rift-effect" data-animate>
+        <div class="variant-visual">
+          <img src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=500&fit=crop" alt="Jane Foster Thor" loading="lazy">
+        </div>
+        <div class="variant-info">
+          <div class="variant-universe-tag">EARTH-TRN666</div>
+          <h3 class="variant-name">THOR — JANE FOSTER</h3>
+          <div class="variant-origin">Origin: In this reality, Jane Foster was deemed worthy of Mjolnir and became the Goddess of Thunder while battling cancer, each transformation draining her mortal strength toward the inevitable.</div>
+          <div class="variant-traits">
+            <span class="trait-tag">Selfless</span>
+            <span class="trait-tag">Determined</span>
+            <span class="trait-tag">Sacrificial</span>
+            <span class="trait-tag">Noble</span>
+          </div>
+          <div class="variant-powers"><strong>Powers:</strong> Godly strength, Mjolnir control, weather manipulation, flight, lightning projection. Powers tied to worthiness, not biology — a hammer's choice, not a bloodline's.</div>
+        </div>
+      </div>
+
+      <!-- Killmonger / White Wolf -->
+      <div class="variant-card rift-effect" data-animate>
+        <div class="variant-visual">
+          <img src="https://images.unsplash.com/photo-1534996858221-380b92700493?w=400&h=500&fit=crop" alt="Killmonger White Wolf" loading="lazy">
+        </div>
+        <div class="variant-info">
+          <div class="variant-universe-tag">EARTH-TRN1147</div>
+          <h3 class="variant-name">KILLMONGER — WHITE WOLF</h3>
+          <div class="variant-origin">Origin: An alternate timeline where Erik Killmonger was rescued and raised in Wakanda, becoming the White Wolf instead of seeking revenge. He leads the War Dogs as Wakanda's greatest protector.</div>
+          <div class="variant-traits">
+            <span class="trait-tag">Noble</span>
+            <span class="trait-tag">Strategic</span>
+            <span class="trait-tag">Redeemed</span>
+            <span class="trait-tag">Leader</span>
+          </div>
+          <div class="variant-powers"><strong>Powers:</strong> Enhanced by Heart-Shaped Herb, master tactician, vibranium technology, War Dog network access, skilled hand-to-hand combatant without the rage of his Prime counterpart.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rift-divider"></div>
+
+  <!-- INCURSION EVENTS -->
+  <section class="section" id="incursions">
+    <div class="section-particles" id="incursionParticles"></div>
+    <div class="section-header">
+      <div class="section-tag">// MULTIVERSAL THREAT ASSESSMENT</div>
+      <h2 class="section-title">INCURSION EVENTS</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="timeline">
+      <!-- The Blip -->
+      <div class="timeline-entry" data-animate>
+        <div class="timeline-entry-image">
+          <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&h=300&fit=crop" alt="The Blip" loading="lazy">
+        </div>
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-date">2018 — 2023</div>
+            <h3 class="timeline-name">THE BLIP</h3>
+          </div>
+          <span class="status-badge stable">REVERSED</span>
+        </div>
+        <div class="timeline-meta">
+          <span class="meta-item">CASUALTIES: 3.5 BILLION ERASED</span>
+          <span class="meta-item">DURATION: 5 YEARS</span>
+        </div>
+        <div class="timeline-desc">Thanos used the completed Infinity Gauntlet to erase half of all living creatures across the entire universe with a single snap, wiping out 3.5 billion beings instantly. The Blip caused the collapse of ecosystems, economies, and governments across the globe. Five years later, the Avengers performed a Time Heist to reverse the snap, restoring all dusted beings — but the temporal paradoxes from this reversal continue to ripple through the multiverse.</div>
+        <div class="impact-rating">
+          <span class="threat-label">Impact: OMEGA</span>
+          <div class="impact-bar-track">
+            <div class="impact-bar-fill c4"></div>
+          </div>
+          <span class="threat-label">4/5</span>
+        </div>
+      </div>
+
+      <!-- Spider-Man Spell Breach -->
+      <div class="timeline-entry critical" data-animate>
+        <div class="timeline-entry-image">
+          <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600&h=300&fit=crop" alt="Spell Breach" loading="lazy">
+        </div>
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-date">2024</div>
+            <h3 class="timeline-name">SPIDER-MAN SPELL BREACH</h3>
+          </div>
+          <span class="status-badge unstable">CONTAINED</span>
+        </div>
+        <div class="timeline-meta">
+          <span class="meta-item">CASUALTIES: 0 DIRECT</span>
+          <span class="meta-item">DIMENSIONS AFFECTED: 3+</span>
+        </div>
+        <div class="timeline-desc">Doctor Strange cast a spell at Spider-Man's request to make the world forget his identity. The spell fractured, pulling multiversal variants of Spider-Man's rogues gallery into Earth-199999. The barriers between realities weakened catastrophically before a modified final spell erased all knowledge of Peter Parker from every universe to seal the breach permanently.</div>
+        <div class="impact-rating">
+          <span class="threat-label">Impact: DELTA</span>
+          <div class="impact-bar-track">
+            <div class="impact-bar-fill c3"></div>
+          </div>
+          <span class="threat-label">3/5</span>
+        </div>
+      </div>
+
+      <!-- Multiverse of Madness -->
+      <div class="timeline-entry critical" data-animate>
+        <div class="timeline-entry-image">
+          <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&h=300&fit=crop" alt="Multiverse of Madness" loading="lazy">
+        </div>
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-date">2022</div>
+            <h3 class="timeline-name">MULTIVERSE OF MADNESS</h3>
+          </div>
+          <span class="status-badge destroyed">RESOLVED</span>
+        </div>
+        <div class="timeline-meta">
+          <span class="meta-item">CASUALTIES: 12,000+</span>
+          <span class="meta-item">DARKHOLD USED: YES</span>
+        </div>
+        <div class="timeline-desc">The Scarlet Witch, corrupted by the Darkhold, tore through the multiverse chasing America Chavez. Earth-838's entire Illuminati was destroyed and over 12,000 lives were lost across multiple realities. The Darkhold was destroyed across every universe by Doctor Strange, but the dimensional scars remain — Wanda's sacrifice sealed the Darkhold Castle but left lasting fractures in the multiversal fabric.</div>
+        <div class="impact-rating">
+          <span class="threat-label">Impact: OMEGA</span>
+          <div class="impact-bar-track">
+            <div class="impact-bar-fill c5"></div>
+          </div>
+          <span class="threat-label">5/5</span>
+        </div>
+      </div>
+
+      <!-- Kang's Temporal Conquest -->
+      <div class="timeline-entry critical" data-animate>
+        <div class="timeline-entry-image">
+          <img src="https://images.unsplash.com/photo-1534996858221-380b92700493?w=600&h=300&fit=crop" alt="Kang's Temporal Conquest" loading="lazy">
+        </div>
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-date">2025</div>
+            <h3 class="timeline-name">KANG'S TEMPORAL CONQUEST</h3>
+          </div>
+          <span class="status-badge unstable">ONGOING</span>
+        </div>
+        <div class="timeline-meta">
+          <span class="meta-item">CASUALTIES: UNCOUNTABLE</span>
+          <span class="meta-item">TIMELINES AT RISK: INFINITE</span>
+        </div>
+        <div class="timeline-desc">Kang the Conqueror emerged from the Quantum Realm wielding technology that allows instant traversal of the multiverse. His variants — Immortus, Rama-Tut, and the Council of Kangs — threaten to collapse all branching timelines into a single controlled reality. The TVA has been compromised and the Sacred Timeline is under siege from multiple incursion points simultaneously, with casualties across countless timelines.</div>
+        <div class="impact-rating">
+          <span class="threat-label">Impact: OMEGA</span>
+          <div class="impact-bar-track">
+            <div class="impact-bar-fill c5"></div>
+          </div>
+          <span class="threat-label">5/5</span>
+        </div>
+      </div>
+
+      <!-- Secret Wars -->
+      <div class="timeline-entry critical" data-animate>
+        <div class="timeline-entry-image">
+          <img src="https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=600&h=300&fit=crop" alt="Secret Wars" loading="lazy">
+        </div>
+        <div class="timeline-header">
+          <div>
+            <div class="timeline-date">2026</div>
+            <h3 class="timeline-name">SECRET WARS</h3>
+          </div>
+          <span class="status-badge unstable">APPROACHING</span>
+        </div>
+        <div class="timeline-meta">
+          <span class="meta-item">CASUALTIES: ALL REALITIES</span>
+          <span class="meta-item">THREAT LEVEL: EXISTENTIAL</span>
+        </div>
+        <div class="timeline-desc">The convergence of all multiversal crises culminates in Secret Wars — the final incursion where two Earths collide and the Beyonders attempt to end all of reality. Every hero from every universe must unite or face absolute annihilation. The battle for existence itself will determine whether the multiverse survives as one unified reality or shatters into nothingness forever.</div>
+        <div class="impact-rating">
+          <span class="threat-label">Impact: OMEGA</span>
+          <div class="impact-bar-track">
+            <div class="impact-bar-fill c5"></div>
+          </div>
+          <span class="threat-label">5/5</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rift-divider"></div>
+
+  <!-- DIMENSIONAL TRAVEL LOG -->
+  <section class="section" id="log">
+    <div class="section-header">
+      <div class="section-tag">// DIMENSIONAL TRAVEL DIVISION</div>
+      <h2 class="section-title">TRAVEL LOG</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="log-container">
+      <div class="log-terminal">
+        <div class="log-terminal-header">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">AVENGERS DTD TERMINAL v7.3</span>
+        </div>
+        <div class="log-body">
+          <div class="log-entry" data-animate>
+            <div class="log-entry-header">
+              <span class="log-entry-id">LOG #0447</span>
+              <span class="log-entry-timestamp">2026.03.14 // 03:22 UTC</span>
+            </div>
+            <div class="log-entry-dest">DESTINATION: EARTH-616 (PRIME)</div>
+            <p class="log-entry-text">Arrived at prime reality. Baseline dimensional readings nominal. Observed standard Avengers activity at headquarters. Local temporal flow consistent with projected timeline. Confirmed no anomalies at entry point. Returning to base coordinates for debrief. <span class="warning">[Minor quantum residue detected near landing zone — logged for TVA review]</span></p>
+          </div>
+
+          <div class="log-entry" data-animate>
+            <div class="log-entry-header">
+              <span class="log-entry-id">LOG #0448</span>
+              <span class="log-entry-timestamp">2026.03.16 // 11:45 UTC</span>
+            </div>
+            <div class="log-entry-dest">DESTINATION: EARTH-65 (SPIDER-GWEN)</div>
+            <p class="log-entry-text">Entered Earth-65 through stable portal nexus. Encountered Spider-Woman patrolling the financial district. Brief friendly contact established. Local reality stable — dimensional integrity at 97.3%. Noted aesthetic divergences: this universe favors neon-drenched architecture and pulsing synth soundscapes. <span class="warning">[Spider-Woman offered to show us her band practice — declined due to mission priority]</span></p>
+          </div>
+
+          <div class="log-entry" data-animate>
+            <div class="log-entry-header">
+              <span class="log-entry-id">LOG #0449</span>
+              <span class="log-entry-timestamp">2026.03.19 // 07:10 UTC</span>
+            </div>
+            <div class="log-entry-dest">DESTINATION: EARTH-838 (ILLUMINATI — WRECKAGE)</div>
+            <p class="log-entry-text"><span class="danger">WARNING: HAZARDOUS ZONE.</span> Arrived at the ruins of Earth-838. The Scarlet Witch's assault left the reality in shambles — floating debris fields, collapsed sanctums, residual Darkhold corruption. Scans confirm zero survivors. Universal decay rate at 2.1% per cycle. <span class="danger">[Darkhold energy signatures still active — full biohazard protocols engaged. This reality is a graveyard.]</span></p>
+          </div>
+
+          <div class="log-entry" data-animate>
+            <div class="log-entry-header">
+              <span class="log-entry-id">LOG #0450</span>
+              <span class="log-entry-timestamp">2026.03.22 // 16:33 UTC</span>
+            </div>
+            <div class="log-entry-dest">DESTINATION: EARTH-928 (2099)</div>
+            <p class="log-entry-text">Temporal displacement into the year 2099. Reality is <span class="warning">STABLE BUT STRAINED</span> — temporal fluctuations detected in the corporate sector. Encountered Spider-Man 2099 engaged in combat with Alchemax security drone swarm. Assisted in extraction. Local spacetime fabric is thinning near the Alchemax tower — predicted instability window within 18 months without intervention. <span class="warning">[Filed urgent report with TVA. This reality needs proactive monitoring.]</span></p>
+          </div>
+
+          <div class="log-entry" data-animate>
+            <div class="log-entry-header">
+              <span class="log-entry-id">LOG #0451</span>
+              <span class="log-entry-timestamp">2026.03.25 // 22:00 UTC</span>
+            </div>
+            <div class="log-entry-dest">DESTINATION: EARTH-A (AGE OF APOCALYPSE)</div>
+            <p class="log-entry-text"><span class="danger">EXTREME CAUTION.</span> Entered the Age of Apocalypse reality. Warzone from the moment of arrival. Apocalypse's forces control 70% of the continent. Brief contact with Magneto's resistance cell — they are losing ground fast. Reality is locked in a perpetual state of conflict with no stable timeline anchor. <span class="danger">[Casualties are inevitable if we cannot disrupt Apocalypse's time stabilization technology. Requesting full strike team authorization.]</span></p>
+          </div>
+
+          <div class="log-entry" data-animate>
+            <div class="log-entry-header">
+              <span class="log-entry-id">LOG #0452</span>
+              <span class="log-entry-timestamp">2026.03.28 // 09:15 UTC</span>
+            </div>
+            <div class="log-entry-dest">DESTINATION: THE VOID (BETWEEN WORLDS)</div>
+            <p class="log-entry-text">Transited through the Void — the space between realities. Visual readings are indescribable — floating remnants of destroyed universes drift like islands in an infinite fog. Detected fragments of Earth-1610, Earth-838, and dozens of unknown realities. <span class="warning">[Void entities were observed at distance. Maintained stealth protocols. One fragment of the Ultimate Universe's Triskelion was recovered — analyzing for residual data.]</span></p>
+          </div>
+
+          <div class="log-entry" data-animate>
+            <div class="log-entry-header">
+              <span class="log-entry-id">LOG #0453</span>
+              <span class="log-entry-timestamp">2026.04.01 // 14:50 UTC</span>
+            </div>
+            <div class="log-entry-dest">DESTINATION: EARTH-X (AGE OF ULTRON — RUINS)</div>
+            <p class="log-entry-text">Reality-X post-collapse scan. The Wolverine-Prime intervention fractured the timeline but could not fully prevent Ultron's ascent. What remains is a scorched hellscape — automated Ultron sentries patrol empty cities, and the few surviving humans hide in underground networks. <span class="danger">[Timeline classified as DESTROYED. Universal reconstruction deemed impossible. Recommend quarantine protocol and long-term monitoring only.]</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rift-divider"></div>
+
+  <!-- TVA SECTION -->
+  <section class="section" id="tva">
+    <div class="section-particles" id="tvaParticles"></div>
+    <div class="section-header">
+      <div class="section-tag">// TIME VARIANCE AUTHORITY</div>
+      <h2 class="section-title">TVA COMMAND</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="tva-grid">
+      <!-- TVA Role -->
+      <div class="tva-card holo-border" data-animate>
+        <div class="tva-card-icon"><i class="fas fa-clock"></i></div>
+        <h3 class="tva-card-title">TVA MANDATE</h3>
+        <p class="tva-card-text">The Time Variance Authority exists outside of time and space to preserve the Sacred Timeline. Founded by He Who Remains, the TVA monitors all branching timelines and prunes variants that threaten to create catastrophic nexus events. Every agent is a variant themselves — plucked from their own timelines and given purpose.</p>
+        <p class="tva-card-text" style="margin-top: 0.75rem;">Current Status: <strong style="color: var(--unstable);">OPERATIONAL — UNDER STRESS.</strong> Multiple timeline breaches have stretched resources thin across all divisions.</p>
+      </div>
+
+      <!-- Variants Catalog -->
+      <div class="tva-card holo-border" data-animate>
+        <div class="tva-card-icon"><i class="fas fa-users"></i></div>
+        <h3 class="tva-card-title">VARIANTS CATALOG</h3>
+        <p class="tva-card-text">Detected variants flagged for monitoring or pruning. Each variant represents a deviation from the Sacred Timeline that could cascade into uncontrolled branching.</p>
+        <ul class="nexus-list">
+          <li><span class="event-name">Sylvie Laufeydottir</span> <span class="event-status contained">CONTAINED</span></li>
+          <li><span class="event-name">Classic Loki</span> <span class="event-status contained">SACRIFICED</span></li>
+          <li><span class="event-name">Kid Loki</span> <span class="event-status monitoring">MONITORING</span></li>
+          <li><span class="event-name">Boastful Loki</span> <span class="event-status monitoring">MONITORING</span></li>
+          <li><span class="event-name">President Loki</span> <span class="event-status contained">CONTAINED</span></li>
+          <li><span class="event-name">Kang Variants (All)</span> <span class="event-status active">ACTIVE THREAT</span></li>
+        </ul>
+      </div>
+
+      <!-- Nexus Events -->
+      <div class="tva-card holo-border" data-animate>
+        <div class="tva-card-icon"><i class="fas fa-bolt"></i></div>
+        <h3 class="tva-card-title">NEXUS EVENTS</h3>
+        <p class="tva-card-text">Events that branch the Sacred Timeline and require immediate TVA intervention to prevent cascading multiversal collapse.</p>
+        <ul class="nexus-list">
+          <li><span class="event-name">Sylvie's Apotheosis</span> <span class="event-status contained">RESOLVED</span></li>
+          <li><span class="event-name">Loki's Tesseract Take</span> <span class="event-status contained">RESOLVED</span></li>
+          <li><span class="event-name">Sylvie Kills He Who Remains</span> <span class="event-status active">ACTIVE</span></li>
+          <li><span class="event-name">Incursion-1610/838</span> <span class="event-status active">ACTIVE</span></li>
+          <li><span class="event-name">Spider-Man Identity Spell</span> <span class="event-status monitoring">MONITORING</span></li>
+          <li><span class="event-name">Wanda's Darkhold Usage</span> <span class="event-status monitoring">MONITORING</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sacred Timeline Visualization -->
+    <div class="tva-card holo-border" data-animate style="margin-top: 1.5rem; grid-column: 1 / -1;">
+      <div class="sacred-timeline">
+        <div class="sacred-timeline-title">SACRED TIMELINE — LIVE VISUALIZATION</div>
+        <div class="timeline-visual">
+          <div class="timeline-main-line"></div>
+          <div class="timeline-marker" style="left: 5%;" data-label="ORIGIN"></div>
+          <div class="timeline-marker" style="left: 15%;" data-label="TVA FOUNDED"></div>
+          <div class="timeline-marker branch" style="left: 28%;" data-label="LOKI NEXUS"></div>
+          <div class="timeline-marker" style="left: 40%;" data-label="INFINITY WAR"></div>
+          <div class="timeline-marker branch" style="left: 52%;" data-label="BLIP REVERSAL"></div>
+          <div class="timeline-marker" style="left: 63%;" data-label="SPELL BREACH"></div>
+          <div class="timeline-marker branch" style="left: 75%;" data-label="DARKHOLD WAR"></div>
+          <div class="timeline-marker branch" style="left: 85%;" data-label="KANG INCURSION"></div>
+          <div class="timeline-marker" style="left: 95%;" data-label="NOW"></div>
+        </div>
+        <div style="display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--nexus-gold); display: inline-block;"></span>
+            <span style="font-family: var(--font-tech); font-size: 0.6rem; letter-spacing: 1px; color: #94a3b8;">SACRED TIMELINE</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--rift-red); display: inline-block; box-shadow: 0 0 8px var(--rift-red);"></span>
+            <span style="font-family: var(--font-tech); font-size: 0.6rem; letter-spacing: 1px; color: #94a3b8;">NEXUS EVENT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rift-divider"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="footer-logo" style="text-decoration:none">MARVEL.</a>
+        <p class="footer-desc">The Marvel Cinematic Universe is a media franchise and shared universe centered on a series of superhero films and other media produced by Marvel Studios.</p>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+          <a href="#"><i class="fab fa-discord"></i></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">EXPLORE</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="missions.html">Mission Files</a></li>
+          <li><a href="characters.html">Character Database</a></li>
+          <li><a href="battles.html">Battle Records</a></li>
+          <li><a href="tech.html">Tech Division</a></li>
+          <li><a href="multiverse.html">Multiverse Map</a></li>
+          <li><a href="roster.html">Team Roster</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">HEROES</div>
+        <ul class="footer-links">
+          <li><a href="characters.html">Iron Man</a></li>
+          <li><a href="characters.html">Captain America</a></li>
+          <li><a href="characters.html">Thor</a></li>
+          <li><a href="characters.html">Spider-Man</a></li>
+          <li><a href="characters.html">Black Panther</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">CONNECT</div>
+        <ul class="footer-links">
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Use</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Marvel Universe Fan Site. All rights reserved. This is a fan-made tribute website.</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Portal Particles =====
+    function createParticles(containerId, count) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.className = containerId === 'portalParticles' ? 'portal-particle' : 's-particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+        const hue = 260 + Math.random() * 60;
+        particle.style.background = `hsl(${hue}, 70%, 70%)`;
+        container.appendChild(particle);
+      }
+    }
+
+    createParticles('portalParticles', 40);
+    createParticles('mapParticles', 20);
+    createParticles('variantParticles', 20);
+    createParticles('incursionParticles', 15);
+    createParticles('tvaParticles', 15);
+
+    // ===== GSAP Animations =====
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero entrance
+    gsap.from('.hero-content', {
+      opacity: 0,
+      y: 60,
+      duration: 1.2,
+      ease: 'power3.out',
+      delay: 0.3
+    });
+
+    // Animate data-animate elements
+    const animElements = document.querySelectorAll('[data-animate]');
+    animElements.forEach((el, i) => {
+      gsap.from(el, {
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        },
+        opacity: 0,
+        y: 50,
+        duration: 0.8,
+        delay: (i % 3) * 0.1,
+        ease: 'power2.out'
+      });
+    });
+
+    // Section headers
+    document.querySelectorAll('.section-header').forEach(header => {
+      gsap.from(header, {
+        scrollTrigger: {
+          trigger: header,
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        },
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        ease: 'power2.out'
+      });
+    });
+
+    // Rift dividers
+    document.querySelectorAll('.rift-divider').forEach(divider => {
+      gsap.from(divider, {
+        scrollTrigger: {
+          trigger: divider,
+          start: 'top 90%',
+          toggleActions: 'play none none none'
+        },
+        scaleX: 0,
+        duration: 1,
+        ease: 'power2.out'
+      });
+    });
+
+    // Timeline entries stagger
+    gsap.from('.timeline-entry', {
+      scrollTrigger: {
+        trigger: '.timeline',
+        start: 'top 75%',
+        toggleActions: 'play none none none'
+      },
+      opacity: 0,
+      x: -30,
+      duration: 0.6,
+      stagger: 0.15,
+      ease: 'power2.out'
+    });
+
+    // Log entries
+    gsap.from('.log-entry', {
+      scrollTrigger: {
+        trigger: '.log-terminal',
+        start: 'top 75%',
+        toggleActions: 'play none none none'
+      },
+      opacity: 0,
+      y: 20,
+      duration: 0.5,
+      stagger: 0.1,
+      ease: 'power2.out'
+    });
+
+    // Sacred timeline markers
+    gsap.from('.timeline-marker', {
+      scrollTrigger: {
+        trigger: '.sacred-timeline',
+        start: 'top 80%',
+        toggleActions: 'play none none none'
+      },
+      scale: 0,
+      duration: 0.4,
+      stagger: 0.1,
+      ease: 'back.out(2)'
+    });
+
+    // Sacred timeline line drawing
+    gsap.from('.timeline-main-line', {
+      scrollTrigger: {
+        trigger: '.sacred-timeline',
+        start: 'top 80%',
+        toggleActions: 'play none none none'
+      },
+      scaleX: 0,
+      transformOrigin: 'left center',
+      duration: 1.5,
+      ease: 'power2.out'
+    });
+
+    // Impact bars fill
+    document.querySelectorAll('.impact-bar-fill').forEach(bar => {
+      const w = bar.style.width || window.getComputedStyle(bar).width;
+      bar.style.width = '0%';
+      gsap.to(bar, {
+        scrollTrigger: {
+          trigger: bar,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        },
+        width: w,
+        duration: 1.2,
+        ease: 'power2.out'
+      });
+    });
+
+    // Threat dots
+    document.querySelectorAll('.universe-card').forEach(card => {
+      const dots = card.querySelectorAll('.threat-dot.filled');
+      gsap.from(dots, {
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        },
+        scale: 0,
+        duration: 0.3,
+        stagger: 0.05,
+        ease: 'back.out(3)'
+      });
+    });
+
+    // TVA cards
+    gsap.from('.tva-card', {
+      scrollTrigger: {
+        trigger: '.tva-grid',
+        start: 'top 80%',
+        toggleActions: 'play none none none'
+      },
+      opacity: 0,
+      y: 40,
+      duration: 0.7,
+      stagger: 0.12,
+      ease: 'power2.out'
+    });
+  </script>
+  <script src="shared.js"></script>
+</body>
+</html>

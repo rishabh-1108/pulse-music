@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avengers Tech Division | Marvel Universe</title>
+<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+@keyframes scan{0%{top:-2px}100%{top:100vh}}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:.8}50%{transform:scale(1.4);opacity:0}100%{transform:scale(1);opacity:0}}
+@keyframes hud-flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.3}94%{opacity:1}96%{opacity:.6}97%{opacity:1}}
+@keyframes circuit-flow{0%{background-position:0 0}100%{background-position:200px 200px}}
+@keyframes data-stream{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+@keyframes power-charge{0%{width:0}100%{width:var(--power)}}
+@keyframes glow-breathe{0%,100%{box-shadow:0 0 15px rgba(0,200,255,.2)}50%{box-shadow:0 0 30px rgba(0,200,255,.5),0 0 60px rgba(0,200,255,.2)}}
+@keyframes rotate-slow{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes blink-caret{0%,100%{border-color:transparent}50%{border-color:var(--tc)}}
+@keyframes gauge-fill{0%{transform:rotate(-90deg)}100%{transform:rotate(calc(-90deg + var(--gauge) * 3.6deg))}}
+@keyframes hex-float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-15px) rotate(30deg)}}
+@keyframes scanline-move{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+
+:root{--tc:#00d4ff;--tc2:#0af;--tg:#1a1a2e;--tb:#0d1117;--tp:#6c63ff}
+
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:99998;opacity:.4}
+
+.scan-line{position:fixed;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.12),transparent);z-index:99997;pointer-events:none;animation:scan 6s linear infinite}
+
+.circuit-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;background-image:repeating-linear-gradient(0deg,transparent,transparent 50px,rgba(0,212,255,.5) 50px,rgba(0,212,255,.5) 51px),repeating-linear-gradient(90deg,transparent,transparent 50px,rgba(0,212,255,.5) 50px,rgba(0,212,255,.5) 51px);animation:circuit-flow 20s linear infinite}
+
+.page-hero{background:linear-gradient(180deg,rgba(0,10,20,.98),rgba(0,0,0,.99))}
+.page-hero::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,.02) 2px,rgba(0,212,255,.02) 4px);pointer-events:none;z-index:1}
+.page-hero h1{letter-spacing:6px}
+.page-hero h1 .tech-accent{color:var(--tc);text-shadow:0 0 30px rgba(0,212,255,.5)}
+.tech-badge{display:inline-flex;align-items:center;gap:10px;font-family:'Orbitron',sans-serif;font-size:13px;color:var(--tc);border:1px solid rgba(0,212,255,.3);padding:8px 30px;letter-spacing:5px;margin-top:20px;animation:glow-breathe 3s ease-in-out infinite;position:relative;overflow:hidden}
+.tech-badge::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,212,255,.08),transparent);animation:typing 3s ease-in-out infinite}
+.hero-status-line{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:15px;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(0,212,255,.4);letter-spacing:3px;flex-wrap:wrap}
+.hero-status-line .blink{width:5px;height:5px;background:var(--tc);border-radius:50%;animation:blink-caret 1s step-end infinite}
+
+.tech-dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1400px;margin:0 auto}
+.tech-dash-card{position:relative;background:rgba(0,212,255,.02);border:1px solid rgba(0,212,255,.1);padding:30px 20px;text-align:center;overflow:hidden;transition:all .4s}
+.tech-dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--tc),transparent);transform:scaleX(0);transition:transform .4s}
+.tech-dash-card:hover::before{transform:scaleX(1)}
+.tech-dash-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,212,255,.03),transparent);opacity:0;transition:opacity .4s}
+.tech-dash-card:hover::after{opacity:1}
+.tech-dash-card:hover{border-color:rgba(0,212,255,.3);transform:translateY(-5px);box-shadow:0 10px 40px rgba(0,212,255,.1)}
+.tech-dash-icon{font-size:28px;margin-bottom:12px;color:var(--tc);text-shadow:0 0 20px rgba(0,212,255,.3)}
+.tech-dash-value{font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;color:var(--tc);margin-bottom:5px;position:relative;z-index:1}
+.tech-dash-label{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;position:relative;z-index:1}
+.tech-dash-sub{font-size:11px;color:rgba(0,212,255,.4);margin-top:6px;font-family:'Orbitron',sans-serif;letter-spacing:1px;position:relative;z-index:1}
+.tech-dash-card.warning .tech-dash-icon{color:var(--mg)}
+.tech-dash-card.warning .tech-dash-value{color:var(--mg)}
+
+.weapons-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:25px;max-width:1500px;margin:0 auto}
+.weapon-card{position:relative;background:rgba(0,10,20,.9);border:1px solid rgba(0,212,255,.1);overflow:hidden;transition:all .5s}
+.weapon-card::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='hex' width='30' height='26' patternUnits='userSpaceOnUse' patternTransform='scale(0.5)'%3E%3Cpolygon points='15,0 30,8 30,20 15,26 0,20 0,8' fill='none' stroke='rgba(0,212,255,0.04)' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23hex)'/%3E%3C/svg%3E");pointer-events:none;opacity:.5}
+.weapon-card:hover{border-color:rgba(0,212,255,.4);box-shadow:0 0 40px rgba(0,212,255,.1),inset 0 0 40px rgba(0,212,255,.03);transform:translateY(-5px)}
+.weapon-img-wrap{position:relative;height:200px;overflow:hidden;background:linear-gradient(135deg,rgba(0,212,255,.05),rgba(108,99,255,.05))}
+.weapon-img-wrap img{width:100%;height:100%;object-fit:cover;filter:brightness(.7) saturate(.7);transition:all .6s}
+.weapon-card:hover .weapon-img-wrap img{filter:brightness(.85) saturate(1);transform:scale(1.08)}
+.weapon-img-wrap::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:60%;background:linear-gradient(transparent,rgba(0,10,20,.95))}
+.weapon-classification{position:absolute;top:12px;right:12px;font-family:'Orbitron',sans-serif;font-size:9px;padding:4px 10px;border:1px solid rgba(0,212,255,.4);color:var(--tc);letter-spacing:2px;background:rgba(0,10,20,.7);backdrop-filter:blur(8px);z-index:3}
+.weapon-body{padding:20px;position:relative;z-index:2}
+.weapon-name{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;margin-bottom:4px;color:#fff}
+.weapon-subtitle{font-size:12px;color:rgba(0,212,255,.6);font-family:'Orbitron',sans-serif;letter-spacing:1px;margin-bottom:12px}
+.weapon-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:15px}
+.weapon-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}
+.weapon-spec{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.4)}
+.weapon-spec i{color:var(--tc);font-size:10px;width:14px;text-align:center}
+.weapon-spec span{color:rgba(255,255,255,.65);font-weight:600}
+.weapon-power-row{display:flex;align-items:center;justify-content:space-between}
+.weapon-power-label{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:2px}
+.weapon-power-bars{display:flex;gap:3px}
+.weapon-power-bar{width:18px;height:6px;background:rgba(255,255,255,.06);border-radius:1px}
+.weapon-power-bar.active{background:var(--tc);box-shadow:0 0 6px rgba(0,212,255,.4)}
+.weapon-power-bar.active.gold{background:var(--mg);box-shadow:0 0 6px rgba(255,215,0,.4)}
+.weapon-power-bar.active.purple{background:var(--mp);box-shadow:0 0 6px rgba(155,89,182,.4)}
+.weapon-power-bar.active.red{background:var(--mr);box-shadow:0 0 6px rgba(226,54,54,.4)}
+.weapon-status{font-family:'Orbitron',sans-serif;font-size:9px;padding:3px 8px;letter-spacing:1px}
+.status-active{color:var(--mgr);border:1px solid rgba(46,204,113,.3);background:rgba(46,204,113,.08)}
+.status-destroyed{color:var(--mr);border:1px solid rgba(226,54,54,.3);background:rgba(226,54,54,.08)}
+.status-unknown{color:var(--mg);border:1px solid rgba(255,215,0,.3);background:rgba(255,215,0,.08)}
+.status-secure{color:var(--tc);border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08)}
+
+.stark-section{background:linear-gradient(180deg,rgba(0,5,15,.98),rgba(10,0,0,.95));position:relative;overflow:hidden}
+.stark-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(226,54,54,.04),transparent 60%);pointer-events:none}
+
+.suit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1400px;margin:0 auto;position:relative;z-index:1}
+.suit-card{position:relative;background:rgba(0,10,20,.9);border:1px solid rgba(255,255,255,.05);overflow:hidden;transition:all .4s}
+.suit-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--mr),transparent);transform:scaleX(0);transition:transform .4s}
+.suit-card:hover::before{transform:scaleX(1)}
+.suit-card:hover{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.03);transform:translateY(-5px)}
+.suit-img-wrap{width:100%;height:200px;overflow:hidden;position:relative}
+.suit-img-wrap img{width:100%;height:100%;object-fit:cover;filter:brightness(.65) saturate(.7);transition:all .5s}
+.suit-card:hover .suit-img-wrap img{filter:brightness(.8) saturate(1);transform:scale(1.06)}
+.suit-img-wrap::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:50%;background:linear-gradient(transparent,rgba(0,10,20,.95))}
+.suit-number{font-family:'Orbitron',sans-serif;font-size:48px;font-weight:900;color:rgba(255,255,255,.04);position:absolute;top:10px;right:15px;line-height:1;z-index:3}
+.suit-body{padding:18px 20px}
+.suit-name{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;margin-bottom:4px}
+.suit-year{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--mg);margin-bottom:8px}
+.suit-feature{font-size:12px;color:rgba(0,212,255,.7);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.suit-feature i{font-size:10px}
+.suit-specs{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6}
+
+.wakanda-section{background:linear-gradient(180deg,rgba(5,0,15,.98),rgba(0,0,0,.99));position:relative;overflow:hidden}
+.wakanda-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(155,89,182,.05),transparent 60%);pointer-events:none}
+
+.wakanda-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;max-width:1400px;margin:0 auto}
+.wakanda-card{position:relative;background:rgba(15,5,25,.9);border:1px solid rgba(155,89,182,.15);overflow:hidden;transition:all .5s}
+.wakanda-card::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='tri' width='40' height='35' patternUnits='userSpaceOnUse' patternTransform='scale(0.6)'%3E%3Cpolygon points='20,0 40,35 0,35' fill='none' stroke='rgba(155,89,182,0.04)' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23tri)'/%3E%3C/svg%3E");pointer-events:none}
+.wakanda-card:hover{border-color:rgba(155,89,182,.4);box-shadow:0 0 40px rgba(155,89,182,.08)}
+.wakanda-img-wrap{width:100%;height:220px;overflow:hidden;position:relative}
+.wakanda-img-wrap img{width:100%;height:100%;object-fit:cover;filter:brightness(.6) saturate(.65);transition:all .5s}
+.wakanda-card:hover .wakanda-img-wrap img{filter:brightness(.8) saturate(1);transform:scale(1.05)}
+.wakanda-img-wrap::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:50%;background:linear-gradient(transparent,rgba(15,5,25,.95))}
+.wakanda-card-icon{font-size:32px;margin-bottom:15px;color:var(--mp);text-shadow:0 0 20px rgba(155,89,182,.3)}
+.wakanda-card-title{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:2px;margin-bottom:8px;position:relative;z-index:1}
+.wakanda-card-subtitle{font-family:'Orbitron',sans-serif;font-size:11px;color:rgba(155,89,182,.6);letter-spacing:2px;margin-bottom:15px;position:relative;z-index:1}
+.wakanda-card-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px;position:relative;z-index:1}
+.wakanda-props{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative;z-index:1}
+.wakanda-prop{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(155,89,182,.05);border:1px solid rgba(155,89,182,.1);font-size:12px;color:rgba(255,255,255,.5)}
+.wakanda-prop i{color:var(--mp);font-size:10px}
+.wakanda-prop span{color:rgba(255,255,255,.7);font-weight:600}
+
+.vibranium-meter{position:relative;width:100%;height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden;margin-top:8px}
+.vibranium-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--mp),var(--tp));transition:width 1.5s ease-out}
+.vibranium-label-row{display:flex;justify-content:space-between;margin-top:4px;font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1px}
+
+.shield-section{position:relative;overflow:hidden}
+.shield-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,212,255,.03),transparent 60%);pointer-events:none}
+
+.arsenal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:25px;max-width:1400px;margin:0 auto}
+.arsenal-card{position:relative;background:rgba(0,10,20,.9);border:1px solid rgba(0,212,255,.08);overflow:hidden;transition:all .5s}
+.arsenal-card::before{content:'';position:absolute;top:0;left:0;width:40px;height:40px;border-top:2px solid rgba(0,212,255,.2);border-left:2px solid rgba(0,212,255,.2);transition:all .4s}
+.arsenal-card::after{content:'';position:absolute;bottom:0;right:0;width:40px;height:40px;border-bottom:2px solid rgba(0,212,255,.2);border-right:2px solid rgba(0,212,255,.2);transition:all .4s}
+.arsenal-card:hover::before{width:60px;height:60px;border-color:var(--tc)}
+.arsenal-card:hover::after{width:60px;height:60px;border-color:var(--tc)}
+.arsenal-card:hover{border-color:rgba(0,212,255,.3);box-shadow:0 0 40px rgba(0,212,255,.08);transform:translateY(-3px)}
+.arsenal-img-wrap{width:100%;height:200px;overflow:hidden;position:relative}
+.arsenal-img-wrap img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(.6);transition:all .5s}
+.arsenal-card:hover .arsenal-img-wrap img{filter:brightness(.75) saturate(1);transform:scale(1.05)}
+.arsenal-img-wrap::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:50%;background:linear-gradient(transparent,rgba(0,10,20,.95))}
+.arsenal-header{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 25px 0;position:relative;z-index:2}
+.arsenal-class{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;padding:3px 10px;border:1px solid rgba(0,212,255,.3);color:var(--tc)}
+.arsenal-class.top-secret{border-color:rgba(226,54,54,.4);color:var(--mr)}
+.arsenal-class.restricted{border-color:rgba(255,215,0,.4);color:var(--mg)}
+.arsenal-body{padding:10px 25px 25px}
+.arsenal-icon{font-size:36px;margin-bottom:12px;color:var(--tc);text-shadow:0 0 20px rgba(0,212,255,.2)}
+.arsenal-name{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;margin-bottom:5px}
+.arsenal-sub{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(0,212,255,.5);letter-spacing:2px;margin-bottom:15px}
+.arsenal-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:15px}
+.arsenal-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.arsenal-spec{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.35)}
+.arsenal-spec i{color:var(--tc);font-size:9px;width:14px;text-align:center}
+.arsenal-spec span{color:rgba(255,255,255,.6);font-weight:600}
+.arsenal-gauge{margin-top:15px;display:flex;align-items:center;gap:12px}
+.arsenal-gauge-label{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1px;min-width:70px}
+.arsenal-gauge-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.arsenal-gauge-fill{height:100%;border-radius:2px;transition:width 1.5s ease-out}
+.arsenal-gauge-fill.cyan{background:linear-gradient(90deg,rgba(0,212,255,.3),var(--tc))}
+.arsenal-gauge-fill.red{background:linear-gradient(90deg,rgba(226,54,54,.3),var(--mr))}
+.arsenal-gauge-fill.gold{background:linear-gradient(90deg,rgba(255,215,0,.3),var(--mg))}
+.arsenal-gauge-fill.purple{background:linear-gradient(90deg,rgba(155,89,182,.3),var(--mp))}
+.arsenal-gauge-val{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(0,212,255,.6);min-width:35px;text-align:right}
+
+.tech-footer-line{display:flex;align-items:center;justify-content:center;gap:20px;padding:30px 0 0;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(0,212,255,.2);letter-spacing:3px}
+.tech-footer-line .sep{width:30px;height:1px;background:rgba(0,212,255,.15)}
+
+@media(max-width:1100px){.tech-dashboard{grid-template-columns:repeat(2,1fr)}.suit-grid{grid-template-columns:repeat(2,1fr)}.wakanda-grid{grid-template-columns:1fr}.weapons-grid{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}}
+@media(max-width:768px){.tech-dashboard{grid-template-columns:1fr}.suit-grid{grid-template-columns:1fr}.weapons-grid{grid-template-columns:1fr}.arsenal-grid{grid-template-columns:1fr}.nav-links{display:none!important}.nav-hamburger{display:block}}
+</style>
+</head>
+<body>
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">MARVEL</div>
+  <div style="color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:5px;margin-top:10px">INITIALIZING QUANTUM REALM</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+</div>
+<div class="scan-line"></div>
+<div class="circuit-overlay"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">MARVEL<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#heroes">Heroes</a></li>
+    <li><a href="missions.html">Missions</a></li>
+    <li><a href="characters.html">Characters</a></li>
+    <li><a href="battles.html">Battles</a></li>
+    <li><a href="tech.html" class="active">Tech</a></li>
+    <li><a href="multiverse.html">Multiverse</a></li>
+    <li><a href="roster.html">Roster</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <h1>AVENGERS INITIATIVE <span class="tech-accent">// TECH DIVISION</span></h1>
+    <p>ADVANCED WEAPONS & DEFENSE SYSTEMS</p>
+    <div class="line"></div>
+    <div class="tech-badge"><i class="fas fa-microchip"></i> SYSTEM ACCESS GRANTED — LEVEL 9</div>
+    <div class="hero-status-line">
+      <span class="blink"></span>
+      <span>S.H.I.E.L.D. NETWORK ACTIVE</span>
+      <span class="blink"></span>
+      <span>STARK INDUSTRIES LINKED</span>
+      <span class="blink"></span>
+      <span>WAKANDAN TECH SYNC</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// TECHNICAL OVERVIEW</div>
+    <h2 class="section-title">TECH LEVEL DASHBOARD</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="tech-dashboard">
+    <div class="tech-dash-card">
+      <div class="tech-dash-icon"><i class="fas fa-shield-halved"></i></div>
+      <div class="tech-dash-value">TIER 7</div>
+      <div class="tech-dash-label">S.H.I.E.L.D. Tech Level</div>
+      <div class="tech-dash-sub">MAXIMUM CLEARANCE</div>
+    </div>
+    <div class="tech-dash-card">
+      <div class="tech-dash-icon"><i class="fas fa-lightbulb"></i></div>
+      <div class="tech-dash-value">3,400+</div>
+      <div class="tech-dash-label">Stark Tech Patents</div>
+      <div class="tech-dash-sub">REGISTERED WORLDWIDE</div>
+    </div>
+    <div class="tech-dash-card warning">
+      <div class="tech-dash-icon"><i class="fas fa-atom"></i></div>
+      <div class="tech-dash-value">99.7%</div>
+      <div class="tech-dash-label">Wakandan Innovation Index</div>
+      <div class="tech-dash-sub">WORLD LEADING</div>
+    </div>
+    <div class="tech-dash-card">
+      <div class="tech-dash-icon"><i class="fas fa-hammer"></i></div>
+      <div class="tech-dash-value">23%</div>
+      <div class="tech-dash-label">Asgardian Reverse-Engineered</div>
+      <div class="tech-dash-sub">ONGOING ANALYSIS</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// ICONIC ARSENAL</div>
+    <h2 class="section-title">WEAPONS GALLERY</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="weapons-grid">
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&h=400&fit=crop" alt="Mjolnir" loading="lazy">
+        <span class="weapon-classification">CLASS: COSMIC</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">MJOLNIR</div>
+        <div class="weapon-subtitle">Thor's Enchanted Hammer</div>
+        <div class="weapon-desc">Forged in the heart of a dying star by the dwarves of Nidavellir, Mjolnir is one of the most powerful weapons in the Nine Realms. Encoded with Odin's enchantment, it can only be wielded by those deemed worthy. The hammer grants the ability to control lightning, fly at interstellar speeds, and open bifrost portals across dimensions.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Wielder: Thor</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Uru Metal</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Weight: Infinite</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Origin: Nidavellir</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+            <div class="weapon-power-bar active gold"></div>
+          </div>
+          <div class="weapon-status status-secure">SECURE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?w=600&h=400&fit=crop" alt="Vibranium Shield" loading="lazy">
+        <span class="weapon-classification">CLASS: TACTICAL</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">VIBRANIUM SHIELD</div>
+        <div class="weapon-subtitle">Captain America's Defense System</div>
+        <div class="weapon-desc">Forged from a single disc of pure Vibranium mined from the mountains of Wakanda, Captain America's shield is virtually indestructible. The unique molecular structure of Vibranium allows it to absorb and redistribute kinetic energy, making it capable of deflecting any known projectile or energy blast. It has served as the symbol of freedom and justice across generations of heroes.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Wielder: Steve Rogers</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Pure Vibranium</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Diameter: 24 inches</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Origin: Wakanda</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+          </div>
+          <div class="weapon-status status-active">IN FIELD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1508344928928-7165b67de128?w=600&h=400&fit=crop" alt="Nano Tech Suit Mark LXXXV" loading="lazy">
+        <span class="weapon-classification">CLASS: OMEGA</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">NANO TECH SUIT MARK LXXXV</div>
+        <div class="weapon-subtitle">Stark's Final Nanotech Armor</div>
+        <div class="weapon-desc">The pinnacle of Tony Stark's engineering genius, the Mark LXXXV utilizes advanced nanotechnology stored in a chest-mounted housing unit. The suit can reshape itself instantaneously into any weapon or tool Stark can imagine, from repulsor cannons to energy shields. It was the final suit worn by Iron Man during the Battle of Earth, housing the Nano Gauntlet that defeated Thanos.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Wielder: Tony Stark</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Nano-Particles</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Power: 150 PetaJoules</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Origin: Stark Labs</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar active red"></div>
+            <div class="weapon-power-bar"></div>
+          </div>
+          <div class="weapon-status status-destroyed">LOST</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=600&h=400&fit=crop" alt="Arc Reactor" loading="lazy">
+        <span class="weapon-classification">CLASS: ENERGY</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">ARC REACTOR</div>
+        <div class="weapon-subtitle">Clean Energy Power Source</div>
+        <div class="weapon-desc">The Arc Reactor is Tony Stark's most revolutionary invention — a clean, self-sustaining fusion energy source capable of generating massive power from a compact device. Originally designed to power Stark's chest implant and suit systems, scaled-up versions powered Stark Tower and entire facilities. The technology represents unlimited clean energy potential, though its miniaturized form remains one of engineering's greatest achievements.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Creator: Tony Stark</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Palladium/RT Core</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Output: 3.2 GJ/s</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Type: Fusion Cell</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+          </div>
+          <div class="weapon-status status-active">OPERATIONAL</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=400&fit=crop" alt="Winter Soldier Arm" loading="lazy">
+        <span class="weapon-classification">CLASS: AUGMENT</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">WINTER SOLDIER ARM</div>
+        <div class="weapon-subtitle">Vibranium Prosthetic</div>
+        <div class="weapon-desc">Engineered by HYDRA scientists using stolen Wakandan Vibranium, Bucky Barnes' cybernetic arm grants superhuman strength capable of bending steel and deflecting bullets. The arm is neurologically linked, responding to Barnes' neural impulses with zero latency. Shuri later created an upgraded version with a sleeker design and enhanced adaptive capabilities during the Wakanda campaigns.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Wielder: Bucky Barnes</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Vibranium Alloy</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Strength: 10-Ton Max</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Neural-Linked</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+          </div>
+          <div class="weapon-status status-active">IN FIELD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=400&fit=crop" alt="Web Shooters" loading="lazy">
+        <span class="weapon-classification">CLASS: TACTICAL</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">WEB SHOOTERS</div>
+        <div class="weapon-subtitle">Spider-Man's Signature Devices</div>
+        <div class="weapon-desc">Designed and built by Peter Parker using modified designs from Tony Stark's laboratory, the web shooters fire cartridges of synthetic web fluid at high velocity. The formula creates tensile steel-strength strands capable of supporting several tons. Advanced models include rapid-fire modes, impact webs, and electric web variants for different combat scenarios.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Wielder: Peter Parker</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Synthetic Polymer</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Range: 50 meters</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Cartridge: 57 per set</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+          </div>
+          <div class="weapon-status status-active">IN FIELD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=400&fit=crop" alt="Trick Arrows" loading="lazy">
+        <span class="weapon-classification">CLASS: MULTI</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">TRICK ARROWS</div>
+        <div class="weapon-subtitle">Hawkeye's Custom Arsenal</div>
+        <div class="weapon-desc">Clint Barton's signature arrows are precision-engineered with specialized payloads by S.H.I.E.L.D. R&D and custom modifications. The arsenal includes explosive, EMP, sonic, grappling, and acid-tipped variants, each loaded into his reinforced compound bow. With over 30 configurations, Hawkeye's quiver is a one-man tactical weapons platform disguised as archery equipment.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Wielder: Clint Barton</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Titanium Tips</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Range: 200 yards</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Variants: 30+</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar active"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+            <div class="weapon-power-bar"></div>
+          </div>
+          <div class="weapon-status status-active">IN FIELD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weapon-card">
+      <div class="weapon-img-wrap">
+        <img src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=600&h=400&fit=crop" alt="Infinity Gauntlet" loading="lazy">
+        <span class="weapon-classification">CLASS: OMEGA+</span>
+      </div>
+      <div class="weapon-body">
+        <div class="weapon-name">INFINITY GAUNTLET</div>
+        <div class="weapon-subtitle">Cosmic Artifact of Omnipotence</div>
+        <div class="weapon-desc">Forged by Thanos and the dwarves of Nidavellir, the Infinity Gauntlet is designed to harness the power of all six Infinity Stones simultaneously. When complete, it grants the wielder godlike control over Time, Space, Reality, Power, Mind, and Soul. The Gauntlet was used twice — first by Thanos to erase half of all life, then by Tony Stark to reverse the Snap and destroy Thanos' army.</div>
+        <div class="weapon-specs">
+          <div class="weapon-spec"><i class="fas fa-user"></i> <span>Wielder: Thanos / Stark</span></div>
+          <div class="weapon-spec"><i class="fas fa-gem"></i> <span>Uru + 6 Stones</span></div>
+          <div class="weapon-spec"><i class="fas fa-ruler"></i> <span>Power: INFINITE</span></div>
+          <div class="weapon-spec"><i class="fas fa-bolt"></i> <span>Origin: Nidavellir</span></div>
+        </div>
+        <div class="weapon-power-row">
+          <div class="weapon-power-label">POWER LEVEL</div>
+          <div class="weapon-power-bars">
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+            <div class="weapon-power-bar active purple"></div>
+          </div>
+          <div class="weapon-status status-destroyed">DESTROYED</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section stark-section">
+  <div class="section-header">
+    <div class="section-tag">// STARK INDUSTRIES</div>
+    <h2 class="section-title">INNOVATION LAB</h2>
+    <div class="section-line"></div>
+  </div>
+  <div style="text-align:center;max-width:800px;margin:0 auto 50px">
+    <p style="font-size:14px;color:rgba(255,255,255,.4);line-height:1.8">From a cave with a box of scraps to the most advanced nanotechnology suit ever conceived, the Iron Man suit evolution represents humanity's greatest leap in engineering. Each iteration pushed the boundaries of what was possible.</p>
+  </div>
+  <div class="suit-grid">
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=400&h=500&fit=crop" alt="Mark I" loading="lazy">
+      </div>
+      <div class="suit-number">I</div>
+      <div class="suit-body">
+        <div class="suit-name">MARK I</div>
+        <div class="suit-year">2008</div>
+        <div class="suit-feature"><i class="fas fa-fire"></i> CAVE-BUILT PROTOTYPE</div>
+        <div class="suit-specs">Built in captivity by Tony Stark and Yinsen using scrap metal and salvaged weapons parts. Featured flamethrowers, a rudimentary repulsor prototype, and limited flight capability. First demonstrated the Jericho missile system during its escape from the Ten Rings. The spark that ignited a revolution in defense technology.</div>
+      </div>
+    </div>
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1508344928928-7165b67de128?w=400&h=500&fit=crop" alt="Mark VII" loading="lazy">
+      </div>
+      <div class="suit-number">VII</div>
+      <div class="suit-body">
+        <div class="suit-name">MARK VII</div>
+        <div class="suit-year">2012</div>
+        <div class="suit-feature"><i class="fas fa-satellite-dish"></i> AUTO-ASSEMBLY SYSTEM</div>
+        <div class="suit-specs">Deployed during the Battle of New York against the Chitauri invasion. Featured laser-guided auto-assembly allowing mid-air suiting at terminal velocity. Equipped with enhanced repulsor output, shoulder-mounted micro-missiles, and advanced targeting HUD. The suit that saved Manhattan.</div>
+      </div>
+    </div>
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400&h=500&fit=crop" alt="Mark XLII" loading="lazy">
+      </div>
+      <div class="suit-number">XLII</div>
+      <div class="suit-body">
+        <div class="suit-name">MARK XLII</div>
+        <div class="suit-year">2013</div>
+        <div class="suit-feature"><i class="fas fa-magnet"></i> PREHENSILE PROTOCOL</div>
+        <div class="suit-specs">Every piece flies independently and assembles onto Stark's body via magnetic bonding and neural interface. Enabled remote deployment and partial armor activation for the first time. Gold-heavy color scheme distinguished it from predecessors. Allowed Stark to suit up from anywhere within satellite range.</div>
+      </div>
+    </div>
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=400&h=500&fit=crop" alt="Hulkbuster" loading="lazy">
+      </div>
+      <div class="suit-number">XLIV</div>
+      <div class="suit-body">
+        <div class="suit-name">MARK XLIV HULKBUSTER</div>
+        <div class="suit-year">2015</div>
+        <div class="suit-feature"><i class="fas fa-hand-fist"></i> ANTI-HULK MODULAR ARMOR</div>
+        <div class="suit-specs">Modular heavy-combat suit designed by Stark and Banner as a contingency against Hulk rampages. Deployed via orbital satellite drop-ship in Johannesburg. Features reinforced exo-frame, enhanced power core, and seismic impact fists. Modular design allows field repair by swapping damaged components mid-fight.</div>
+      </div>
+    </div>
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=500&fit=crop" alt="Mark L" loading="lazy">
+      </div>
+      <div class="suit-number">L</div>
+      <div class="suit-body">
+        <div class="suit-name">MARK L</div>
+        <div class="suit-year">2018</div>
+        <div class="suit-feature"><i class="fas fa-dna"></i> NANOTECH FIRST GEN</div>
+        <div class="suit-specs">Breakthrough nanotechnology platform featuring billions of nano-particles stored in a chest-mounted housing unit. Real-time shape-shifting into weapons, shields, and flight surfaces. Deployed during the Battle of Titan against Thanos. Represents the convergence of Stark's nanotech research and Wakandan vibranium science.</div>
+      </div>
+    </div>
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=500&fit=crop" alt="Mark LXXXV" loading="lazy">
+      </div>
+      <div class="suit-number">LXXXV</div>
+      <div class="suit-body">
+        <div class="suit-name">MARK LXXXV</div>
+        <div class="suit-year">2019</div>
+        <div class="suit-feature"><i class="fas fa-infinity"></i> FINAL ITERATION</div>
+        <div class="suit-specs">Tony Stark's ultimate masterpiece. Enhanced nanotech with stronger durability, energy-blade generation, and integrated Nano Gauntlet for Infinity Stone handling. Worn during the final Battle of Earth. Designed with the ability to channel the full power of all six Infinity Stones — at the cost of the wielder's life.</div>
+      </div>
+    </div>
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1534996858221-380b92700493?w=400&h=500&fit=crop" alt="Rescue" loading="lazy">
+      </div>
+      <div class="suit-number">RES</div>
+      <div class="suit-body">
+        <div class="suit-name">RESCUE</div>
+        <div class="suit-year">2019</div>
+        <div class="suit-feature"><i class="fas fa-shield-heart"></i> PEPPER POTTS' SUIT</div>
+        <div class="suit-specs">Custom-built by Tony Stark for Pepper Potts with a focus on defensive and rescue operations rather than pure combat. Features energy shields, repulsor pulses, and advanced life-saving systems. Blue and silver color scheme differentiates it from the Iron Man line. Deployed during the final battle against Thanos' forces.</div>
+      </div>
+    </div>
+
+    <div class="suit-card">
+      <div class="suit-img-wrap">
+        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=500&fit=crop" alt="Iron Legion" loading="lazy">
+      </div>
+      <div class="suit-number">LEG</div>
+      <div class="suit-body">
+        <div class="suit-name">IRON LEGION</div>
+        <div class="suit-year">2015</div>
+        <div class="suit-feature"><i class="fas fa-robot"></i> DRONE ARMY — AI CONTROLLED</div>
+        <div class="suit-specs">Autonomous drone fleet controlled by the FRIDAY AI system. Designed for mass deployment in large-scale threats and global defense per the Ultron Protocol. Each drone equipped with repulsors, micro-missiles, and surveillance tech. Later upgraded with enhanced AI following the Ultron incident and integrated into the Avengers defense network.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section wakanda-section">
+  <div class="section-header">
+    <div class="section-tag">// KINGDOM OF WAKANDA</div>
+    <h2 class="section-title">WAKANDA TECHNOLOGY</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="wakanda-grid">
+
+    <div class="wakanda-card">
+      <div class="wakanda-img-wrap">
+        <img src="https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?w=600&h=400&fit=crop" alt="Vibranium" loading="lazy">
+      </div>
+      <div class="wakanda-card-icon"><i class="fas fa-gem"></i></div>
+      <div class="wakanda-card-title">VIBRANIUM PROPERTIES</div>
+      <div class="wakanda-card-subtitle">THE MOST VALUABLE SUBSTANCE ON EARTH</div>
+      <div class="wakanda-card-desc">Vibranium is an extraterrestrial metallic ore with the unique ability to absorb, store, and redirect kinetic and vibrational energy. A meteorite carrying Vibranium crashed into the African continent millennia ago, creating the nation of Wakanda. Its applications span from impenetrable armor to energy weapons and healing technology.</div>
+      <div class="wakanda-props">
+        <div class="wakanda-prop"><i class="fas fa-shield-halved"></i> <span>Kinetic Absorption</span></div>
+        <div class="wakanda-prop"><i class="fas fa-bolt"></i> <span>Energy Redirection</span></div>
+        <div class="wakanda-prop"><i class="fas fa-weight-hanging"></i> <span>Lightweight / Ultra-Dense</span></div>
+        <div class="wakanda-prop"><i class="fas fa-microscope"></i> <span>Adaptive Molecular Bond</span></div>
+        <div class="wakanda-prop"><i class="fas fa-heart-pulse"></i> <span>Healing Properties</span></div>
+        <div class="wakanda-prop"><i class="fas fa-volume-xmark"></i> <span>Sound Dampening</span></div>
+      </div>
+      <div style="margin-top:20px;position:relative;z-index:1">
+        <div class="vibranium-meter"><div class="vibranium-fill" style="width:97%"></div></div>
+        <div class="vibranium-label-row"><span>VIBRANIUM DENSITY INDEX</span><span>97%</span></div>
+      </div>
+    </div>
+
+    <div class="wakanda-card">
+      <div class="wakanda-img-wrap">
+        <img src="https://images.unsplash.com/photo-1534996858221-380b92700493?w=600&h=400&fit=crop" alt="Kimoyo Beads" loading="lazy">
+      </div>
+      <div class="wakanda-card-icon"><i class="fas fa-circle-nodes"></i></div>
+      <div class="wakanda-card-title">KIMOYO BEADS</div>
+      <div class="wakanda-card-subtitle">NEURAL-LINKED COMMUNICATION NETWORK</div>
+      <div class="wakanda-card-desc">Kimoyo beads are a Wakandan technology consisting of Vibranium-infused neural-linked bracelets. Each bead serves a specific function, from holographic communication and biometric scanning to remote device control and encrypted data storage. The network connects every bead across Wakanda, forming the backbone of their advanced communication infrastructure.</div>
+      <div class="wakanda-props">
+        <div class="wakanda-prop"><i class="fas fa-wifi"></i> <span>Global Comm Link</span></div>
+        <div class="wakanda-prop"><i class="fas fa-id-card"></i> <span>Biometric ID</span></div>
+        <div class="wakanda-prop"><i class="fas fa-project-diagram"></i> <span>Holographic Display</span></div>
+        <div class="wakanda-prop"><i class="fas fa-lock"></i> <span>Encrypted Protocol</span></div>
+        <div class="wakanda-prop"><i class="fas fa-heartbeat"></i> <span>Health Monitoring</span></div>
+        <div class="wakanda-prop"><i class="fas fa-satellite-dish"></i> <span>Satellite Relay</span></div>
+      </div>
+      <div style="margin-top:20px;position:relative;z-index:1">
+        <div class="vibranium-meter"><div class="vibranium-fill" style="width:89%"></div></div>
+        <div class="vibranium-label-row"><span>NETWORK COVERAGE</span><span>89%</span></div>
+      </div>
+    </div>
+
+    <div class="wakanda-card">
+      <div class="wakanda-img-wrap">
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop" alt="Shuri's Lab" loading="lazy">
+      </div>
+      <div class="wakanda-card-icon"><i class="fas fa-brain"></i></div>
+      <div class="wakanda-card-title">SHURI'S LAB</div>
+      <div class="wakanda-card-subtitle">MOST ADVANCED TECH LAB ON EARTH</div>
+      <div class="wakanda-card-desc">Princess Shuri's laboratory is the crown jewel of Wakandan innovation, combining Vibranium science with visionary engineering to produce technology decades ahead of anything else on Earth. Her creations include the Black Panther Habit, vibranium mining devices, maglev weapons, and the synthesis of the Heart-Shaped Herb. The lab served as the primary R&D hub during the Infinity War and Endgame conflicts.</div>
+      <div style="position:relative;z-index:1">
+        <ul style="list-style:none;padding:0;margin:0">
+          <li style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(155,89,182,.08);font-size:13px;color:rgba(255,255,255,.5);transition:all .3s"><i class="fas fa-circle" style="color:var(--mp);font-size:10px;width:16px;text-align:center"></i> <span style="font-weight:600;color:rgba(155,89,182,.8)">Black Panther Habit</span> — Adaptive Vibranium nanoweave suit</li>
+          <li style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(155,89,182,.08);font-size:13px;color:rgba(255,255,255,.5)"><i class="fas fa-circle" style="color:var(--mp);font-size:10px;width:16px;text-align:center"></i> <span style="font-weight:600;color:rgba(155,89,182,.8)">Sound Mining Device</span> — Vibranium extraction via sonic resonance</li>
+          <li style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(155,89,182,.08);font-size:13px;color:rgba(255,255,255,.5)"><i class="fas fa-circle" style="color:var(--mp);font-size:10px;width:16px;text-align:center"></i> <span style="font-weight:600;color:rgba(155,89,182,.8)">Maglev Gauntlet</span> — Magnetic levitation weapon for Okoye</li>
+          <li style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(155,89,182,.08);font-size:13px;color:rgba(255,255,255,.5)"><i class="fas fa-circle" style="color:var(--mp);font-size:10px;width:16px;text-align:center"></i> <span style="font-weight:600;color:rgba(155,89,182,.8)">Remote Piloting AI</span> — Control the Hulkbuster remotely</li>
+          <li style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(155,89,182,.08);font-size:13px;color:rgba(255,255,255,.5)"><i class="fas fa-circle" style="color:var(--mp);font-size:10px;width:16px;text-align:center"></i> <span style="font-weight:600;color:rgba(155,89,182,.8)">Bucky's New Arm</span> — Upgraded Vibranium prosthetic</li>
+          <li style="display:flex;align-items:center;gap:10px;padding:10px 0;font-size:13px;color:rgba(255,255,255,.5)"><i class="fas fa-circle" style="color:var(--mp);font-size:10px;width:16px;text-align:center"></i> <span style="font-weight:600;color:rgba(155,89,182,.8)">Herb Synthesis</span> — Recreated the lost Heart-Shaped Herb formula</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wakanda-card">
+      <div class="wakanda-img-wrap">
+        <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&h=400&fit=crop" alt="Wakandan Energy Grid" loading="lazy">
+      </div>
+      <div class="wakanda-card-icon"><i class="fas fa-bolt-lightning"></i></div>
+      <div class="wakanda-card-title">WAKANDAN ENERGY GRID</div>
+      <div class="wakanda-card-subtitle">CITY-WIDE POWER INFRASTRUCTURE</div>
+      <div class="wakanda-card-desc">Wakanda's energy grid is a Vibranium-powered distributed power network that provides limitless clean energy to every corner of the nation. The system harvests energy from Vibranium deposits deep underground and distributes it through resonance frequencies, eliminating the need for traditional power lines or fossil fuels. This same grid powers the cloaking shields that hide Wakanda from the outside world.</div>
+      <div class="wakanda-props">
+        <div class="wakanda-prop"><i class="fas fa-bolt"></i> <span>Source: Vibranium Core</span></div>
+        <div class="wakanda-prop"><i class="fas fa-leaf"></i> <span>100% Clean Energy</span></div>
+        <div class="wakanda-prop"><i class="fas fa-shield-halved"></i> <span>Powers Cloak Shield</span></div>
+        <div class="wakanda-prop"><i class="fas fa-network-wired"></i> <span>Distributed Mesh</span></div>
+      </div>
+      <div style="margin-top:20px;position:relative;z-index:1">
+        <div class="vibranium-meter"><div class="vibranium-fill" style="width:100%"></div></div>
+        <div class="vibranium-label-row"><span>GRID CAPACITY</span><span>100%</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section shield-section">
+  <div class="section-header">
+    <div class="section-tag">// CLASSIFIED ARSENAL</div>
+    <h2 class="section-title">S.H.I.E.L.D. ADVANCED SYSTEMS</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="arsenal-grid">
+
+    <div class="arsenal-card">
+      <div class="arsenal-img-wrap">
+        <img src="https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=600&h=400&fit=crop" alt="Quinjet" loading="lazy">
+      </div>
+      <div class="arsenal-header">
+        <div class="arsenal-class">LEVEL 8 ACCESS</div>
+      </div>
+      <div class="arsenal-body">
+        <div class="arsenal-icon"><i class="fas fa-jet-fighter-up"></i></div>
+        <div class="arsenal-name">QUINJET ST-201</div>
+        <div class="arsenal-sub">TACTICAL STEALTH AIRCRAFT</div>
+        <div class="arsenal-desc">The Quinjet is S.H.I.E.L.D.'s primary aerial transport and combat vehicle. Featuring VTOL capability, stealth coating, and modular weapon bays, it serves as the Avengers' main deployment platform. Advanced variants include anti-gravity engines and adaptive cloaking systems for deep-cover missions.</div>
+        <div class="arsenal-specs">
+          <div class="arsenal-spec"><i class="fas fa-gauge-high"></i> <span>Max: Mach 4.2</span></div>
+          <div class="arsenal-spec"><i class="fas fa-users"></i> <span>Crew: 6 + 12 troops</span></div>
+          <div class="arsenal-spec"><i class="fas fa-radar"></i> <span>Range: 4,800 km</span></div>
+          <div class="arsenal-spec"><i class="fas fa-crosshairs"></i> <span>Weapons: 4x guided</span></div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">SPEED</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill cyan" style="width:85%"></div></div>
+          <div class="arsenal-gauge-val">85%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">ARMOR</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill cyan" style="width:72%"></div></div>
+          <div class="arsenal-gauge-val">72%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">STEALTH</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill cyan" style="width:94%"></div></div>
+          <div class="arsenal-gauge-val">94%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arsenal-card">
+      <div class="arsenal-img-wrap">
+        <img src="https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=600&h=400&fit=crop" alt="Darkhold" loading="lazy">
+      </div>
+      <div class="arsenal-header">
+        <div class="arsenal-class top-secret">TOP SECRET</div>
+      </div>
+      <div class="arsenal-body">
+        <div class="arsenal-icon"><i class="fas fa-book-skull"></i></div>
+        <div class="arsenal-name">THE DARKHOLD</div>
+        <div class="arsenal-sub">BOOK OF THE DAMNED — CONTAINMENT PROTOCOL</div>
+        <div class="arsenal-desc">Originally the Lumerijoul, the Darkhold is an ancient grimoire of dark magic written by the elder god Chthon. S.H.I.E.L.D. maintained a containment protocol after its recovery, but the book's corrupting influence led to multiple security breaches. Now destroyed by Wanda Maximoff, its pages were used for multiversal dreamwalking rituals.</div>
+        <div class="arsenal-specs">
+          <div class="arsenal-spec"><i class="fas fa-skull-crossbones"></i> <span>Threat: OMEGA</span></div>
+          <div class="arsenal-spec"><i class="fas fa-book-open"></i> <span>Type: Dark Grimoire</span></div>
+          <div class="arsenal-spec"><i class="fas fa-user-secret"></i> <span>Author: Chthon</span></div>
+          <div class="arsenal-spec"><i class="fas fa-skull"></i> <span>Status: DESTROYED</span></div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">DANGER</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill red" style="width:100%"></div></div>
+          <div class="arsenal-gauge-val">100%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">CORRUPT</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill red" style="width:98%"></div></div>
+          <div class="arsenal-gauge-val">98%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">CONTAIN</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill red" style="width:0%"></div></div>
+          <div class="arsenal-gauge-val">N/A</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arsenal-card">
+      <div class="arsenal-img-wrap">
+        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=400&fit=crop" alt="Containment Cells" loading="lazy">
+      </div>
+      <div class="arsenal-header">
+        <div class="arsenal-class restricted">RESTRICTED</div>
+      </div>
+      <div class="arsenal-body">
+        <div class="arsenal-icon"><i class="fas fa-boxes-stacked"></i></div>
+        <div class="arsenal-name">CONTAINMENT CELLS</div>
+        <div class="arsenal-sub">METAHUMAN SECURE HOLDING</div>
+        <div class="arsenal-desc">S.H.I.E.L.D. Containment Cells are reinforced detention units designed for holding metahuman threats, alien technology, and dimensional anomalies. Each cell features adaptive Vibranium lining, energy dampening fields, and automated defense systems that respond to attempted breaches. The Raft and the Vault are the largest known installations.</div>
+        <div class="arsenal-specs">
+          <div class="arsenal-spec"><i class="fas fa-shield-halved"></i> <span>Rating: Omega-class</span></div>
+          <div class="arsenal-spec"><i class="fas fa-bolt"></i> <span>Power: Grid-independent</span></div>
+          <div class="arsenal-spec"><i class="fas fa-lock"></i> <span>Lock: Neural-sequence</span></div>
+          <div class="arsenal-spec"><i class="fas fa-camera"></i> <span>Surveillance: 360 AI</span></div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">STRENGTH</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill gold" style="width:92%"></div></div>
+          <div class="arsenal-gauge-val">92%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">DAMPENER</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill gold" style="width:88%"></div></div>
+          <div class="arsenal-gauge-val">88%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">SECURITY</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill gold" style="width:96%"></div></div>
+          <div class="arsenal-gauge-val">96%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arsenal-card">
+      <div class="arsenal-img-wrap">
+        <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&h=400&fit=crop" alt="Helicarrier" loading="lazy">
+      </div>
+      <div class="arsenal-header">
+        <div class="arsenal-class top-secret">OMEGA-LEVEL</div>
+      </div>
+      <div class="arsenal-body">
+        <div class="arsenal-icon"><i class="fas fa-helicopter"></i></div>
+        <div class="arsenal-name">HELICARRIER</div>
+        <div class="arsenal-sub">FLYING FORTRESS — COMMAND CENTER</div>
+        <div class="arsenal-desc">The S.H.I.E.L.D. Helicarrier is the organization's flagship — a massive flying aircraft carrier capable of staying airborne indefinitely using four nuclear turbine engines and repulsor lift technology. Housing over 400 agents, multiple hangars, labs, and a command bridge with global surveillance, it is the nerve center of global defense operations.</div>
+        <div class="arsenal-specs">
+          <div class="arsenal-spec"><i class="fas fa-ruler-combined"></i> <span>Length: 438 meters</span></div>
+          <div class="arsenal-spec"><i class="fas fa-users"></i> <span>Crew: 400+</span></div>
+          <div class="arsenal-spec"><i class="fas fa-jet-fighter"></i> <span>Capacity: 24 fighters</span></div>
+          <div class="arsenal-spec"><i class="fas fa-bolt"></i> <span>Power: 6x Arc Reactors</span></div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">FIREPOWER</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill purple" style="width:95%"></div></div>
+          <div class="arsenal-gauge-val">95%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">DEFENSE</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill purple" style="width:90%"></div></div>
+          <div class="arsenal-gauge-val">90%</div>
+        </div>
+        <div class="arsenal-gauge">
+          <div class="arsenal-gauge-label">REACH</div>
+          <div class="arsenal-gauge-track"><div class="arsenal-gauge-fill purple" style="width:100%"></div></div>
+          <div class="arsenal-gauge-val">100%</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="tech-footer-line">
+    <span>S.H.I.E.L.D. TECH DIVISION</span>
+    <span class="sep"></span>
+    <span>SECURE PROTOCOL v7.2.1</span>
+    <span class="sep"></span>
+    <span><i class="fas fa-lock"></i> CLASSIFIED</span>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a href="index.html" class="footer-logo" style="text-decoration:none">MARVEL.</a>
+      <p class="footer-desc">The Marvel Cinematic Universe is a media franchise and shared universe centered on a series of superhero films and other media produced by Marvel Studios.</p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">EXPLORE</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="missions.html">Mission Files</a></li>
+        <li><a href="characters.html">Character Database</a></li>
+        <li><a href="battles.html">Battle Records</a></li>
+        <li><a href="tech.html">Tech Division</a></li>
+        <li><a href="multiverse.html">Multiverse Map</a></li>
+        <li><a href="roster.html">Team Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">HEROES</div>
+      <ul class="footer-links">
+        <li><a href="characters.html">Iron Man</a></li>
+        <li><a href="characters.html">Captain America</a></li>
+        <li><a href="characters.html">Thor</a></li>
+        <li><a href="characters.html">Spider-Man</a></li>
+        <li><a href="characters.html">Black Panther</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">CONNECT</div>
+      <ul class="footer-links">
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Marvel Universe Fan Site. All rights reserved. This is a fan-made tribute website.</p>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+window.addEventListener('scroll',()=>{
+  document.querySelector('nav').classList.toggle('scrolled',window.scrollY>50);
+});
+document.querySelector('nav').style.cssText+='background:rgba(0,0,0,.8);backdrop-filter:blur(20px);box-shadow:0 2px 30px rgba(0,212,255,.1)';
+
+gsap.from('.page-hero-content',{y:60,opacity:0,duration:1.2,ease:'power3.out'});
+gsap.from('.tech-badge',{y:30,opacity:0,duration:1,ease:'power3.out',delay:0.4});
+
+gsap.from('.tech-dash-card',{scrollTrigger:{trigger:'.tech-dashboard',start:'top 80%'},y:60,opacity:0,duration:0.6,stagger:0.1,ease:'power3.out'});
+
+gsap.from('.weapon-card',{scrollTrigger:{trigger:'.weapons-grid',start:'top 80%'},y:80,opacity:0,duration:0.8,stagger:0.12,ease:'power3.out'});
+
+gsap.from('.suit-card',{scrollTrigger:{trigger:'.suit-grid',start:'top 80%'},y:60,opacity:0,duration:0.6,stagger:0.1,ease:'power3.out'});
+
+gsap.from('.wakanda-card',{scrollTrigger:{trigger:'.wakanda-grid',start:'top 80%'},y:60,opacity:0,duration:0.7,stagger:0.12,ease:'power3.out'});
+
+gsap.from('.arsenal-card',{scrollTrigger:{trigger:'.arsenal-grid',start:'top 80%'},y:60,opacity:0,duration:0.7,stagger:0.12,ease:'power3.out'});
+
+gsap.from('.footer-grid',{scrollTrigger:{trigger:'.footer',start:'top 90%'},y:40,opacity:0,duration:0.8,ease:'power3.out'});
+
+function animateGauges(){
+  document.querySelectorAll('.arsenal-gauge-fill').forEach(el=>{
+    const w=el.style.width;
+    el.style.width='0%';
+    setTimeout(()=>{el.style.width=w},300);
+  });
+  document.querySelectorAll('.vibranium-fill').forEach(el=>{
+    const w=el.style.width;
+    el.style.width='0%';
+    setTimeout(()=>{el.style.width=w},300);
+  });
+}
+ScrollTrigger.create({trigger:'.arsenal-grid',start:'top 70%',onEnter:animateGauges,once:true});
+ScrollTrigger.create({trigger:'.wakanda-grid',start:'top 70%',onEnter:animateGauges,once:true});
+
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.querySelector('.nav-links');
+hamburger.addEventListener('click',()=>{
+  const d=navLinks.style.display;
+  navLinks.style.display=d==='flex'?'none':'flex';
+  navLinks.style.flexDirection='column';
+  navLinks.style.position='absolute';
+  navLinks.style.top='60px';
+  navLinks.style.right='20px';
+  navLinks.style.background='rgba(0,0,0,.95)';
+  navLinks.style.padding='20px';
+  navLinks.style.borderRadius='12px';
+  navLinks.style.border='1px solid rgba(0,212,255,.3)';
+  navLinks.style.zIndex='9999';
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

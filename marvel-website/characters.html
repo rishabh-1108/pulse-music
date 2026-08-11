@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Archive // Marvel Multiverse Database</title>
+<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+@keyframes holo-border{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@keyframes pulse-glow{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes scan-line{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes flicker{0%,100%{opacity:1}50%{opacity:.85}52%{opacity:1}54%{opacity:.7}56%{opacity:1}}
+@keyframes badge-pulse{0%,100%{box-shadow:0 0 5px currentColor}50%{box-shadow:0 0 15px currentColor,0 0 30px currentColor}}
+@keyframes rotate-border{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes radar-pulse{0%{transform:scale(0);opacity:1}100%{transform:scale(1);opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sweep{0%{left:-60%}55%,100%{left:130%}}
+@keyframes avReveal{from{opacity:0;transform:scale(1.08) translateY(14px);filter:blur(6px)}to{opacity:1;transform:scale(1.04) translateY(0);filter:blur(0)}}
+@keyframes searchIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.page-hero{height:70vh!important}
+.page-hero::after{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:rgba(226,54,54,.4);animation:scan-line 4s linear infinite;pointer-events:none;z-index:5}
+.page-hero .corner-mark{position:absolute;width:40px;height:40px;border-color:var(--mr);border-style:solid;border-width:0;z-index:3;opacity:.4}
+.page-hero .corner-mark.tl{top:20%;left:10%;border-top-width:2px;border-left-width:2px}
+.page-hero .corner-mark.tr{top:20%;right:10%;border-top-width:2px;border-right-width:2px}
+.page-hero .corner-mark.bl{bottom:20%;left:10%;border-bottom-width:2px;border-left-width:2px}
+.page-hero .corner-mark.br{bottom:20%;right:10%;border-bottom-width:2px;border-right-width:2px}
+.page-hero .hud-text{position:absolute;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(226,54,54,.3);letter-spacing:3px;z-index:3}
+.page-hero .hud-text.top-left{top:22%;left:12%}
+.page-hero .hud-text.top-right{top:22%;right:12%;text-align:right}
+.page-hero .hud-text.bottom-left{bottom:22%;left:12%}
+
+.filter-bar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:50px;position:relative;z-index:2}
+.filter-tab{padding:10px 28px;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:30px;color:rgba(255,255,255,.4);cursor:pointer;transition:all .4s;position:relative;overflow:hidden}
+.filter-tab::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--mr),var(--mg));opacity:0;transition:opacity .4s}
+.filter-tab:hover,.filter-tab.active{border-color:var(--mr);color:#fff;box-shadow:0 0 20px rgba(226,54,54,.2)}
+.filter-tab:hover::before,.filter-tab.active::before{opacity:.1}
+.filter-tab span{position:relative;z-index:1}
+
+.archive-search{position:relative;max-width:620px;margin:0 auto 40px;z-index:20}
+.search-box{display:flex;align-items:center;gap:14px;padding:14px 22px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px);transition:border-color .3s,box-shadow .3s}
+.search-box:focus-within{border-color:var(--mr);box-shadow:0 0 25px rgba(226,54,54,.15)}
+.search-box>i{color:rgba(255,255,255,.35);font-size:14px}
+.search-box input{flex:1;background:none;border:none;outline:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:15px;letter-spacing:1px}
+.search-box input::placeholder{color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;font-family:'Orbitron',sans-serif;font-size:10px}
+.search-box .search-kbd{margin-left:auto;font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.14);padding:3px 8px;border-radius:6px}
+.search-results{position:absolute;top:calc(100% + 10px);left:0;right:0;background:rgba(5,5,5,.97);border:1px solid rgba(226,54,54,.25);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 30px rgba(226,54,54,.08);display:none;max-height:480px;overflow-y:auto;z-index:21}
+.search-results.open{display:block;animation:searchIn .3s ease}
+.search-group{padding:10px 16px;font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:var(--mg);border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
+.search-item{display:flex;align-items:center;gap:14px;padding:10px 16px;cursor:pointer;transition:background .2s;border-bottom:1px solid rgba(255,255,255,.03)}
+.search-item:hover,.search-item.active{background:rgba(226,54,54,.08)}
+.search-item img{width:44px;height:44px;border-radius:10px;object-fit:cover;border:1px solid rgba(255,255,255,.12)}
+.search-item .si-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:var(--iacc,#e23636);flex-shrink:0}
+.search-item .si-text{display:flex;flex-direction:column;min-width:0}
+.search-item .si-name{font-size:15px;font-weight:600;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-item .si-sub{font-size:12px;color:rgba(255,255,255,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-item .si-cat{margin-left:auto;font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.12);padding:3px 8px;border-radius:20px;flex-shrink:0}
+.search-empty{padding:30px 20px;text-align:center;font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.35)}
+.search-empty i{display:block;font-size:22px;margin-bottom:12px;color:rgba(255,255,255,.2)}
+
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:35px;max-width:1400px;margin:0 auto}
+
+.char-card{position:relative;height:680px;border-radius:20px;perspective:1000px;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease;will-change:transform}
+.char-card:focus-visible{outline:2px solid var(--mr);outline-offset:3px}
+.char-card .card-hud{position:absolute;top:12px;left:52px;z-index:4;font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.5);opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;text-shadow:0 0 10px rgba(0,0,0,.9)}
+.char-card:hover .card-hud,.char-card:focus-visible .card-hud{opacity:1}
+.char-card-inner{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.char-card:hover .char-card-inner{transform:rotateY(180deg)}
+
+.char-card-front,.char-card-back{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+
+.char-card-front{background:rgba(10,10,10,.95)}
+.char-card-front::before{content:'';position:absolute;inset:-2px;border-radius:20px;background:linear-gradient(135deg,transparent,rgba(226,54,54,.4),transparent,rgba(255,215,0,.4),transparent);background-size:300% 300%;animation:holo-border 4s ease infinite;z-index:1;pointer-events:none;opacity:.5;transition:opacity .4s}
+.char-card:hover .char-card-front::before{opacity:1}
+.char-card-front::after{content:'';position:absolute;inset:2px;border-radius:18px;background:rgba(10,10,10,.97);z-index:0}
+
+.char-card-front .card-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column}
+
+.card-image-wrap{position:relative;height:260px;overflow:hidden;border-radius:20px 20px 0 0}
+.card-image-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s,filter .4s;filter:brightness(.7) saturate(1.2)}
+.char-card:hover .char-card-front .card-image-wrap img{transform:scale(1.1);filter:brightness(.5) saturate(1.4)}
+.card-image-wrap::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:60%;background:linear-gradient(to top,rgba(10,10,10,.98),transparent)}
+
+.card-status-badge{position:absolute;top:15px;right:15px;z-index:3;padding:5px 14px;border-radius:20px;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;font-weight:700;animation:badge-pulse 3s infinite}
+.status-active{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.4)}
+.status-deceased{background:rgba(226,54,54,.15);color:#e23636;border:1px solid rgba(226,54,54,.4)}
+.status-retired{background:rgba(150,150,150,.15);color:#999;border:1px solid rgba(150,150,150,.4)}
+.status-unknown{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.4)}
+
+.card-number{position:absolute;top:15px;left:15px;z-index:3;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:2px}
+
+.card-identity{padding:0 25px;margin-top:-40px;position:relative;z-index:3}
+.card-alias{font-family:'Bebas Neue',cursive;font-size:42px;line-height:1;letter-spacing:3px;background:linear-gradient(135deg,#fff,rgba(255,255,255,.7));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card-realname{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:8px;letter-spacing:1px}
+.card-team-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.team-tag{padding:3px 10px;border-radius:12px;font-size:10px;letter-spacing:1px;font-weight:600;text-transform:uppercase;position:relative;overflow:hidden}
+.team-tag::before{content:'';position:absolute;inset:0;opacity:.15;border-radius:12px}
+.team-tag.avengers{color:#e23636;border:1px solid rgba(226,54,54,.3)}.team-tag.avengers::before{background:#e23636}
+.team-tag.guardians{color:#2ecc71;border:1px solid rgba(46,204,113,.3)}.team-tag.guardians::before{background:#2ecc71}
+.team-tag.xmen{color:#1a6bff;border:1px solid rgba(26,107,255,.3)}.team-tag.xmen::before{background:#1a6bff}
+.team-tag.defenders{color:#9b59b6;border:1px solid rgba(155,89,182,.3)}.team-tag.defenders::before{background:#9b59b6}
+.team-tag.stark{color:#ffd700;border:1px solid rgba(255,215,0,.3)}.team-tag.stark::before{background:#ffd700}
+.team-tag.shield{color:#4fc3f7;border:1px solid rgba(79,195,247,.3)}.team-tag.shield::before{background:#4fc3f7}
+.team-tag.magic{color:#9b59b6;border:1px solid rgba(155,89,182,.35)}.team-tag.magic::before{background:#9b59b6}
+.team-tag.street{color:#e67e22;border:1px solid rgba(230,126,34,.35)}.team-tag.street::before{background:#e67e22}
+
+.card-origin{padding:0 25px;flex:1}
+.card-origin p{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-top:10px}
+
+.card-stats-mini{padding:0 25px 20px}
+.stat-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.stat-bar-label{font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:2px;width:70px;text-align:right;text-transform:uppercase}
+.stat-bar-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;position:relative}
+.stat-bar-fill{height:100%;border-radius:2px;width:0;transition:width 1.5s cubic-bezier(.4,0,.2,1);position:relative}
+.stat-bar-fill.strength{background:linear-gradient(90deg,#e23636,#ff6b6b)}
+.stat-bar-fill.speed{background:linear-gradient(90deg,#1a6bff,#64b5f6)}
+.stat-bar-fill.intelligence{background:linear-gradient(90deg,#ffd700,#ffeb3b)}
+.stat-bar-fill.durability{background:linear-gradient(90deg,#2ecc71,#81c784)}
+.stat-bar-fill.power{background:linear-gradient(90deg,#9b59b6,#ce93d8)}
+.stat-bar-fill.combat{background:linear-gradient(90deg,#ff9800,#ffb74d)}
+
+.card-appearance{padding:0 25px 15px;display:flex;justify-content:space-between;align-items:center}
+.appearance-label{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:2px}
+.appearance-value{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--mg)}
+
+.card-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:3;font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:3px;text-transform:uppercase;animation:flicker 3s infinite}
+
+.char-card-back{transform:rotateY(180deg);background:rgba(8,8,8,.98);display:flex;flex-direction:column;padding:30px;overflow-y:auto}
+.char-card-back::before{content:'';position:absolute;inset:-2px;border-radius:20px;background:linear-gradient(135deg,var(--mr),var(--mg),var(--mb),var(--mp),var(--mr));background-size:400% 400%;animation:holo-border 3s ease infinite;z-index:0;pointer-events:none}
+.char-card-back::after{content:'';position:absolute;inset:2px;border-radius:18px;background:rgba(8,8,8,.98);z-index:0}
+
+.back-content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+.back-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,.06)}
+.back-name{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:2px}
+.back-id{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:2px}
+
+.back-section{margin-bottom:18px}
+.back-section-title{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--mr);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(226,54,54,.15)}
+.back-powers-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.back-power-item{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.6)}
+.back-power-item i{color:var(--mg);font-size:8px}
+
+.back-radar{width:100%;max-width:220px;margin:0 auto;position:relative}
+.radar-svg{width:100%;height:auto}
+
+.back-bio{font-size:13px;color:rgba(255,255,255,.45);line-height:1.7}
+.back-footer{margin-top:auto;padding-top:15px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
+.back-flip-hint{font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:2px}
+
+.compare-section{background:linear-gradient(180deg,rgba(10,10,10,.95),rgba(20,0,0,.95))}
+.compare-container{max-width:1100px;margin:0 auto}
+.compare-header{display:flex;justify-content:center;align-items:center;gap:40px;margin-bottom:50px}
+.compare-char{text-align:center}
+.compare-char img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--mr);box-shadow:0 0 20px rgba(226,54,54,.3);transition:all .4s}
+.compare-char img:hover{box-shadow:0 0 40px rgba(226,54,54,.6);transform:scale(1.05)}
+.compare-char .name{font-family:'Bebas Neue',cursive;font-size:22px;margin-top:8px;letter-spacing:2px}
+.compare-vs{font-family:'Bebas Neue',cursive;font-size:40px;color:var(--mg);text-shadow:var(--gg);animation:float 3s ease-in-out infinite}
+.compare-bars{max-width:700px;margin:0 auto}
+.compare-row{display:grid;grid-template-columns:80px 1fr 60px 1fr 80px;align-items:center;gap:12px;margin-bottom:18px}
+.compare-stat-name{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;text-align:center;text-transform:uppercase}
+.compare-bar-track{height:12px;background:rgba(255,255,255,.04);border-radius:6px;overflow:hidden;position:relative}
+.compare-bar-fill-left{height:100%;border-radius:6px;background:linear-gradient(90deg,transparent,#e23636);width:0;transition:width 1.8s cubic-bezier(.4,0,.2,1);position:absolute;right:0}
+.compare-bar-fill-right{height:100%;border-radius:6px;background:linear-gradient(90deg,#1a6bff,transparent);width:0;transition:width 1.8s cubic-bezier(.4,0,.2,1);position:absolute;left:0}
+.compare-bar-value{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700}
+.compare-bar-value.left{color:#e23636;text-align:right}
+.compare-bar-value.right{color:#1a6bff;text-align:left}
+
+.team-matrix{max-width:1200px;margin:0 auto;overflow-x:auto}
+.matrix-table{width:100%;border-collapse:separate;border-spacing:0;background:rgba(255,255,255,.02);border-radius:16px;overflow:hidden;backdrop-filter:blur(10px)}
+.matrix-table thead th{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:18px 12px;color:rgba(255,255,255,.4);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);white-space:nowrap}
+.matrix-table thead th:first-child{text-align:left;padding-left:20px;min-width:160px}
+.matrix-table tbody td{padding:14px 12px;text-align:center;border-bottom:1px solid rgba(255,255,255,.03);transition:all .3s}
+.matrix-table tbody td:first-child{text-align:left;padding-left:20px;font-size:14px;font-weight:600;color:rgba(255,255,255,.7)}
+.matrix-table tbody tr{transition:all .3s}
+.matrix-table tbody tr:hover{background:rgba(226,54,54,.03)}
+.matrix-table tbody tr:hover td:first-child{color:var(--mr)}
+.matrix-dot{width:10px;height:10px;border-radius:50%;display:inline-block;transition:all .3s}
+.matrix-dot.yes{background:var(--mr);box-shadow:0 0 8px rgba(226,54,54,.5)}
+.matrix-dot.no{background:rgba(255,255,255,.06)}
+.matrix-table tbody tr:hover .matrix-dot.yes{box-shadow:0 0 15px rgba(226,54,54,.8);transform:scale(1.2)}
+
+.section-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(226,54,54,.2),rgba(255,215,0,.2),transparent);margin:0 auto}
+
+.archive-overlay{position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.94);backdrop-filter:blur(16px);display:none;align-items:stretch;justify-content:center;overflow:hidden}
+.archive-overlay.open{display:flex}
+.archive-overlay::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 30%,rgba(226,54,54,.07),transparent 55%),radial-gradient(ellipse at 80% 75%,rgba(255,215,0,.05),transparent 55%);pointer-events:none}
+.archive-overlay::after{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--acc,#e23636),transparent);opacity:.5;animation:scan-line 5s linear infinite;pointer-events:none;z-index:20}
+.archive-shell{position:relative;width:min(1480px,96vw);display:flex;flex-direction:column;padding:0;height:100%;overflow-y:auto;overflow-x:hidden}
+.archive-topbar{position:sticky;top:0;left:0;right:0;z-index:15;display:flex;align-items:center;gap:20px;padding:16px 40px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.72);backdrop-filter:blur(14px)}
+.archive-hud-title{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:4px;color:rgba(255,255,255,.45)}
+.archive-hud-title i{color:var(--mr);margin-right:8px}
+.archive-subject-id{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:var(--acc,#e23636);margin-left:auto}
+.archive-close{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.7);cursor:pointer;transition:all .3s;font-size:15px;flex-shrink:0}
+.archive-close:hover{color:#fff;border-color:var(--acc);box-shadow:0 0 20px rgba(226,54,54,.25);transform:rotate(90deg)}
+.archive-prev,.archive-next{position:absolute;top:50%;transform:translateY(-50%);z-index:16;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;font-size:16px}
+.archive-prev{left:14px}.archive-next{right:14px}
+.archive-prev:hover,.archive-next:hover{color:#fff;border-color:var(--acc);box-shadow:0 0 20px rgba(226,54,54,.25);transform:translateY(-50%) scale(1.08)}
+.archive-body{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,42%) minmax(0,58%);gap:28px;padding:34px 76px 20px}
+.archive-info,.archive-visual-inner,.archive-lower>*{transition:opacity .25s ease,transform .25s ease}
+.archive-body.switching .archive-info,.archive-body.switching .archive-visual-inner,.archive-lower.switching>*{opacity:0;transform:translateX(34px)}
+
+.archive-info{padding:8px 8px 8px 0;overflow-y:auto;position:relative}
+.ai-tag{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:var(--acc,#e23636);margin-bottom:14px}
+.ai-tag i{margin-right:6px}
+.ai-name{font-family:'Bebas Neue',cursive;font-size:clamp(50px,5.4vw,88px);line-height:.95;letter-spacing:3px;margin-bottom:10px}
+.ai-realname{font-size:16px;color:rgba(255,255,255,.55);letter-spacing:1px;margin-bottom:12px}
+.ai-aliases{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.ai-aliases span{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.14);padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.02)}
+.ai-desc{font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;max-width:60ch;margin-bottom:22px}
+.ai-block{margin-bottom:22px}
+.ai-block-title{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:var(--acc,#e23636);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ai-abilities{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
+.ai-abilities span{font-size:13px;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:8px}
+.ai-abilities i{font-size:7px;color:var(--acc,#e23636)}
+.ai-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+.ai-meta{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px}
+.am-label{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.35);display:block;margin-bottom:6px}
+.am-value{font-size:13px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.85);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.am-status.status-active{background:rgba(46,204,113,.12);padding:2px 8px;border-radius:12px;border:none;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;animation:none}
+.am-status.status-deceased{background:rgba(226,54,54,.12);padding:2px 8px;border-radius:12px;border:none;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;animation:none}
+.am-status.status-retired{background:rgba(150,150,150,.12);padding:2px 8px;border-radius:12px;border:none;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;animation:none}
+.am-status.status-unknown{background:rgba(255,215,0,.12);padding:2px 8px;border-radius:12px;border:none;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;animation:none}
+.ai-radar-label{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:var(--acc,#e23636);margin-bottom:8px}
+.ai-radar{max-width:300px}
+.ai-radar svg{width:100%;height:auto}
+
+.archive-visual{display:flex;align-items:center;justify-content:center;position:relative;min-height:0;overflow:hidden;border-radius:20px}
+.archive-visual-inner{position:relative;width:100%;height:100%;min-height:320px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:20px;perspective:1100px}
+.av-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+.av-rings{position:absolute;width:min(560px,82%);aspect-ratio:1;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.av-ring{position:absolute;border-radius:50%;pointer-events:none}
+.av-ring.r1{inset:0;border:1px solid rgba(255,255,255,.1);border-top-color:var(--acc,#e23636);border-right-color:var(--acc,#e23636);animation:spin 24s linear infinite}
+.av-ring.r2{inset:11%;border:1px dashed rgba(255,255,255,.12);border-bottom-color:var(--acc,#e23636);animation:spin 36s linear infinite reverse}
+.av-corner{position:absolute;width:34px;height:34px;border:2px solid var(--acc,#e23636);opacity:.7;z-index:4;pointer-events:none}
+.av-corner.tl{top:24px;left:24px;border-right:0;border-bottom:0}
+.av-corner.tr{top:24px;right:24px;border-left:0;border-bottom:0}
+.av-corner.bl{bottom:24px;left:24px;border-right:0;border-top:0}
+.av-corner.br{bottom:24px;right:24px;border-left:0;border-top:0}
+.av-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 3px);pointer-events:none;z-index:2;mix-blend-mode:overlay}
+.av-sweep{position:absolute;top:-20%;bottom:-20%;width:34%;left:-60%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.06),transparent);transform:skewX(-12deg);animation:sweep 6s ease-in-out infinite;pointer-events:none;z-index:2}
+.av-hud-top{position:absolute;top:16px;left:66px;z-index:4;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.4);pointer-events:none}
+.av-hud-bottom{position:absolute;bottom:16px;right:66px;z-index:4;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.4);pointer-events:none}
+.av-img{position:relative;z-index:1;max-width:86%;max-height:86%;width:auto;height:auto;object-fit:contain;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6);transition:transform .12s ease-out;will-change:transform;animation:avReveal .8s cubic-bezier(.2,.7,.2,1) both}
+.archive-particles{position:absolute;inset:0;z-index:3;pointer-events:none}
+
+.archive-lower{flex:0 0 auto;overflow-y:auto;padding:0 76px 28px;max-height:44%}
+.al-section{margin-bottom:20px}
+.al-title{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:var(--acc,#e23636);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07)}
+.al-title i{margin-right:8px}
+.al-movie-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.al-movie{flex:0 0 auto;min-width:215px;display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer;text-align:left;transition:all .3s;font-family:'Rajdhani',sans-serif;position:relative;overflow:hidden}
+.al-movie::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent,var(--acc,#e23636),transparent);background-size:250% 250%;opacity:0;transition:opacity .3s}
+.al-movie:hover{border-color:var(--acc,#e23636);box-shadow:0 0 24px rgba(226,54,54,.16);transform:translateY(-3px)}
+.al-movie:hover::before{opacity:.07}
+.al-movie .am-year{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--mg);letter-spacing:2px}
+.al-movie .am-tag{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.4)}
+.al-movie .am-name{font-size:15px;font-weight:600;letter-spacing:1px}
+.al-movie>i{position:absolute;right:14px;bottom:14px;transition:transform .3s;color:var(--acc,#e23636);font-size:12px}
+.al-movie:hover>i{transform:translateX(4px)}
+.al-related-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.al-related{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.7);font-size:12px;letter-spacing:1px;padding:6px;border-radius:12px;transition:all .3s;font-family:'Rajdhani',sans-serif}
+.al-related img{width:76px;height:76px;object-fit:cover;border-radius:14px;border:1px solid rgba(255,255,255,.14);transition:all .3s}
+.al-related:hover{color:#fff}
+.al-related:hover img{border-color:var(--acc,#e23636);box-shadow:0 0 20px rgba(226,54,54,.25);transform:translateY(-3px)}
+.al-universe-row{display:flex;gap:12px;flex-wrap:wrap}
+.al-universe{display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:all .3s;font-family:'Rajdhani',sans-serif}
+.al-universe i{color:var(--uac,#e23636);font-size:16px}
+.al-universe b{display:block;font-size:14px;letter-spacing:1px}
+.al-universe small{color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px}
+.al-universe:hover{border-color:var(--uac,#e23636);box-shadow:0 0 24px rgba(255,255,255,.08);transform:translateY(-2px)}
+.al-quote-row{display:flex;gap:14px;flex-wrap:wrap}
+.al-quote-row blockquote{flex:1 1 260px;font-size:15px;color:rgba(255,255,255,.75);font-style:italic;border-left:2px solid var(--acc,#e23636);padding:10px 16px;background:rgba(255,255,255,.02);border-radius:0 12px 12px 0;letter-spacing:.4px}
+
+.archive-overlay button:focus-visible{outline:2px solid var(--acc,#e23636);outline-offset:2px}
+
+@media(max-width:1024px){.profile-grid{grid-template-columns:1fr}.compare-row{grid-template-columns:60px 1fr 40px 1fr 60px}.char-card{height:auto;min-height:680px}
+.archive-body{grid-template-columns:1fr;padding:26px 24px 16px;overflow-y:auto}.archive-visual{min-height:340px;max-height:44vh}.archive-visual-inner{min-height:340px}.archive-lower{padding:0 24px 24px;max-height:none}.archive-prev{left:6px}.archive-next{right:6px}}
+@media(max-width:768px){.filter-bar{gap:6px}.filter-tab{padding:8px 16px;font-size:9px}.compare-char img{width:80px;height:80px}.compare-vs{font-size:28px}.char-card{height:auto;min-height:auto}.char-card-inner{min-height:700px}.char-card-back{position:relative;transform:none;min-height:400px}.char-card:hover .char-card-inner{transform:none}.card-hint{display:none}
+.archive-shell{padding-bottom:0}.archive-topbar{padding:12px 14px;gap:10px}.archive-hud-title{font-size:8px;letter-spacing:2px}.archive-subject-id{display:none}.archive-body{padding:20px 12px 12px;gap:18px}.archive-info{padding:4px;overflow:visible}.archive-visual{min-height:300px;max-height:40vh}.archive-visual-inner{min-height:300px}.archive-lower{padding:0 12px 70px}.ai-name{font-size:46px}.ai-abilities{grid-template-columns:1fr}.ai-meta-grid{grid-template-columns:1fr}.av-hud-top{left:52px}.av-hud-bottom{right:52px}.archive-prev,.archive-next{top:auto;bottom:14px;transform:none;width:44px;height:44px;font-size:13px}.archive-prev{left:12px}.archive-next{right:12px}}
+@media(prefers-reduced-motion:reduce){
+.archive-overlay *,.archive-overlay *::before,.archive-overlay *::after,.char-card *,.char-card *::before,.char-card *::after,.search-results,.archive-body,.archive-lower,.av-img{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+.archive-overlay,.archive-body,.archive-lower,.av-img{transition:none!important}
+.av-sweep,.av-scanlines{display:none}
+}
+</style>
+</head>
+<body>
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">MARVEL</div>
+  <div style="color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:5px;margin-top:10px">INITIALIZING QUANTUM REALM</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+</div>
+
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">MARVEL<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#heroes">Heroes</a></li>
+    <li><a href="missions.html">Missions</a></li>
+    <li><a href="characters.html" class="active">Characters</a></li>
+    <li><a href="battles.html">Battles</a></li>
+    <li><a href="tech.html">Tech</a></li>
+    <li><a href="multiverse.html">Multiverse</a></li>
+    <li><a href="roster.html">Roster</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+</nav>
+
+<div class="glow-orb glow-orb-1"></div>
+<div class="glow-orb glow-orb-2"></div>
+
+<section class="page-hero" id="hero">
+  <div class="corner-mark tl"></div>
+  <div class="corner-mark tr"></div>
+  <div class="corner-mark bl"></div>
+  <div class="corner-mark br"></div>
+  <span class="hud-text top-left">SYS://AVENGERS_DB v8.0.0</span>
+  <span class="hud-text top-right">CLEARANCE: OMEGA</span>
+  <span class="hud-text bottom-left">RECORDS: 13 LOADED</span>
+  <div class="page-hero-content">
+    <p class="section-tag" style="margin-bottom:15px">S.H.I.E.L.D. CLASSIFIED DATABASE</p>
+    <h1>CHARACTER <span class="gradient">// ARCHIVE</span></h1>
+    <div class="line"></div>
+    <p style="margin-top:20px;font-family:'Orbitron',sans-serif;font-size:clamp(11px,1.3vw,16px);color:rgba(255,255,255,.45);letter-spacing:8px;text-transform:uppercase">MULTIVERSE DOSSIERS &amp; CINEMATIC INTEL</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag"><i class="fas fa-fingerprint"></i> CLASSIFIED INTEL</div>
+    <div class="section-title">FIELD DOSSIERS</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="archive-search" role="search">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="archiveSearch" placeholder="SEARCH CHARACTERS, MOVIES, UNIVERSES" autocomplete="off" aria-label="Search the archive">
+      <span class="search-kbd">ESC</span>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-tab active" onclick="filterCards('all', this)"><span><i class="fas fa-globe"></i> ALL</span></div>
+    <div class="filter-tab" onclick="filterCards('avengers', this)"><span><i class="fas fa-shield-halved"></i> AVENGERS</span></div>
+    <div class="filter-tab" onclick="filterCards('guardians', this)"><span><i class="fas fa-rocket"></i> GUARDIANS</span></div>
+    <div class="filter-tab" onclick="filterCards('magic', this)"><span><i class="fas fa-hat-wizard"></i> MAGIC</span></div>
+    <div class="filter-tab" onclick="filterCards('street', this)"><span><i class="fas fa-city"></i> STREET</span></div>
+    <div class="filter-tab" onclick="filterCards('villains', this)"><span><i class="fas fa-skull"></i> VILLAINS</span></div>
+  </div>
+
+  <div class="profile-grid" id="profileGrid"></div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section compare-section">
+  <div class="section-header">
+    <div class="section-tag"><i class="fas fa-chart-bar"></i> POWER ANALYSIS</div>
+    <div class="section-title">HEAD TO HEAD</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="compare-container">
+    <div class="compare-header">
+      <div class="compare-char">
+        <img src="https://res.cloudinary.com/dgtdgt126/image/upload/v1786297431/IRONMAN_Art_by_animenature_ig_wpu29s.jpg?w=200&h=200&fit=crop" alt="Iron Man">
+        <div class="name" style="color:var(--mr)">IRON MAN</div>
+      </div>
+      <div class="compare-vs">VS</div>
+      <div class="compare-char">
+        <img src="https://res.cloudinary.com/dgtdgt126/image/upload/v1786350692/download_5_izcprc.jpg?w=200&h=200&fit=crop" alt="Hulk">
+        <div class="name" style="color:var(--mgr)">HULK</div>
+      </div>
+    </div>
+
+    <div class="compare-bars" id="compareBars">
+      <div class="compare-row">
+        <div class="compare-bar-value left">8</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-left" data-width="80" style="position:absolute;right:0"></div></div>
+        <div class="compare-stat-name">STRENGTH</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-right" data-width="100" style="position:absolute;left:0"></div></div>
+        <div class="compare-bar-value right">10</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-bar-value left">7</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-left" data-width="70" style="position:absolute;right:0"></div></div>
+        <div class="compare-stat-name">SPEED</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-right" data-width="60" style="position:absolute;left:0"></div></div>
+        <div class="compare-bar-value right">6</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-bar-value left">10</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-left" data-width="100" style="position:absolute;right:0"></div></div>
+        <div class="compare-stat-name">INTEL</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-right" data-width="90" style="position:absolute;left:0"></div></div>
+        <div class="compare-bar-value right">9</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-bar-value left">7</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-left" data-width="70" style="position:absolute;right:0"></div></div>
+        <div class="compare-stat-name">DURABLE</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-right" data-width="100" style="position:absolute;left:0"></div></div>
+        <div class="compare-bar-value right">10</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-bar-value left">9</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-left" data-width="90" style="position:absolute;right:0"></div></div>
+        <div class="compare-stat-name">POWER</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-right" data-width="92" style="position:absolute;left:0"></div></div>
+        <div class="compare-bar-value right">9</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-bar-value left">8</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-left" data-width="80" style="position:absolute;right:0"></div></div>
+        <div class="compare-stat-name">COMBAT</div>
+        <div class="compare-bar-track" style="position:relative"><div class="compare-bar-fill-right" data-width="75" style="position:absolute;left:0"></div></div>
+        <div class="compare-bar-value right">8</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag"><i class="fas fa-sitemap"></i> ORG STRUCTURE</div>
+    <div class="section-title">TEAM AFFILIATIONS</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="team-matrix" id="teamMatrix">
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th>CHARACTER</th>
+          <th><i class="fas fa-shield-halved"></i> AVENGERS</th>
+          <th><i class="fas fa-rocket"></i> GUARDIANS</th>
+          <th><i class="fas fa-users"></i> X-MEN</th>
+          <th><i class="fas fa-fist-raised"></i> DEFENDERS</th>
+          <th><i class="fas fa-building"></i> STARK IND.</th>
+          <th><i class="fas fa-eye"></i> S.H.I.E.L.D.</th>
+          <th><i class="fas fa-hat-wizard"></i> MAGIC</th>
+          <th><i class="fas fa-city"></i> STREET</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><i class="fas fa-mask" style="color:var(--mr);margin-right:8px"></i>Iron Man</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-shield" style="color:var(--mb);margin-right:8px"></i>Captain America</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-bolt" style="color:var(--mg);margin-right:8px"></i>Thor</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-spider" style="color:var(--mr);margin-right:8px"></i>Spider-Man</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-cat" style="color:var(--mp);margin-right:8px"></i>Black Panther</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-hand-fist" style="color:var(--mgr);margin-right:8px"></i>Hulk</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-hat-wizard" style="color:var(--mb);margin-right:8px"></i>Doctor Strange</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-fire" style="color:var(--mp);margin-right:8px"></i>Scarlet Witch</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-gem" style="color:#4fc3f7;margin-right:8px"></i>Vision</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-star" style="color:var(--mr);margin-right:8px"></i>Captain Marvel</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-crosshairs" style="color:var(--mg);margin-right:8px"></i>Hawkeye</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-spider" style="color:var(--mr);margin-right:8px"></i>Black Widow</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+        </tr>
+        <tr>
+          <td><i class="fas fa-bug" style="color:var(--mr);margin-right:8px"></i>Ant-Man</td>
+          <td><span class="matrix-dot yes"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot no"></span></td>
+          <td><span class="matrix-dot yes"></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a href="index.html" class="footer-logo" style="text-decoration:none">MARVEL.</a>
+      <p class="footer-desc">The Marvel Cinematic Universe is a media franchise and shared universe centered on a series of superhero films and other media produced by Marvel Studios.</p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">EXPLORE</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="missions.html">Mission Files</a></li>
+        <li><a href="characters.html">Character Database</a></li>
+        <li><a href="battles.html">Battle Records</a></li>
+        <li><a href="tech.html">Tech Division</a></li>
+        <li><a href="multiverse.html">Multiverse Map</a></li>
+        <li><a href="roster.html">Team Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">HEROES</div>
+      <ul class="footer-links">
+        <li><a href="characters.html">Iron Man</a></li>
+        <li><a href="characters.html">Captain America</a></li>
+        <li><a href="characters.html">Thor</a></li>
+        <li><a href="characters.html">Spider-Man</a></li>
+        <li><a href="characters.html">Black Panther</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">CONNECT</div>
+      <ul class="footer-links">
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Marvel Universe Fan Site. All rights reserved. This is a fan-made tribute website.</p>
+  </div>
+</footer>
+
+<div class="archive-overlay" id="archiveOverlay" role="dialog" aria-modal="true" aria-label="Character archive">
+  <div class="archive-shell">
+    <div class="archive-topbar">
+      <span class="archive-hud-title"><i class="fas fa-database"></i> MARVEL MULTIVERSE // CHARACTER ARCHIVE</span>
+      <span class="archive-subject-id">FILE: AV-001 // CLEARANCE: OMEGA</span>
+      <button class="archive-close" aria-label="Close archive"><i class="fas fa-times"></i></button>
+    </div>
+    <button class="archive-prev" aria-label="Previous character"><i class="fas fa-chevron-left"></i></button>
+    <button class="archive-next" aria-label="Next character"><i class="fas fa-chevron-right"></i></button>
+    <div class="archive-body">
+      <div class="archive-info"></div>
+      <div class="archive-visual">
+        <div class="archive-visual-inner"></div>
+      </div>
+    </div>
+    <div class="archive-lower"></div>
+  </div>
+</div>
+
+<script src="characters-data.js"></script>
+<script src="characters-app.js"></script>
+<script>
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+});
+
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.from('.filter-tab',{scrollTrigger:{trigger:'.filter-bar',start:'top 85%'},y:30,opacity:0,duration:0.5,stagger:0.08,ease:'power3.out'});
+
+gsap.from('.compare-header',{scrollTrigger:{trigger:'.compare-section',start:'top 80%'},y:50,opacity:0,duration:0.8,ease:'power3.out'});
+
+ScrollTrigger.create({
+  trigger:'.compare-bars',start:'top 75%',
+  onEnter:()=>{
+    document.querySelectorAll('.compare-bar-fill-left').forEach(b=>{b.style.width=b.getAttribute('data-width')+'%'});
+    document.querySelectorAll('.compare-bar-fill-right').forEach(b=>{b.style.width=b.getAttribute('data-width')+'%'});
+  },once:true
+});
+
+gsap.from('.matrix-table',{scrollTrigger:{trigger:'.team-matrix',start:'top 80%'},y:60,opacity:0,duration:0.8,ease:'power3.out'});
+
+gsap.from('.footer-grid',{scrollTrigger:{trigger:'.footer',start:'top 90%'},y:40,opacity:0,duration:0.8,ease:'power3.out'});
+
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.querySelector('.nav-links');
+hamburger.addEventListener('click',()=>{
+  navLinks.style.display=navLinks.style.display==='flex'?'none':'flex';
+  navLinks.style.flexDirection='column';
+  navLinks.style.position='absolute';
+  navLinks.style.top='60px';
+  navLinks.style.right='20px';
+  navLinks.style.background='rgba(0,0,0,.95)';
+  navLinks.style.padding='20px';
+  navLinks.style.borderRadius='12px';
+  navLinks.style.border='1px solid rgba(226,54,54,.3)';
+});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

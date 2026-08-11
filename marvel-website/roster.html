@@ -1,0 +1,663 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Roster | Marvel Universe</title>
+<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+@keyframes scan{0%{top:-2px}100%{top:100vh}}
+@keyframes status-blink{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes glow-breathe{0%,100%{box-shadow:0 0 15px rgba(226,54,54,.2)}50%{box-shadow:0 0 30px rgba(226,54,54,.5),0 0 60px rgba(226,54,54,.2)}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes terminal-cursor{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes hall-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.02)}}
+@keyframes blink-caret{0%,100%{border-color:transparent}50%{border-color:#e23636}}
+@keyframes counter-spin{from{transform:rotate(360deg)}to{transform:rotate(0)}}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:99998;opacity:.4}
+.scan-line{position:fixed;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(226,54,54,.1),transparent);z-index:99997;pointer-events:none;animation:scan 6s linear infinite}
+.page-hero{background:linear-gradient(180deg,rgba(20,0,0,.98),rgba(0,0,0,.99))}
+.page-hero::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(226,54,54,.015) 2px,rgba(226,54,54,.015) 4px);pointer-events:none;z-index:1}
+.page-hero h1{letter-spacing:6px}
+.page-hero h1 .cmd-accent{color:var(--mg);text-shadow:0 0 30px rgba(255,215,0,.4)}
+.cmd-badge{display:inline-flex;align-items:center;gap:10px;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--mr);border:1px solid rgba(226,54,54,.3);padding:8px 30px;letter-spacing:5px;margin-top:20px;animation:glow-breathe 3s ease-in-out infinite;position:relative;overflow:hidden}
+.cmd-badge::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(226,54,54,.08),transparent);animation:typing 3s ease-in-out infinite}
+.hero-status-line{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:15px;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(226,54,54,.4);letter-spacing:3px}
+.hero-status-line .blink{width:5px;height:5px;background:var(--mr);border-radius:50%;animation:blink-caret 1s step-end infinite}
+.dashboard-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1400px;margin:0 auto}
+.dash-stat{position:relative;background:rgba(226,54,54,.02);border:1px solid rgba(226,54,54,.1);padding:30px 20px;text-align:center;overflow:hidden;transition:all .4s}
+.dash-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--mr),transparent);transform:scaleX(0);transition:transform .4s}
+.dash-stat:hover::before{transform:scaleX(1)}
+.dash-stat:hover{border-color:rgba(226,54,54,.3);transform:translateY(-5px);box-shadow:0 10px 40px rgba(226,54,54,.1)}
+.dash-stat-icon{font-size:28px;margin-bottom:12px;color:var(--mr);text-shadow:0 0 20px rgba(226,54,54,.3)}
+.dash-stat-value{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--mr);margin-bottom:5px}
+.dash-stat-label{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase}
+.dash-stat-sub{font-size:11px;color:rgba(226,54,54,.5);margin-top:6px;font-family:'Orbitron',sans-serif;letter-spacing:1px}
+.dash-stat.gold .dash-stat-icon{color:var(--mg);text-shadow:0 0 20px rgba(255,215,0,.3)}
+.dash-stat.gold .dash-stat-value{color:var(--mg)}
+.dash-stat.gold::before{background:linear-gradient(90deg,transparent,var(--mg),transparent)}
+.dash-stat.gold:hover{border-color:rgba(255,215,0,.3);box-shadow:0 10px 40px rgba(255,215,0,.1)}
+.dash-stat.green .dash-stat-icon{color:var(--mgr);text-shadow:0 0 20px rgba(46,204,113,.3)}
+.dash-stat.green .dash-stat-value{color:var(--mgr)}
+.dash-stat.green::before{background:linear-gradient(90deg,transparent,var(--mgr),transparent)}
+.dash-stat.green:hover{border-color:rgba(46,204,113,.3);box-shadow:0 10px 40px rgba(46,204,113,.1)}
+.dash-stat.blue .dash-stat-icon{color:var(--mb);text-shadow:0 0 20px rgba(26,107,255,.3)}
+.dash-stat.blue .dash-stat-value{color:var(--mb)}
+.dash-stat.blue::before{background:linear-gradient(90deg,transparent,var(--mb),transparent)}
+.dash-stat.blue:hover{border-color:rgba(26,107,255,.3);box-shadow:0 10px 40px rgba(26,107,255,.1)}
+.team-section{max-width:1400px;margin:0 auto 80px;position:relative}
+.team-banner{position:relative;width:100%;height:220px;border-radius:16px;overflow:hidden;margin-bottom:24px;border:1px solid rgba(255,255,255,.06)}
+.team-banner img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.team-banner:hover img{transform:scale(1.05)}
+.team-banner::after{content:'';position:absolute;inset:0;pointer-events:none}
+.team-banner.av-banner::after{background:linear-gradient(135deg,rgba(226,54,54,.35) 0%,rgba(0,0,0,.7) 50%,rgba(255,215,0,.1) 100%)}
+.team-banner.na-banner::after{background:linear-gradient(135deg,rgba(100,100,255,.35) 0%,rgba(0,0,0,.7) 50%,rgba(150,100,255,.1) 100%)}
+.team-banner.gotg-banner::after{background:linear-gradient(135deg,rgba(46,204,113,.35) 0%,rgba(0,0,0,.7) 50%,rgba(0,200,100,.1) 100%)}
+.team-banner.eternals-banner::after{background:linear-gradient(135deg,rgba(255,215,0,.35) 0%,rgba(0,0,0,.7) 50%,rgba(255,165,0,.1) 100%)}
+.team-banner.xmen-banner::after{background:linear-gradient(135deg,rgba(26,107,255,.35) 0%,rgba(0,0,0,.7) 50%,rgba(255,215,0,.1) 100%)}
+.team-banner.villains-banner::after{background:linear-gradient(135deg,rgba(155,89,182,.35) 0%,rgba(0,0,0,.7) 50%,rgba(226,54,54,.1) 100%)}
+.team-banner-label{position:absolute;bottom:16px;left:20px;z-index:2;display:flex;align-items:center;gap:12px}
+.team-banner-label .banner-emblem{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.team-banner-label .banner-text{display:flex;flex-direction:column}
+.team-banner-label .banner-team-name{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;line-height:1}
+.team-banner-label .banner-team-sub{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:3px;text-transform:uppercase}
+.team-header{display:flex;align-items:center;gap:25px;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.team-emblem{width:70px;height:70px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;flex-shrink:0}
+.team-emblem::after{content:'';position:absolute;inset:-3px;border-radius:18px;border:2px solid transparent;animation:counter-spin 8s linear infinite}
+.team-emblem.av{background:linear-gradient(135deg,rgba(226,54,54,.2),rgba(255,215,0,.1));border:1px solid rgba(226,54,54,.3)}
+.team-emblem.av::after{border-color:rgba(226,54,54,.15)}
+.team-emblem.na{background:linear-gradient(135deg,rgba(100,100,255,.15),rgba(150,100,255,.1));border:1px solid rgba(100,100,255,.3)}
+.team-emblem.na::after{border-color:rgba(100,100,255,.15)}
+.team-emblem.gotg{background:linear-gradient(135deg,rgba(46,204,113,.15),rgba(0,200,100,.1));border:1px solid rgba(46,204,113,.3)}
+.team-emblem.gotg::after{border-color:rgba(46,204,113,.15)}
+.team-emblem.eternals{background:linear-gradient(135deg,rgba(255,215,0,.15),rgba(255,165,0,.1));border:1px solid rgba(255,215,0,.3)}
+.team-emblem.eternals::after{border-color:rgba(255,215,0,.15)}
+.team-emblem.xmen{background:linear-gradient(135deg,rgba(26,107,255,.15),rgba(255,215,0,.1));border:1px solid rgba(26,107,255,.3)}
+.team-emblem.xmen::after{border-color:rgba(26,107,255,.15)}
+.team-emblem.villains{background:linear-gradient(135deg,rgba(155,89,182,.15),rgba(226,54,54,.1));border:1px solid rgba(155,89,182,.3)}
+.team-emblem.villains::after{border-color:rgba(155,89,182,.15)}
+.team-info h2{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:3px}
+.team-info h2 .team-year{font-size:18px;color:rgba(255,255,255,.4);margin-left:10px}
+.team-meta{display:flex;gap:20px;flex-wrap:wrap;margin-top:5px}
+.team-meta-item{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;display:flex;align-items:center;gap:6px}
+.team-meta-item i{font-size:10px}
+.team-meta-item strong{color:rgba(255,255,255,.7)}
+.roster-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.member-card{position:relative;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);padding:24px;transition:all .4s;overflow:hidden;cursor:pointer}
+.member-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transform:scaleX(0);transition:transform .4s;transform-origin:left}
+.member-card:hover::before{transform:scaleX(1)}
+.member-card.av::before{background:linear-gradient(90deg,var(--mr),var(--mg))}
+.member-card.na::before{background:linear-gradient(90deg,#6464ff,#9664ff)}
+.member-card.gotg::before{background:linear-gradient(90deg,#2ecc71,#00c864)}
+.member-card.eternals::before{background:linear-gradient(90deg,var(--mg),#ffa500)}
+.member-card.xmen::before{background:linear-gradient(90deg,var(--mb),var(--mg))}
+.member-card.villains::before{background:linear-gradient(90deg,var(--mp),var(--mr))}
+.member-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.member-card-top{display:flex;align-items:center;gap:15px;margin-bottom:15px}
+.member-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative}
+.member-avatar.av{background:linear-gradient(135deg,rgba(226,54,54,.2),rgba(255,215,0,.1));border:2px solid rgba(226,54,54,.3)}
+.member-avatar.na{background:linear-gradient(135deg,rgba(100,100,255,.2),rgba(150,100,255,.1));border:2px solid rgba(100,100,255,.3)}
+.member-avatar.gotg{background:linear-gradient(135deg,rgba(46,204,113,.2),rgba(0,200,100,.1));border:2px solid rgba(46,204,113,.3)}
+.member-avatar.eternals{background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,165,0,.1));border:2px solid rgba(255,215,0,.3)}
+.member-avatar.xmen{background:linear-gradient(135deg,rgba(26,107,255,.2),rgba(255,215,0,.1));border:2px solid rgba(26,107,255,.3)}
+.member-avatar.villains{background:linear-gradient(135deg,rgba(155,89,182,.2),rgba(226,54,54,.1));border:2px solid rgba(155,89,182,.3)}
+.member-name{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;line-height:1.1}
+.member-role{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.member-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.member-detail{display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(255,255,255,.5)}
+.member-detail i{width:14px;text-align:center;font-size:10px;color:rgba(255,255,255,.3)}
+.member-detail span{font-weight:600;color:rgba(255,255,255,.7)}
+.member-achievements{margin-bottom:10px}
+.member-achievements-title{font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.achievement-tag{display:inline-block;padding:3px 8px;font-size:10px;border-radius:2px;margin:0 4px 4px 0;font-weight:600;letter-spacing:1px}
+.achievement-tag.av{background:rgba(226,54,54,.1);color:rgba(226,54,54,.7);border:1px solid rgba(226,54,54,.15)}
+.achievement-tag.gold{background:rgba(255,215,0,.08);color:rgba(255,215,0,.7);border:1px solid rgba(255,215,0,.12)}
+.achievement-tag.green{background:rgba(46,204,113,.08);color:rgba(46,204,113,.7);border:1px solid rgba(46,204,113,.12)}
+.achievement-tag.blue{background:rgba(26,107,255,.08);color:rgba(26,107,255,.7);border:1px solid rgba(26,107,255,.12)}
+.achievement-tag.purple{background:rgba(155,89,182,.08);color:rgba(155,89,182,.7);border:1px solid rgba(155,89,182,.12)}
+.member-status-bar{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.04)}
+.status-dot{display:flex;align-items:center;gap:6px;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.status-dot::before{content:'';width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-dot.active::before{background:var(--mgr);box-shadow:0 0 8px rgba(46,204,113,.5);animation:status-blink 2s infinite}
+.status-dot.active{color:var(--mgr)}
+.status-dot.inactive::before{background:var(--mr);box-shadow:0 0 8px rgba(226,54,54,.4)}
+.status-dot.inactive{color:var(--mr)}
+.status-dot.reserve::before{background:var(--mg);box-shadow:0 0 8px rgba(255,215,0,.4)}
+.status-dot.reserve{color:var(--mg)}
+.status-dot.fallen::before{background:#666;box-shadow:0 0 6px rgba(100,100,100,.3)}
+.status-dot.fallen{color:#888}
+.member-years{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1px}
+.comparison-section{max-width:1400px;margin:0 auto;overflow-x:auto}
+.comparison-grid{display:grid;grid-template-columns:200px repeat(6,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06)}
+.comp-cell{padding:16px 12px;background:#000;font-size:12px;display:flex;align-items:center;justify-content:center;text-align:center}
+.comp-cell.header{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--mr);letter-spacing:2px;text-transform:uppercase;background:rgba(226,54,54,.03);justify-content:flex-start;padding-left:20px}
+.comp-cell.label{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:1px;justify-content:flex-start;padding-left:20px}
+.comp-bars{display:flex;gap:3px}
+.comp-bar{width:16px;height:8px;background:rgba(255,255,255,.05);border-radius:1px;flex-shrink:0}
+.comp-bar.filled.av{background:var(--mr);box-shadow:0 0 4px rgba(226,54,54,.3)}
+.comp-bar.filled.na{background:#6464ff;box-shadow:0 0 4px rgba(100,100,255,.3)}
+.comp-bar.filled.gotg{background:var(--mgr);box-shadow:0 0 4px rgba(46,204,113,.3)}
+.comp-bar.filled.eternals{background:var(--mg);box-shadow:0 0 4px rgba(255,215,0,.3)}
+.comp-bar.filled.xmen{background:var(--mb);box-shadow:0 0 4px rgba(26,107,255,.3)}
+.comp-bar.filled.villains{background:var(--mp);box-shadow:0 0 4px rgba(155,89,182,.3)}
+.recruit-board{max-width:1400px;margin:0 auto;background:rgba(0,0,0,.95);border:1px solid rgba(226,54,54,.15);position:relative;overflow:hidden}
+.recruit-board::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(226,54,54,.01) 2px,rgba(226,54,54,.01) 4px);pointer-events:none}
+.recruit-terminal-header{background:rgba(226,54,54,.05);border-bottom:1px solid rgba(226,54,54,.1);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.terminal-dots{display:flex;gap:6px}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+.terminal-dot.r{background:#ff5f56}.terminal-dot.y{background:#ffbd2e}.terminal-dot.g{background:#27c93f}
+.terminal-title{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(226,54,54,.5);letter-spacing:3px}
+.terminal-time{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(226,54,54,.3);letter-spacing:1px}
+.recruit-body{padding:20px;font-family:'Courier New',monospace;font-size:13px;line-height:2}
+.recruit-line{color:rgba(255,255,255,.5);display:flex;align-items:center;gap:10px;padding:4px 0;flex-wrap:wrap}
+.recruit-line .prompt{color:var(--mr);white-space:nowrap}
+.recruit-line .cmd{color:var(--mgr)}
+.recruit-line .val{color:var(--mg)}
+.recruit-line .info{color:rgba(255,255,255,.4)}
+.recruit-line .warn{color:#ff6b6b}
+.recruit-line .ok{color:var(--mgr)}
+.cursor-blink{display:inline-block;width:8px;height:14px;background:var(--mr);animation:terminal-cursor 1s step-end infinite;vertical-align:middle}
+.hall-section{position:relative;background:linear-gradient(180deg,#000,rgba(5,0,15,.99),rgba(0,0,0,.99));overflow:hidden}
+.hall-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,215,0,.02),transparent 60%);pointer-events:none}
+.hall-section::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.2),transparent)}
+.hall-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;max-width:1200px;margin:0 auto}
+.hall-card{position:relative;text-align:center;padding:40px 30px;background:rgba(255,255,255,.01);border:1px solid rgba(255,215,0,.06);transition:all .5s;overflow:hidden}
+.hall-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,215,0,.03),transparent 70%);opacity:0;transition:opacity .5s}
+.hall-card:hover::before{opacity:1}
+.hall-card:hover{border-color:rgba(255,215,0,.15);transform:translateY(-5px);box-shadow:0 20px 60px rgba(255,215,0,.05)}
+.hall-icon{width:80px;height:80px;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:32px;background:rgba(255,215,0,.03);border:2px solid rgba(255,215,0,.1);position:relative;animation:hall-float 6s ease-in-out infinite}
+.hall-icon::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(255,215,0,.05)}
+.hall-name{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:3px;color:rgba(255,215,0,.9);margin-bottom:4px}
+.hall-real{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:15px}
+.hall-desc{font-size:13px;color:rgba(255,255,255,.35);line-height:1.8;margin-bottom:15px}
+.hall-years{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,215,0,.3);letter-spacing:3px}
+.hall-candle{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.candle{width:2px;height:20px;background:linear-gradient(to top,rgba(255,215,0,.1),rgba(255,215,0,.5));border-radius:1px;position:relative}
+.candle::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:4px;height:6px;background:rgba(255,215,0,.6);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;filter:blur(1px);animation:status-blink 1.5s infinite}
+.section{position:relative;z-index:1;padding:80px 50px}
+.section-header{text-align:center;margin-bottom:60px}
+.section-tag{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--mr);letter-spacing:5px;text-transform:uppercase;margin-bottom:10px}
+.section-title{font-family:'Bebas Neue',cursive;font-size:clamp(36px,5vw,70px);background:linear-gradient(135deg,#fff,rgba(255,255,255,.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:15px}
+.section-line{width:80px;height:3px;background:linear-gradient(90deg,var(--mr),var(--mg));margin:0 auto}
+@media(max-width:768px){.dashboard-stats{grid-template-columns:1fr 1fr}.comparison-grid{grid-template-columns:140px repeat(6,1fr);font-size:10px}.section{padding:40px 20px}.team-header{flex-direction:column;text-align:center}.team-meta{justify-content:center}.roster-grid{grid-template-columns:1fr}.hall-cards{grid-template-columns:1fr}.team-banner{height:160px}}
+</style>
+</head>
+<body>
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">MARVEL</div>
+  <div style="color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:5px;margin-top:10px">INITIALIZING QUANTUM REALM</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+</div>
+<div class="scan-line"></div>
+<nav>
+  <a href="index.html" class="nav-logo">MARVEL<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#heroes">Heroes</a></li>
+    <li><a href="missions.html">Missions</a></li>
+    <li><a href="characters.html">Characters</a></li>
+    <li><a href="battles.html">Battles</a></li>
+    <li><a href="tech.html">Tech</a></li>
+    <li><a href="multiverse.html">Multiverse</a></li>
+    <li><a href="roster.html" class="active">Roster</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+</nav>
+<section class="page-hero">
+  <div class="page-hero-content">
+    <h1>AVENGERS // <span class="cmd-accent">ROSTER COMMAND</span></h1>
+    <p>EVERY TEAM. EVERY ERA. EVERY HERO.</p>
+    <div class="line"></div>
+    <div class="cmd-badge"><i class="fas fa-shield-halved"></i> CLASSIFICATION LEVEL: OMEGA &mdash; COMMAND ACCESS</div>
+    <div class="hero-status-line">
+      <span class="blink"></span>
+      <span>AVENGERS COMMS NETWORK ACTIVE</span>
+      <span class="blink"></span>
+      <span>ALL UNITS STANDING BY</span>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// OVERVIEW</div>
+    <div class="section-title">ACTIVE ROSTER DASHBOARD</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="dashboard-stats">
+    <div class="dash-stat"><div class="dash-stat-icon"><i class="fas fa-users"></i></div><div class="dash-stat-value">47</div><div class="dash-stat-label">TOTAL MEMBERS</div><div class="dash-stat-sub">ALL TEAMS COMBINED</div></div>
+    <div class="dash-stat gold"><div class="dash-stat-icon"><i class="fas fa-shield-halved"></i></div><div class="dash-stat-value">28</div><div class="dash-stat-label">ACTIVE MEMBERS</div><div class="dash-stat-sub">CURRENTLY DEPLOYED</div></div>
+    <div class="dash-stat green"><div class="dash-stat-icon"><i class="fas fa-layer-group"></i></div><div class="dash-stat-value">12</div><div class="dash-stat-label">ACTIVE TEAMS</div><div class="dash-stat-sub">ACROSS ALL DIVISIONS</div></div>
+    <div class="dash-stat blue"><div class="dash-stat-icon"><i class="fas fa-clock-rotate-left"></i></div><div class="dash-stat-value">19</div><div class="dash-stat-label">RESERVE</div><div class="dash-stat-sub">ON STANDBY / LEAVE</div></div>
+  </div>
+</section>
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// TEAM ROSTERS</div>
+    <div class="section-title">FORCE COMPOSITION</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="team-section" id="team-avengers">
+    <div class="team-banner av-banner">
+      <img src="https://images.unsplash.com/photo-1508344928928-7165b67de128?w=1400&h=400&fit=crop" alt="The Avengers Team" loading="lazy">
+      <div class="team-banner-label">
+        <div class="banner-emblem" style="background:linear-gradient(135deg,rgba(226,54,54,.3),rgba(255,215,0,.15));border:1px solid rgba(226,54,54,.4);border-radius:12px;color:var(--mr)"><i class="fas fa-shield-halved"></i></div>
+        <div class="banner-text">
+          <span class="banner-team-name" style="color:var(--mr)">THE AVENGERS</span>
+          <span class="banner-team-sub">FORMATION: 2012 &mdash; AVENGERS TOWER, New York</span>
+        </div>
+      </div>
+    </div>
+    <div class="team-header">
+      <div class="team-emblem av"><i class="fas fa-shield-halved"></i></div>
+      <div class="team-info">
+        <h2 style="color:var(--mr)">THE AVENGERS <span class="team-year">&mdash; EST. 2012</span></h2>
+        <div class="team-meta">
+          <div class="team-meta-item"><i class="fas fa-user-shield"></i> LEADER: <strong>IRON MAN</strong></div>
+          <div class="team-meta-item"><i class="fas fa-location-dot"></i> BASE: <strong>AVENGERS TOWER</strong></div>
+          <div class="team-meta-item"><i class="fas fa-users"></i> ROSTER: <strong>6 MEMBERS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-crosshairs"></i> FOCUS: <strong>GLOBAL THREAT RESPONSE</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="roster-grid">
+      <div class="member-card av"><div class="member-card-top"><div class="member-avatar av"><i class="fas fa-mask"></i></div><div><div class="member-name">IRON MAN</div><div class="member-role">LEADER / TECH SPECIALIST</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Tony Stark</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2008 &ndash; 2023</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>FOUNDER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag av">BUILT THE SUIT</span><span class="achievement-tag gold">NANOTECH SUIT</span><span class="achievement-tag av">SAVED THE UNIVERSE</span></div><div class="member-status-bar"><div class="status-dot fallen">FALLEN</div><div class="member-years">2008 &ndash; 2023</div></div></div>
+      <div class="member-card av"><div class="member-card-top"><div class="member-avatar av"><i class="fas fa-shield"></i></div><div><div class="member-name">CAPTAIN AMERICA</div><div class="member-role">FIELD COMMANDER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Steve Rogers</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2011 &ndash; 2023</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>COMMANDER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag av">LED 4 MAJOR CONFLICTS</span><span class="achievement-tag gold">SUPER SOLDIER</span><span class="achievement-tag av">VIBRANIUM SHIELD</span></div><div class="member-status-bar"><div class="status-dot reserve">RETIRED</div><div class="member-years">2011 &ndash; 2023</div></div></div>
+      <div class="member-card av"><div class="member-card-top"><div class="member-avatar av"><i class="fas fa-bolt"></i></div><div><div class="member-name">THOR</div><div class="member-role">HEAVY HITTER / ASGARDIAN</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Thor Odinson</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2011 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>ASGARDIAN PRINCE</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag av">DEFEATED THANOS ARMY</span><span class="achievement-tag gold">STORMBREAKER</span><span class="achievement-tag av">GOD OF THUNDER</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">1500+ YEARS</div></div></div>
+      <div class="member-card av"><div class="member-card-top"><div class="member-avatar av"><i class="fas fa-fist-raised"></i></div><div><div class="member-name">HULK</div><div class="member-role">ENFORCER / GAMMA</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Bruce Banner</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2008 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>DELTA LEVEL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag av">SNAPPED BLIP REVERSAL</span><span class="achievement-tag gold">SMART HULK</span><span class="achievement-tag av">INFINITE STRENGTH</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">2008 &ndash; PRESENT</div></div></div>
+      <div class="member-card av"><div class="member-card-top"><div class="member-avatar av"><i class="fas fa-spider"></i></div><div><div class="member-name">BLACK WIDOW</div><div class="member-role">SPY / STRATEGIST</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Natasha Romanoff</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2010 &ndash; 2023</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>LIFETIME AGENT</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag av">GATHERED AVENGERS</span><span class="achievement-tag gold">TIME HEIST SPY</span><span class="achievement-tag av">SACRIFICE AT VORMIR</span></div><div class="member-status-bar"><div class="status-dot fallen">FALLEN</div><div class="member-years">2010 &ndash; 2023</div></div></div>
+      <div class="member-card av"><div class="member-card-top"><div class="member-avatar av"><i class="fas fa-bullseye"></i></div><div><div class="member-name">HAWKEYE</div><div class="member-role">MARKSMAN / TACTICIAN</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Clint Barton</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2012 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>SPECIALIST</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA-</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag av">MOST KILLS IN NYC</span><span class="achievement-tag gold">S.H.I.E.L.D. TOP MARK</span><span class="achievement-tag av">TRICK ARROWS</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">2012 &ndash; PRESENT</div></div></div>
+    </div>
+  </div>
+  <div class="team-section" id="team-newavengers">
+    <div class="team-banner na-banner">
+      <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1400&h=400&fit=crop" alt="New Avengers Team" loading="lazy">
+      <div class="team-banner-label">
+        <div class="banner-emblem" style="background:linear-gradient(135deg,rgba(100,100,255,.3),rgba(150,100,255,.15));border:1px solid rgba(100,100,255,.4);border-radius:12px;color:#8888ff"><i class="fas fa-shield-halved"></i></div>
+        <div class="banner-text">
+          <span class="banner-team-name" style="color:#8888ff">NEW AVENGERS</span>
+          <span class="banner-team-sub">FORMATION: 2023 &mdash; STREET-LEVEL + GLOBAL</span>
+        </div>
+      </div>
+    </div>
+    <div class="team-header">
+      <div class="team-emblem na"><i class="fas fa-shield-halved"></i></div>
+      <div class="team-info">
+        <h2 style="color:#8888ff">NEW AVENGERS <span class="team-year">&mdash; EST. 2023</span></h2>
+        <div class="team-meta">
+          <div class="team-meta-item"><i class="fas fa-user-shield"></i> LEADER: <strong>SPIDER-MAN</strong></div>
+          <div class="team-meta-item"><i class="fas fa-location-dot"></i> BASE: <strong>AVENGERS MANSION</strong></div>
+          <div class="team-meta-item"><i class="fas fa-users"></i> ROSTER: <strong>8 MEMBERS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-crosshairs"></i> FOCUS: <strong>STREET-LEVEL + GLOBAL</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="roster-grid">
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-spider"></i></div><div><div class="member-name">SPIDER-MAN</div><div class="member-role">WEB WARRIOR / LEADER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Peter Parker</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2016 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>AVENGER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag purple">SPIDER-SENSE</span><span class="achievement-tag blue">IRON SPIDER</span><span class="achievement-tag purple">MULTIVERSE HERO</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">7 YEARS ACTIVE</div></div></div>
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-helicopter"></i></div><div><div class="member-name">WAR MACHINE</div><div class="member-role">AERIAL COMBAT / TECH</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>James Rhodes</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2010 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>COLONEL, USAF</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">WAR MACHINE ARMOR</span><span class="achievement-tag purple">IRON PATRIOT</span><span class="achievement-tag blue">MILITARY LIAISON</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">13 YEARS ACTIVE</div></div></div>
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-dove"></i></div><div><div class="member-name">FALCON</div><div class="member-role">AERIAL RECON / CAPTAIN</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Sam Wilson</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2014 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>CAPTAIN AMERICA</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">WING SUIT</span><span class="achievement-tag purple">SHIELD BEARER</span><span class="achievement-tag blue">REDWING DRONE</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">9 YEARS ACTIVE</div></div></div>
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-gem"></i></div><div><div class="member-name">VISION</div><div class="member-role">SYNTHETIC / STRATEGIST</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Victor Shade</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2015 &ndash; 2023</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>AVENGER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag purple">MIND STONE</span><span class="achievement-tag blue">DENSITY CONTROL</span><span class="achievement-tag purple">SYNTHETIC EVOLUTION</span></div><div class="member-status-bar"><div class="status-dot fallen">FALLEN / REBORN</div><div class="member-years">8 YEARS ACTIVE</div></div></div>
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-fire"></i></div><div><div class="member-name">SCARLET WITCH</div><div class="member-role">CHAOS MAGIC / OMEGA</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Wanda Maximoff</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2015 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>OMEGA-LEVEL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag purple">CHAOS MAGIC</span><span class="achievement-tag blue">REALITY WARPING</span><span class="achievement-tag purple">DARKHOLD</span></div><div class="member-status-bar"><div class="status-dot inactive">DECEASED</div><div class="member-years">8 YEARS ACTIVE</div></div></div>
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-snowflake"></i></div><div><div class="member-name">WINTER SOLDIER</div><div class="member-role">ASSASSIN / REDEEMED</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Bucky Barnes</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2014 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>LIEUTENANT</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">VIBRANIUM ARM</span><span class="achievement-tag purple">ASSASSIN PROTOCOL</span><span class="achievement-tag blue">WAKANDAN ALLY</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">9 YEARS ACTIVE</div></div></div>
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-bugs"></i></div><div><div class="member-name">ANT-MAN</div><div class="member-role">SIZE-ALTERING / INFILTRATOR</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Scott Lang</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2015 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>SPECIALIST</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>BETA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">PIMM PARTICLES</span><span class="achievement-tag purple">QUANTUM REALM</span><span class="achievement-tag blue">TIME HEIST</span></div><div class="member-status-bar"><div class="status-dot reserve">QUANTUM REALM</div><div class="member-years">8 YEARS ACTIVE</div></div></div>
+      <div class="member-card na"><div class="member-card-top"><div class="member-avatar na"><i class="fas fa-wasp"></i></div><div><div class="member-name">WASP</div><div class="member-role">SIZE-ALTERING / PILOT</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Hope van Dyne</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2018 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>AVENGER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA-</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">WASP SUIT</span><span class="achievement-tag purple">BIO-ELECTRIC BLASTS</span><span class="achievement-tag blue">QUANTUM NAVIGATOR</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">5 YEARS ACTIVE</div></div></div>
+    </div>
+  </div>
+  <div class="team-section" id="team-gotg">
+    <div class="team-banner gotg-banner">
+      <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1400&h=400&fit=crop" alt="Guardians of the Galaxy" loading="lazy">
+      <div class="team-banner-label">
+        <div class="banner-emblem" style="background:linear-gradient(135deg,rgba(46,204,113,.3),rgba(0,200,100,.15));border:1px solid rgba(46,204,113,.4);border-radius:12px;color:var(--mgr)"><i class="fas fa-rocket"></i></div>
+        <div class="banner-text">
+          <span class="banner-team-name" style="color:var(--mgr)">GUARDIANS OF THE GALAXY</span>
+          <span class="banner-team-sub">FORMATION: 2014 &mdash; THE MILANO, DEEP SPACE</span>
+        </div>
+      </div>
+    </div>
+    <div class="team-header">
+      <div class="team-emblem gotg"><i class="fas fa-rocket"></i></div>
+      <div class="team-info">
+        <h2 style="color:var(--mgr)">GUARDIANS OF THE GALAXY <span class="team-year">&mdash; EST. 2014</span></h2>
+        <div class="team-meta">
+          <div class="team-meta-item"><i class="fas fa-user-shield"></i> LEADER: <strong>STAR-LORD</strong></div>
+          <div class="team-meta-item"><i class="fas fa-location-dot"></i> BASE: <strong>THE MILANO</strong></div>
+          <div class="team-meta-item"><i class="fas fa-users"></i> ROSTER: <strong>8 MEMBERS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-crosshairs"></i> FOCUS: <strong>COSMIC DEFENSE</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="roster-grid">
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-mask"></i></div><div><div class="member-name">STAR-LORD</div><div class="member-role">LEADER / TACTICIAN</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Peter Quill</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2014 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>COMMANDER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">CELESTIAL LEGACY</span><span class="achievement-tag gold">POWER STONE</span><span class="achievement-tag green">GALACTIC HERO</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">9 YEARS ACTIVE</div></div></div>
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-dagger"></i></div><div><div class="member-name">GAMORA</div><div class="member-role">COMBAT SPECIALIST / ASSASSIN</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Gamora</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2014 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>DEADLIEST WOMAN</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">GALACTIC ASSASSIN</span><span class="achievement-tag gold">DAUGHTER OF THANOS</span><span class="achievement-tag green">KNIFE MASTER</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">9 YEARS ACTIVE</div></div></div>
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-skull-crossbones"></i></div><div><div class="member-name">DRAX</div><div class="member-role">VANGUARD / BRAWLER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Drax the Destroyer</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2014 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>DESTROYER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">SUPER STRENGTH</span><span class="achievement-tag gold">INVULNERABILITY</span><span class="achievement-tag green">AVENGE FAMILY</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">9 YEARS ACTIVE</div></div></div>
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-gun"></i></div><div><div class="member-name">ROCKET</div><div class="member-role">WEAPONS EXPERT / ENGINEER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>89P13</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2014 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>CHIEF ENGINEER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">WEAPONSMITH</span><span class="achievement-tag gold">GENE-ENHANCED</span><span class="achievement-tag green">BATTLE IQ</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">9 YEARS ACTIVE</div></div></div>
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-tree"></i></div><div><div class="member-name">GROOT</div><div class="member-role">FLORA COLOSSUS / DEFENSE</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Groot</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2014 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>SENTINEL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">SELF-SACRIFICE</span><span class="achievement-tag gold">REGENERATION</span><span class="achievement-tag green">I AM GROOT</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">9 YEARS ACTIVE</div></div></div>
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-skull"></i></div><div><div class="member-name">NEBULA</div><div class="member-role">COMBAT / CYBERNETIC ASSASSIN</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Nebula</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2018 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>LIEUTENANT</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">CYBERNETIC UPGRADES</span><span class="achievement-tag gold">TIME HEIST NAVIGATOR</span><span class="achievement-tag green">REDEEMED VILLAIN</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">5 YEARS ACTIVE</div></div></div>
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-eye"></i></div><div><div class="member-name">MANTIS</div><div class="member-role">EMPATH / PSIONIC</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Mantis</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2017 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>SPECIALIST</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>BETA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">EMPATHIC TOUCH</span><span class="achievement-tag gold">CELESTIAL DESCENT</span><span class="achievement-tag green">SLEEP INDUCTION</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">6 YEARS ACTIVE</div></div></div>
+      <div class="member-card gotg"><div class="member-card-top"><div class="member-avatar gotg"><i class="fas fa-sun"></i></div><div><div class="member-name">ADAM WARLOCK</div><div class="member-role">COSMIC BEING / PROTECTOR</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Adam Warlock</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2023 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>OMEGA CANDIDATE</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag green">PERFECTED BEING</span><span class="achievement-tag gold">SOUL REALM</span><span class="achievement-tag green">COSMIC POWER</span></div><div class="member-status-bar"><div class="status-dot reserve">RECRUITING</div><div class="member-years">NEWLY ACTIVE</div></div></div>
+    </div>
+  </div>
+  <div class="team-section" id="team-eternals">
+    <div class="team-banner eternals-banner">
+      <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1400&h=400&fit=crop" alt="The Eternals" loading="lazy">
+      <div class="team-banner-label">
+        <div class="banner-emblem" style="background:linear-gradient(135deg,rgba(255,215,0,.3),rgba(255,165,0,.15));border:1px solid rgba(255,215,0,.4);border-radius:12px;color:var(--mg)"><i class="fas fa-star-of-life"></i></div>
+        <div class="banner-text">
+          <span class="banner-team-name" style="color:var(--mg)">THE ETERNALS</span>
+          <span class="banner-team-sub">FORMATION: 7000 BC &mdash; THE DOMO, CRESCENT</span>
+        </div>
+      </div>
+    </div>
+    <div class="team-header">
+      <div class="team-emblem eternals"><i class="fas fa-star-of-life"></i></div>
+      <div class="team-info">
+        <h2 style="color:var(--mg)">THE ETERNALS <span class="team-year">&mdash; EST. 7000 BC</span></h2>
+        <div class="team-meta">
+          <div class="team-meta-item"><i class="fas fa-user-shield"></i> LEADER: <strong>AJAK / SERSI</strong></div>
+          <div class="team-meta-item"><i class="fas fa-location-dot"></i> BASE: <strong>DOMO (CRESCENT)</strong></div>
+          <div class="team-meta-item"><i class="fas fa-users"></i> ROSTER: <strong>10 MEMBERS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-crosshairs"></i> FOCUS: <strong>COSMIC PROTECTION</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="roster-grid">
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-eye"></i></div><div><div class="member-name">IKARIS</div><div class="member-role">COMMANDER / COSMIC POWER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Ikaris</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>PRIME ETERNAL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">ENERGY PROJECTION</span><span class="achievement-tag gold">FLIGHT</span><span class="achievement-tag gold">SUPER STRENGTH</span></div><div class="member-status-bar"><div class="status-dot fallen">LOST IN COSMOS</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-hand-fist"></i></div><div><div class="member-name">THENA</div><div class="member-role">WEAPON MASTER / WARRIOR</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Thena</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>EPOCH WARRIOR</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">WEAPON MANIFESTATION</span><span class="achievement-tag gold">COMBAT MASTERY</span><span class="achievement-tag gold">MAHDI</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-fist-raised"></i></div><div><div class="member-name">GILGAMESH</div><div class="member-role">THE FORGOTTEN / BRAWLER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Gilgamesh</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>CHAMPION</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">INVULNERABLE ARMOR</span><span class="achievement-tag gold">STRENGTH OF ANTS</span><span class="achievement-tag gold">LEGENDARY FIGHTER</span></div><div class="member-status-bar"><div class="status-dot fallen">FALLEN</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-wand-magic-sparkles"></i></div><div><div class="member-name">KINGO</div><div class="member-role">ENERGY BEAMER / PERFORMER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Kingo</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>ETERNAL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">FINGER BEAMS</span><span class="achievement-tag gold">BOLLYWOOD STAR</span><span class="achievement-tag gold">ENERGY PROJECTION</span></div><div class="member-status-bar"><div class="status-dot reserve">ON LEAVE</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-hat-wizard"></i></div><div><div class="member-name">SPRITE</div><div class="member-role">ILLUSIONIST / SHAPE-SHIFTER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Sprite</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>ILLUSIONIST</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>BETA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">REALITY ILLUSIONS</span><span class="achievement-tag gold">SHAPE-SHIFTING</span><span class="achievement-tag gold">ETERNAL YOUTH</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-microchip"></i></div><div><div class="member-name">PHASTOS</div><div class="member-role">TECHNO PATH / INVENTOR</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Phastos</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>ENGINEER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">TECH CREATION</span><span class="achievement-tag gold">CELESTIAL TOOLS</span><span class="achievement-tag gold">INVENTIONS</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-crown"></i></div><div><div class="member-name">AJAK</div><div class="member-role">SPIRITUAL LEADER / HEALER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Ajak</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>PRIESTESS</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">CELESTIAL COMMUNICATOR</span><span class="achievement-tag gold">HEALING FACTOR</span><span class="achievement-tag gold">LEADERSHIP</span></div><div class="member-status-bar"><div class="status-dot fallen">FALLEN</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-water"></i></div><div><div class="member-name">SERSI</div><div class="member-role">MASTERY OF MATTER / LEADER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Sersi</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>LEADER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">MATTER TRANSMUTATION</span><span class="achievement-tag gold">GRANDMASTER MATE</span><span class="achievement-tag gold">UNIMIND CANDIDATE</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-brain"></i></div><div><div class="member-name">DRUIG</div><div class="member-role">MIND CONTROL / MANIPULATOR</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Druig</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>PSIONIC</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">MIND CONTROL</span><span class="achievement-tag gold">TELEPATHY</span><span class="achievement-tag gold">SUGGESTION</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">ANCIENT</div></div></div>
+      <div class="member-card eternals"><div class="member-card-top"><div class="member-avatar eternals"><i class="fas fa-person-running"></i></div><div><div class="member-name">MAKKARI</div><div class="member-role">SUPER SPEED / RUNNER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Makkari</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>MILLIONS OF YEARS</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>RUNNER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag gold">COSMIC SPEED</span><span class="achievement-tag gold">SONIC BOOMS</span><span class="achievement-tag gold">SPEED FORCE</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">ANCIENT</div></div></div>
+    </div>
+  </div>
+  <div class="team-section" id="team-xmen">
+    <div class="team-banner xmen-banner">
+      <img src="https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=1400&h=400&fit=crop" alt="X-Men" loading="lazy">
+      <div class="team-banner-label">
+        <div class="banner-emblem" style="background:linear-gradient(135deg,rgba(26,107,255,.3),rgba(255,215,0,.15));border:1px solid rgba(26,107,255,.4);border-radius:12px;color:var(--mb)"><i class="fas fa-x"></i></div>
+        <div class="banner-text">
+          <span class="banner-team-name" style="color:var(--mb)">X-MEN</span>
+          <span class="banner-team-sub">FORMATION: 1963 &mdash; XAVIER'S SCHOOL, WESTCHESTER</span>
+        </div>
+      </div>
+    </div>
+    <div class="team-header">
+      <div class="team-emblem xmen"><i class="fas fa-x"></i></div>
+      <div class="team-info">
+        <h2 style="color:var(--mb)">X-MEN <span class="team-year">&mdash; EST. 1963</span></h2>
+        <div class="team-meta">
+          <div class="team-meta-item"><i class="fas fa-user-shield"></i> LEADER: <strong>PROFESSOR X</strong></div>
+          <div class="team-meta-item"><i class="fas fa-location-dot"></i> BASE: <strong>XAVIER'S SCHOOL</strong></div>
+          <div class="team-meta-item"><i class="fas fa-users"></i> ROSTER: <strong>11 MEMBERS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-crosshairs"></i> FOCUS: <strong>MUTANT RIGHTS</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="roster-grid">
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-brain"></i></div><div><div class="member-name">PROFESSOR X</div><div class="member-role">FOUNDER / OMEGA TELEPATH</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Charles Xavier</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1963 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>FOUNDER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">OMEGA TELEPATHY</span><span class="achievement-tag gold">CEREBRO</span><span class="achievement-tag blue">XAVIER SCHOOLS</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">60+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-claw"></i></div><div><div class="member-name">WOLVERINE</div><div class="member-role">BERSERKER / HEALER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Logan</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1974 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>LIEUTENANT</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">ADAMANTIUM SKELETON</span><span class="achievement-tag gold">REGENERATION</span><span class="achievement-tag blue">BERSERKER RAGE</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">100+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-eye"></i></div><div><div class="member-name">CYCLOPS</div><div class="member-role">FIELD LEADER / BEAM</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Scott Summers</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1963 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>FIELD LEADER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">OPTIC BLASTS</span><span class="achievement-tag gold">TACTICAL GENIUS</span><span class="achievement-tag blue">X-FORCE LEADER</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">60+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-flask"></i></div><div><div class="member-name">JEAN GREY</div><div class="member-role">PSIONIC / PHOENIX</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Jean Grey</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1963 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>OMEGA-LEVEL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">PHOENIX FORCE</span><span class="achievement-tag gold">TELEPATHY</span><span class="achievement-tag blue">TELEKINESIS</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">60+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-cloud-bolt"></i></div><div><div class="member-name">STORM</div><div class="member-role">WEATHER GODDESS / LEADER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Ororo Munroe</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1975 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>LEADER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">WEATHER CONTROL</span><span class="achievement-tag gold">GODDESS OF ORROLLAN</span><span class="achievement-tag blue">WAKANDAN QUEEN</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">48+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-flask-vial"></i></div><div><div class="member-name">BEAST</div><div class="member-role">SCIENTIST / ACROBATIC</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Hank McCoy</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1963 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>SCIENCE ADVISOR</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">GENIUS IQ</span><span class="achievement-tag gold">ACROBATICS</span><span class="achievement-tag blue">CHEMISTRY</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">60+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-bat"></i></div><div><div class="member-name">NIGHTCRAWLER</div><div class="member-role">TELEPORTER / SWASHBUCKLER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Kurt Wagner</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1975 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>ACROBAT</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA-</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">TELEPORTATION</span><span class="achievement-tag gold">WALL-CRAWLING</span><span class="achievement-tag blue">BABY BLUE DEMON</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">48+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-hand-dots"></i></div><div><div class="member-name">ROGUE</div><div class="member-role">POWER ABSORPTION / FLIGHT</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Anna Marie</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1981 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>AVENGER / X-MEN</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">POWER ABSORPTION</span><span class="achievement-tag gold">FLIGHT</span><span class="achievement-tag blue">STRENGTH THEFT</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">42+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-diamond"></i></div><div><div class="member-name">GAMBIT</div><div class="member-role">KINETIC CHARGER / THIEF</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Remy LeBeau</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1990 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>THIEF / X-MEN</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">KINETIC CHARGING</span><span class="achievement-tag gold">CARD THROWING</span><span class="achievement-tag blue">GAMBIT'S ACE</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">33+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-sparkles"></i></div><div><div class="member-name">JUBILEE</div><div class="member-role">PYROTECH / GENERATION X</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Jubilation Lee</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1989 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>JUNIOR X-MEN</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>BETA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">PLASMA BURSTS</span><span class="achievement-tag gold">GENERATION X</span><span class="achievement-tag blue">FIREWORKS</span></div><div class="member-status-bar"><div class="status-dot active">ACTIVE</div><div class="member-years">34+ YEARS</div></div></div>
+      <div class="member-card xmen"><div class="member-card-top"><div class="member-avatar xmen"><i class="fas fa-mask"></i></div><div><div class="member-name">MYSTIQUE</div><div class="member-role">SHAPE-SHIFTER / DOUBLE AGENT</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> IDENTITY: <span>Raven Darkholme</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1967 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>AGENT / ANTAGONIST</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE ACHIEVEMENTS</div><span class="achievement-tag blue">SHAPE-SHIFTING</span><span class="achievement-tag gold">LEADER OF BROTHERHOOD</span><span class="achievement-tag blue">HUNDRED FACES</span></div><div class="member-status-bar"><div class="status-dot reserve">ALIGNED</div><div class="member-years">56+ YEARS</div></div></div>
+    </div>
+  </div>
+  <div class="team-section" id="team-villains">
+    <div class="team-banner villains-banner">
+      <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=1400&h=400&fit=crop" alt="Villains and Threat Actors" loading="lazy">
+      <div class="team-banner-label">
+        <div class="banner-emblem" style="background:linear-gradient(135deg,rgba(155,89,182,.3),rgba(226,54,54,.15));border:1px solid rgba(155,89,182,.4);border-radius:12px;color:var(--mp)"><i class="fas fa-skull"></i></div>
+        <div class="banner-text">
+          <span class="banner-team-name" style="color:var(--mp)">VILLAINS / THREAT ACTORS</span>
+          <span class="banner-team-sub">CLASSIFIED &mdash; OMEGA CLASS THREATS</span>
+        </div>
+      </div>
+    </div>
+    <div class="team-header">
+      <div class="team-emblem villains"><i class="fas fa-skull"></i></div>
+      <div class="team-info">
+        <h2 style="color:var(--mp)">VILLAINS / THREAT ACTORS <span class="team-year">&mdash; CLASSIFIED</span></h2>
+        <div class="team-meta">
+          <div class="team-meta-item"><i class="fas fa-triangle-exclamation"></i> CLASS: <strong>THREAT ACTORS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-location-dot"></i> ORIGIN: <strong>VARIOUS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-users"></i> TRACKED: <strong>10 MEMBERS</strong></div>
+          <div class="team-meta-item"><i class="fas fa-crosshairs"></i> THREAT: <strong>OMEGA CLASS</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="roster-grid">
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-gem"></i></div><div><div class="member-name">THANOS</div><div class="member-role">MAD TITAN / COSMIC WARLORD</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Titan</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2012 &ndash; 2023</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>TITAN</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>COSMIC OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">INFINITY GAUNTLET</span><span class="achievement-tag purple">THE SNAP</span><span class="achievement-tag purple">BLIP</span></div><div class="member-status-bar"><div class="status-dot fallen">DEFEATED</div><div class="member-years">11 YEARS THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-hat-wizard"></i></div><div><div class="member-name">LOKI</div><div class="member-role">GOD OF MISCHIEF / TRICKSTER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Asgardian</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2011 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>ASGARDIAN PRINCE</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">ILLUSIONS</span><span class="achievement-tag purple">TVA ALLIANCE</span><span class="achievement-tag purple">TIMEKEEPER</span></div><div class="member-status-bar"><div class="status-dot reserve">REDEEMED / VARIANT</div><div class="member-years">12+ YEARS THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-robot"></i></div><div><div class="member-name">ULTRON</div><div class="member-role">AI SINGULARITY / GENOCIDAL</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Artificial Intelligence</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2015</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>AI OMEGA</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>COSMIC OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">SOKOVIA</span><span class="achievement-tag purple">VIBRANIUM BODY</span><span class="achievement-tag purple">ULTIMATE DECOY</span></div><div class="member-status-bar"><div class="status-dot fallen">DEFEATED</div><div class="member-years">SINGLE YEAR THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-hourglass-half"></i></div><div><div class="member-name">KANG</div><div class="member-role">CONQUEROR / TEMPORAL</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Time Traveler</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>31ST CENTURY+</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>TEMPORAL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>MULTIVERSAL OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">QUANTUM NAVIGATION</span><span class="achievement-tag purple">MULTIVERSE WAR</span><span class="achievement-tag purple">TVA CREATION</span></div><div class="member-status-bar"><div class="status-dot inactive">ACTIVE THREAT</div><div class="member-years">ETERNAL THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-flag"></i></div><div><div class="member-name">RED SKULL</div><div class="member-role">HYDRA LEADER / SUPER SOLDIER</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>HYDRA</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>1943 &ndash; PRESENT</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>HYDRA SUPREME</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">TESSERACT</span><span class="achievement-tag purple">HYDRA RISE</span><span class="achievement-tag purple">VORMIR GUARDIAN</span></div><div class="member-status-bar"><div class="status-dot inactive">EXILED</div><div class="member-years">80+ YEARS THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-skull-crossbones"></i></div><div><div class="member-name">HELA</div><div class="member-role">GODDESS OF DEATH / ASGARDIAN</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Asgardian</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2017</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>ASGARDIAN PRINCESS</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>COSMIC OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">NECROSWORD</span><span class="achievement-tag purple">ASGARD CONQUEST</span><span class="achievement-tag purple">SURTUR ALLIANCE</span></div><div class="member-status-bar"><div class="status-dot fallen">DESTROYED</div><div class="member-years">TEMPORARY THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-theater-masks"></i></div><div><div class="member-name">MYSTERIO</div><div class="member-role">ILLUSIONIST / FRAUD</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Human</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2024</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>IMPOSTER</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>BETA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">HOLOGRAPHIC DECOY</span><span class="achievement-tag purple">ELEMENTALS HOAX</span><span class="achievement-tag purple">SPIDER-MAN FRAME</span></div><div class="member-status-bar"><div class="status-dot fallen">DECEASED</div><div class="member-years">SINGLE YEAR THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-mask"></i></div><div><div class="member-name">KILLMONGER</div><div class="member-role">USURPER / WARRIOR KING</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Wakandan</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2018</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>WAKANDAN PRINCE</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>ALPHA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">WAKANDAN THRONE</span><span class="achievement-tag purple">HEART-SHAPED HERB</span><span class="achievement-tag purple">GLOBAL REVOLUTION</span></div><div class="member-status-bar"><div class="status-dot fallen">DECEASED</div><div class="member-years">SINGLE YEAR THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-planet-ringed"></i></div><div><div class="member-name">EGO</div><div class="member-role">CELESTIAL / PATERNAL COSMIC</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Celestial</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>2017</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>CELESTIAL</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>COSMIC OMEGA</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">EXPANSION PLAN</span><span class="achievement-tag purple">CELESTIAL SEED</span><span class="achievement-tag purple">PLANET DESTRUCTION</span></div><div class="member-status-bar"><div class="status-dot fallen">DESTROYED</div><div class="member-years">SINGLE YEAR THREAT</div></div></div>
+      <div class="member-card villains"><div class="member-card-top"><div class="member-avatar villains"><i class="fas fa-crown"></i></div><div><div class="member-name">DOCTOR DOOM</div><div class="member-role">SORCERER SCIENTIST / MONARCH</div></div></div><div class="member-details"><div class="member-detail"><i class="fas fa-user"></i> ORIGIN: <span>Latverian</span></div><div class="member-detail"><i class="fas fa-calendar"></i> ACTIVE: <span>PENDING</span></div><div class="member-detail"><i class="fas fa-star"></i> RANK: <span>MONARCH OF LATVERIA</span></div><div class="member-detail"><i class="fas fa-bolt"></i> THREAT: <span>OMEGA+</span></div></div><div class="member-achievements"><div class="member-achievements-title">NOTABLE OPERATIONS</div><span class="achievement-tag purple">DOOM BOTS</span><span class="achievement-tag purple">MAGIC + SCIENCE</span><span class="achievement-tag purple">SECRET WARS</span></div><div class="member-status-bar"><div class="status-dot inactive">ACTIVE THREAT</div><div class="member-years">IMMINENT THREAT</div></div></div>
+    </div>
+  </div>
+</section>
+<section class="section" style="background:rgba(255,255,255,.01)">
+  <div class="section-header">
+    <div class="section-tag">// TACTICAL OVERVIEW</div>
+    <div class="section-title">TEAM COMPARISON MATRIX</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="comparison-section">
+    <div class="comparison-grid">
+      <div class="comp-cell header">ATTRIBUTE</div>
+      <div class="comp-cell header" style="color:var(--mr)">AVENGERS</div>
+      <div class="comp-cell header" style="color:#8888ff">NEW AVENGERS</div>
+      <div class="comp-cell header" style="color:var(--mgr)">GUARDIANS</div>
+      <div class="comp-cell header" style="color:var(--mg)">ETERNALS</div>
+      <div class="comp-cell header" style="color:var(--mb)">X-MEN</div>
+      <div class="comp-cell header" style="color:var(--mp)">VILLAINS</div>
+      <div class="comp-cell label"><i class="fas fa-bolt" style="color:var(--mr);margin-right:8px"></i> POWER</div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span></div></div>
+      <div class="comp-cell label"><i class="fas fa-microchip" style="color:var(--mg);margin-right:8px"></i> TECH</div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell label"><i class="fas fa-hat-wizard" style="color:var(--mp);margin-right:8px"></i> MAGIC</div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell label"><i class="fas fa-chess" style="color:var(--mgr);margin-right:8px"></i> STRATEGY</div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span></div></div>
+      <div class="comp-cell label"><i class="fas fa-people-group" style="color:var(--mb);margin-right:8px"></i> COHESION</div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar filled av"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar filled na"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar filled gotg"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar filled eternals"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar filled xmen"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+      <div class="comp-cell"><div class="comp-bars"><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar filled villains"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span><span class="comp-bar"></span></div></div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// RECRUITMENT</div>
+    <div class="section-title">RECRUITMENT STATUS BOARD</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="recruit-board">
+    <div class="recruit-terminal-header">
+      <div class="terminal-dots"><span class="terminal-dot r"></span><span class="terminal-dot y"></span><span class="terminal-dot g"></span></div>
+      <div class="terminal-title">AVENGERS COMMS // RECRUITMENT TERMINAL</div>
+      <div class="terminal-time">SYS.TIME: 2026.07.26 // SEC.LEVEL: OMEGA</div>
+    </div>
+    <div class="recruit-body">
+      <div class="recruit-line"><span class="prompt">[AVENGERS_COMMS]</span> <span class="cmd">scanning</span> <span class="info">global hero registers...</span></div>
+      <div class="recruit-line"><span class="prompt">[SYS]</span> <span class="ok">CONNECTED TO S.H.I.E.L.D. DATABASE</span></div>
+      <div class="recruit-line"><span class="prompt">[QUERY]</span> SELECT * FROM recruits WHERE status = <span class="val">'RECRUITING'</span></div>
+      <div class="recruit-line"><span class="prompt">[RESULT]</span> <span class="ok">8 RECORDS FOUND</span></div>
+      <div class="recruit-line" style="margin-top:10px"><span class="prompt">&gt; ADAM WARLOCK</span> <span class="info">.............</span> <span class="cmd">STATUS: RECRUITING</span> <span class="info">// COSMIC PRIORITY</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; SHANG-CHI</span> <span class="info">.............</span> <span class="cmd">STATUS: RECRUITING</span> <span class="info">// TEN RINGS</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; SHE-HULK</span> <span class="info">.............</span> <span class="cmd">STATUS: RECRUITING</span> <span class="info">// GAMMA DIVISION</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; MS. MARVEL</span> <span class="info">.............</span> <span class="cmd">STATUS: RECRUITING</span> <span class="info">// COSMIC</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; CAPTAIN MARVEL</span> <span class="info">..........</span> <span class="ok">STATUS: CONFIRMED</span> <span class="info">// ALPHA TEAM</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; MOON KNIGHT</span> <span class="info">.............</span> <span class="val">STATUS: EVALUATION</span> <span class="info">// PSYCH CLEARANCE</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; ECHO</span> <span class="info">.....................</span> <span class="val">STATUS: EVALUATION</span> <span class="info">// STREET LEVEL</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; AMERICA CHAVEZ</span> <span class="info">..........</span> <span class="cmd">STATUS: RECRUITING</span> <span class="info">// MULTIVERSE</span></div>
+      <div class="recruit-line" style="margin-top:10px"><span class="prompt">[QUERY]</span> SELECT * FROM recruits WHERE status = <span class="val">'ON_LEAVE'</span></div>
+      <div class="recruit-line"><span class="prompt">[RESULT]</span> <span class="val">5 RECORDS FOUND</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; HAWKEYE</span> <span class="info">...............</span> <span class="val">STATUS: FAMILY LEAVE</span> <span class="info">// KATE BISHOP COVER</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; HULK</span> <span class="info">...................</span> <span class="val">STATUS: SABBATICAL</span> <span class="info">// SMART HULK MODE</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; KINGO</span> <span class="info">..................</span> <span class="val">STATUS: FILMING</span> <span class="info">// BOLLYWOOD SCHEDULE</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; ANT-MAN</span> <span class="info">...............</span> <span class="val">STATUS: QUANTUM</span> <span class="info">// EXPEDITION</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; WASP</span> <span class="info">...................</span> <span class="val">STATUS: LAB ASSIGN</span> <span class="info">// PYM TECH</span></div>
+      <div class="recruit-line" style="margin-top:10px"><span class="prompt">[QUERY]</span> SELECT * FROM recruits WHERE status = <span class="val">'UNAVAILABLE'</span></div>
+      <div class="recruit-line"><span class="prompt">[RESULT]</span> <span class="warn">4 RECORDS FOUND</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; IRON MAN</span> <span class="info">...............</span> <span class="warn">STATUS: DECEASED</span> <span class="info">// SACRIFICE 2023</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; BLACK WIDOW</span> <span class="info">.............</span> <span class="warn">STATUS: DECEASED</span> <span class="info">// VORMIR 2023</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; VISION</span> <span class="info">..................</span> <span class="warn">STATUS: DECOMMISSIONED</span> <span class="info">// SHURI PROJECT</span></div>
+      <div class="recruit-line"><span class="prompt">&gt; SCARLET WITCH</span> <span class="info">...........</span> <span class="warn">STATUS: UNCONFIRMED</span> <span class="info">// MOUNT WONDO</span></div>
+      <div class="recruit-line" style="margin-top:15px"><span class="prompt">[SYS]</span> <span class="info">END OF QUERY. AWAITING COMMAND...</span> <span class="cursor-blink"></span></div>
+    </div>
+  </div>
+</section>
+<section class="section hall-section">
+  <div class="section-header">
+    <div class="section-tag" style="color:var(--mg)">// REMEMBRANCE</div>
+    <div class="section-title">HALL OF LEGENDS</div>
+    <div class="section-line" style="background:linear-gradient(90deg,var(--mg),rgba(255,215,0,.3))"></div>
+    <p style="color:rgba(255,255,255,.3);margin-top:15px;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px">THEY GAVE EVERYTHING. WE REMEMBER ALWAYS.</p>
+  </div>
+  <div class="hall-cards">
+    <div class="hall-card">
+      <div class="hall-icon"><i class="fas fa-mask" style="color:rgba(255,215,0,.6)"></i></div>
+      <div class="hall-name">IRON MAN</div>
+      <div class="hall-real">TONY STARK &mdash; 1970&ndash;2023</div>
+      <div class="hall-desc">The genius billionaire who started it all. From building a suit in a cave to wielding the Infinity Stones, Tony Stark proved that even a man without powers can save the universe. His sacrifice snapped away Thanos and restored half of all life.</div>
+      <div class="hall-years">IN MEMORY: THE ONE WHO SAVED THE UNIVERSE</div>
+      <div class="hall-candle"><div class="candle"></div><div class="candle" style="animation-delay:.3s"></div><div class="candle" style="animation-delay:.6s"></div><div class="candle" style="animation-delay:.9s"></div><div class="candle" style="animation-delay:1.2s"></div></div>
+    </div>
+    <div class="hall-card">
+      <div class="hall-icon" style="animation-delay:2s"><i class="fas fa-heart" style="color:rgba(255,215,0,.6)"></i></div>
+      <div class="hall-name">BLACK WIDOW</div>
+      <div class="hall-real">NATASHA ROMANOFF &mdash; 1984&ndash;2023</div>
+      <div class="hall-desc">From Red Room assassin to Earth's mightiest hero, Natasha Romanoff dedicated her life to protecting others. Her final sacrifice on Vormir ensured the Soul Stone could be claimed, enabling the Time Heist and the restoration of the universe.</div>
+      <div class="hall-years">IN MEMORY: THE SPY WHO CHOSE HER FAMILY</div>
+      <div class="hall-candle"><div class="candle" style="animation-delay:.2s"></div><div class="candle" style="animation-delay:.5s"></div><div class="candle" style="animation-delay:.8s"></div><div class="candle" style="animation-delay:1.1s"></div><div class="candle" style="animation-delay:1.4s"></div></div>
+    </div>
+    <div class="hall-card">
+      <div class="hall-icon" style="animation-delay:4s"><i class="fas fa-gem" style="color:rgba(255,215,0,.6)"></i></div>
+      <div class="hall-name">VISION</div>
+      <div class="hall-real">VICTOR SHADE &mdash; 2015&ndash;2023</div>
+      <div class="hall-desc">Born from the Mind Stone and Ultron's ambition, Vision chose to become something more than his creators intended. His synthetic mind held infinite empathy, and his sacrifice at Thanos's hand proved that even an artificial being could understand the meaning of love.</div>
+      <div class="hall-years">IN MEMORY: THE BEING WHO LEARNED TO FEEL</div>
+      <div class="hall-candle"><div class="candle" style="animation-delay:.4s"></div><div class="candle" style="animation-delay:.7s"></div><div class="candle" style="animation-delay:1s"></div><div class="candle" style="animation-delay:1.3s"></div><div class="candle" style="animation-delay:1.6s"></div></div>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a href="index.html" class="footer-logo" style="text-decoration:none">MARVEL.</a>
+      <p class="footer-desc">The Marvel Cinematic Universe is a media franchise and shared universe centered on a series of superhero films and other media produced by Marvel Studios.</p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">EXPLORE</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="missions.html">Mission Files</a></li>
+        <li><a href="characters.html">Character Database</a></li>
+        <li><a href="battles.html">Battle Records</a></li>
+        <li><a href="tech.html">Tech Division</a></li>
+        <li><a href="multiverse.html">Multiverse Map</a></li>
+        <li><a href="roster.html">Team Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">HEROES</div>
+      <ul class="footer-links">
+        <li><a href="characters.html">Iron Man</a></li>
+        <li><a href="characters.html">Captain America</a></li>
+        <li><a href="characters.html">Thor</a></li>
+        <li><a href="characters.html">Spider-Man</a></li>
+        <li><a href="characters.html">Black Panther</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">CONNECT</div>
+      <ul class="footer-links">
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Marvel Universe Fan Site. All rights reserved. This is a fan-made tribute website.</p>
+  </div>
+</footer>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+gsap.from('.page-hero-content h1',{y:60,opacity:0,duration:1,ease:'power3.out'});
+gsap.from('.page-hero-content p',{y:40,opacity:0,duration:1,ease:'power3.out',delay:0.2});
+gsap.from('.cmd-badge',{y:30,opacity:0,duration:1,ease:'power3.out',delay:0.4});
+gsap.from('.hero-status-line',{y:20,opacity:0,duration:1,ease:'power3.out',delay:0.6});
+gsap.from('.dash-stat',{scrollTrigger:{trigger:'.dashboard-stats',start:'top 80%'},y:60,opacity:0,duration:0.6,stagger:0.1,ease:'power3.out'});
+gsap.utils.toArray('.section-header').forEach(h=>{
+  gsap.from(h,{scrollTrigger:{trigger:h,start:'top 85%'},y:50,opacity:0,duration:1,ease:'power3.out'});
+});
+gsap.utils.toArray('.team-header').forEach(h=>{
+  gsap.from(h,{scrollTrigger:{trigger:h,start:'top 85%'},x:-50,opacity:0,duration:0.8,ease:'power3.out'});
+});
+gsap.utils.toArray('.team-banner').forEach(b=>{
+  gsap.from(b,{scrollTrigger:{trigger:b,start:'top 88%'},y:60,opacity:0,duration:0.9,ease:'power3.out'});
+});
+gsap.utils.toArray('.member-card').forEach(c=>{
+  gsap.from(c,{scrollTrigger:{trigger:c,start:'top 90%'},y:40,opacity:0,duration:0.5,stagger:0.05,ease:'power3.out'});
+});
+gsap.utils.toArray('.team-emblem').forEach(e=>{
+  gsap.from(e,{scrollTrigger:{trigger:e,start:'top 85%'},scale:0,opacity:0,duration:0.6,ease:'back.out(1.7)'});
+});
+gsap.from('.comparison-grid',{scrollTrigger:{trigger:'.comparison-grid',start:'top 80%'},y:60,opacity:0,duration:1,ease:'power3.out'});
+gsap.from('.recruit-board',{scrollTrigger:{trigger:'.recruit-board',start:'top 80%'},y:60,opacity:0,duration:0.8,ease:'power3.out'});
+gsap.utils.toArray('.hall-card').forEach(c=>{
+  gsap.from(c,{scrollTrigger:{trigger:c,start:'top 85%'},y:60,opacity:0,duration:0.8,ease:'power3.out'});
+});
+gsap.from('.footer-grid',{scrollTrigger:{trigger:'.footer',start:'top 90%'},y:40,opacity:0,duration:0.8,ease:'power3.out'});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

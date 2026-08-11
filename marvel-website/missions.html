@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Files // Avengers Classified Operations</title>
+<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 6px currentColor}50%{opacity:.4;box-shadow:0 0 12px currentColor}}
+@keyframes scan-line{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes glitch{0%,100%{transform:translate(0)}20%{transform:translate(-2px,2px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,-2px)}80%{transform:translate(1px,1px)}}
+@keyframes stamp-in{0%{transform:rotate(-15deg) scale(2);opacity:0}100%{transform:rotate(-12deg) scale(1);opacity:.85}}
+@keyframes flicker{0%,100%{opacity:1}50%{opacity:.8}52%{opacity:1}54%{opacity:.6}56%{opacity:1}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes blink-cursor{50%{border-color:transparent}}
+@keyframes rotate-border{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes fade-in-up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes threat-pulse{0%,100%{text-shadow:0 0 5px currentColor}50%{text-shadow:0 0 20px currentColor,0 0 40px currentColor}}
+@keyframes classification-slide{0%{transform:translate(-50%,-50%) rotate(-12deg) scale(3);opacity:0;filter:blur(10px)}60%{transform:translate(-50%,-50%) rotate(-12deg) scale(0.95);opacity:.9;filter:blur(0)}100%{transform:translate(-50%,-50%) rotate(-12deg) scale(1);opacity:.85;filter:blur(0)}}
+@keyframes hud-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes matrix-rain{0%{transform:translateY(-100%);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(100vh);opacity:0}}
+
+.page-hero{height:75vh!important;position:relative;overflow:hidden}
+.page-hero::after{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:rgba(226,54,54,.4);animation:scan-line 4s linear infinite;pointer-events:none;z-index:5}
+.page-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(226,54,54,.015) 3px,rgba(226,54,54,.015) 4px);pointer-events:none;z-index:1}
+.page-hero .classification-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);font-family:'Bebas Neue',cursive;font-size:clamp(60px,10vw,120px);color:rgba(226,54,54,.07);letter-spacing:15px;border:4px solid rgba(226,54,54,.07);padding:10px 40px;pointer-events:none;z-index:1;white-space:nowrap;animation:classification-slide 1.5s ease-out forwards}
+.page-hero .classification-stamp-2{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);font-family:'Bebas Neue',cursive;font-size:clamp(60px,10vw,120px);color:rgba(255,215,0,.04);letter-spacing:15px;border:4px solid rgba(255,215,0,.04);padding:10px 40px;pointer-events:none;z-index:1;white-space:nowrap;animation:classification-slide 2s ease-out forwards}
+.page-hero .corner-mark{position:absolute;width:40px;height:40px;border-color:var(--mr);border-style:solid;border-width:0;z-index:3;opacity:.4}
+.page-hero .corner-mark.tl{top:20%;left:10%;border-top-width:2px;border-left-width:2px}
+.page-hero .corner-mark.tr{top:20%;right:10%;border-top-width:2px;border-right-width:2px}
+.page-hero .corner-mark.bl{bottom:20%;left:10%;border-bottom-width:2px;border-left-width:2px}
+.page-hero .corner-mark.br{bottom:20%;right:10%;border-bottom-width:2px;border-right-width:2px}
+.page-hero .hud-text{position:absolute;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(226,54,54,.3);letter-spacing:3px;z-index:3}
+.page-hero .hud-text.top-left{top:22%;left:12%}
+.page-hero .hud-text.top-right{top:22%;right:12%;text-align:right}
+.page-hero .hud-text.bottom-left{bottom:22%;left:12%}
+.page-hero .hud-text.bottom-right{bottom:22%;right:12%;text-align:right}
+.page-hero .stamp-overlay{position:absolute;top:15%;right:15%;z-index:4;font-family:'Bebas Neue',cursive;font-size:14px;padding:6px 14px;border:2px solid rgba(226,54,54,.5);color:rgba(226,54,54,.6);transform:rotate(-15deg);letter-spacing:3px;animation:stamp-in .8s .5s ease-out both}
+.page-hero .stamp-overlay-2{position:absolute;bottom:25%;left:12%;z-index:4;font-family:'Bebas Neue',cursive;font-size:12px;padding:5px 12px;border:2px solid rgba(255,215,0,.4);color:rgba(255,215,0,.5);transform:rotate(-8deg);letter-spacing:2px;animation:stamp-in .8s .8s ease-out both}
+.page-hero .hud-cursor{display:inline-block;width:8px;height:14px;background:rgba(226,54,54,.6);animation:blink-cursor 1s step-end infinite;vertical-align:middle;margin-left:4px}
+
+.dashboard-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:25px;max-width:1200px;margin:0 auto}
+.dash-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:35px 25px;text-align:center;position:relative;overflow:hidden;transition:all .4s;backdrop-filter:blur(10px)}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--mr),var(--mg),transparent);transform:scaleX(0);transition:transform .5s}
+.dash-card:hover::before{transform:scaleX(1)}
+.dash-card:hover{transform:translateY(-8px);border-color:rgba(226,54,54,.25);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.dash-card .icon{font-size:32px;margin-bottom:15px;background:linear-gradient(135deg,var(--mr),var(--mg));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.dash-card .number{font-family:'Orbitron',sans-serif;font-size:42px;font-weight:900;color:var(--mg);margin-bottom:5px}
+.dash-card .label{font-family:'Rajdhani',sans-serif;font-size:14px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:3px}
+.dash-card .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;animation:pulse-dot 2s infinite}
+.dash-card .status-text{font-size:12px;color:rgba(255,255,255,.4);margin-top:10px;text-transform:uppercase;letter-spacing:2px}
+.dash-card:nth-child(1) .status-dot{background:var(--mgr);color:var(--mgr)}
+.dash-card:nth-child(2) .status-dot{background:var(--mb);color:var(--mb)}
+.dash-card:nth-child(3) .status-dot{background:var(--mr);color:var(--mr)}
+.dash-card:nth-child(4) .status-dot{background:var(--mg);color:var(--mg)}
+
+.missions-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px;max-width:1400px;margin:0 auto}
+.mission-card{background:rgba(10,10,10,.9);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:0;overflow:hidden;position:relative;transition:all .5s;backdrop-filter:blur(10px)}
+.mission-card::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;border-radius:16px;padding:1px;background:linear-gradient(135deg,transparent,rgba(226,54,54,.2),transparent,rgba(255,215,0,.2),transparent);background-size:300% 300%;animation:rotate-border 6s linear infinite;opacity:0;transition:opacity .4s;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:5}
+.mission-card:hover::before{opacity:1}
+.mission-card:hover{transform:translateY(-6px);box-shadow:0 25px 50px rgba(0,0,0,.6)}
+.mission-card-image{width:100%;height:200px;object-fit:cover;display:block;filter:brightness(.65) saturate(1.1);transition:all .5s}
+.mission-card:hover .mission-card-image{filter:brightness(.8) saturate(1.2);transform:scale(1.03)}
+.mission-card-img-wrap{position:relative;overflow:hidden}
+.mission-card-img-wrap::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,rgba(10,10,10,.95),transparent);z-index:1}
+.mission-card-header{padding:20px 25px 15px;position:relative}
+.mission-card-classification{display:inline-block;padding:3px 12px;border-radius:4px;font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:10px}
+.mission-card-classification.top-secret{background:rgba(226,54,54,.15);color:var(--mr);border:1px solid rgba(226,54,54,.3)}
+.mission-card-classification.eyes-only{background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.3)}
+.mission-card-classification.classified{background:rgba(255,215,0,.15);color:var(--mg);border:1px solid rgba(255,215,0,.3)}
+.mission-card-stamp{position:absolute;top:15px;right:15px;font-family:'Bebas Neue',cursive;font-size:14px;padding:4px 10px;border:2px solid;transform:rotate(-12deg);opacity:.7;letter-spacing:2px}
+.mission-card-stamp.completed{color:var(--mgr);border-color:var(--mgr)}
+.mission-card-stamp.active{color:var(--mg);border-color:var(--mg)}
+.mission-card-stamp.ongoing{color:var(--mr);border-color:var(--mr)}
+.mission-card-stamp.failed{color:#ff3b3b;border-color:#ff3b3b}
+.mission-card-year{font-family:'Orbitron',sans-serif;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px;margin-bottom:5px}
+.mission-card-name{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;margin-bottom:2px;background:linear-gradient(135deg,#fff,rgba(255,255,255,.7));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mission-card-codename{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--mr);letter-spacing:3px;margin-bottom:0}
+.mission-card-body{padding:0 25px 20px}
+.mission-card-desc{font-size:14px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:18px}
+.mission-card-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.mission-card-team{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px}
+.mission-card-team i{color:var(--mb);font-size:13px}
+.mission-card-threat{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:20px;font-weight:700;animation:threat-pulse 3s infinite}
+.mission-card-threat.omega{background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.3)}
+.mission-card-threat.delta{background:rgba(226,54,54,.15);color:var(--mr);border:1px solid rgba(226,54,54,.3)}
+.mission-card-threat.alpha{background:rgba(255,215,0,.15);color:var(--mg);border:1px solid rgba(255,215,0,.3)}
+.mission-card-threat.beta{background:rgba(26,107,255,.15);color:var(--mb);border:1px solid rgba(26,107,255,.3)}
+.mission-card-footer{padding:15px 25px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center}
+.mission-card-status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px}
+.mission-card-status .dot{width:8px;height:8px;border-radius:50%;animation:pulse-dot 2s infinite}
+.mission-card-status.completed .dot{background:var(--mgr);color:var(--mgr)}
+.mission-card-status.completed{color:var(--mgr)}
+.mission-card-status.active .dot{background:var(--mg);color:var(--mg)}
+.mission-card-status.active{color:var(--mg)}
+.mission-card-status.ongoing .dot{background:var(--mr);color:var(--mr)}
+.mission-card-status.ongoing{color:var(--mr)}
+.mission-card-status.failed .dot{background:#ff3b3b;color:#ff3b3b}
+.mission-card-status.failed{color:#ff3b3b}
+.mission-card-id{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:2px}
+
+.priority-matrix{max-width:1200px;margin:0 auto;overflow:hidden;border-radius:16px;border:1px solid rgba(255,255,255,.06)}
+.priority-matrix table{width:100%;border-collapse:collapse}
+.priority-matrix thead{background:rgba(226,54,54,.1)}
+.priority-matrix th{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:3px;color:var(--mg);padding:18px 20px;text-transform:uppercase;text-align:left;border-bottom:2px solid rgba(226,54,54,.2)}
+.priority-matrix td{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;color:rgba(255,255,255,.7);transition:all .3s}
+.priority-matrix tr:hover td{background:rgba(255,255,255,.02)}
+.priority-matrix .threat-badge{font-family:'Orbitron',sans-serif;font-size:11px;padding:4px 14px;border-radius:20px;font-weight:700;letter-spacing:2px;display:inline-block}
+.threat-badge.omega{background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.3)}
+.threat-badge.delta{background:rgba(226,54,54,.15);color:var(--mr);border:1px solid rgba(226,54,54,.3)}
+.threat-badge.alpha{background:rgba(255,215,0,.15);color:var(--mg);border:1px solid rgba(255,215,0,.3)}
+.threat-badge.beta{background:rgba(26,107,255,.15);color:var(--mb);border:1px solid rgba(26,107,255,.3)}
+.priority-matrix .priority-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;min-width:120px}
+.priority-matrix .priority-bar-fill{height:100%;border-radius:3px;transition:width 1.5s ease}
+.priority-matrix .response-time{font-family:'Orbitron',sans-serif;font-size:12px;color:rgba(255,255,255,.4)}
+
+.dossier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:30px;max-width:1400px;margin:0 auto}
+.dossier-card{background:rgba(15,15,15,.95);border:1px solid rgba(226,54,54,.15);border-radius:16px;padding:30px;position:relative;overflow:hidden;transition:all .4s}
+.dossier-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(226,54,54,.01) 2px,rgba(226,54,54,.01) 4px);pointer-events:none;z-index:1}
+.dossier-card:hover{border-color:rgba(226,54,54,.35);box-shadow:0 0 40px rgba(226,54,54,.1)}
+.dossier-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;position:relative;z-index:2}
+.dossier-id{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--mr);letter-spacing:3px;margin-bottom:5px}
+.dossier-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:2px;color:#fff}
+.dossier-stamp{font-family:'Bebas Neue',cursive;font-size:12px;padding:5px 12px;border:2px solid;transform:rotate(-12deg);opacity:.75;letter-spacing:3px;white-space:nowrap}
+.dossier-stamp.top-secret{color:var(--mr);border-color:var(--mr)}
+.dossier-stamp.classified{color:var(--mg);border-color:var(--mg)}
+.dossier-stamp.eyes-only{color:var(--mp);border-color:var(--mp)}
+.dossier-body{position:relative;z-index:2}
+.dossier-line{display:flex;gap:10px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.dossier-label{color:var(--mr);font-weight:700;white-space:nowrap;min-width:90px;text-transform:uppercase;letter-spacing:1px}
+.dossier-value{color:rgba(255,255,255,.6)}
+.redacted{background:#fff;color:#fff;padding:0 6px;border-radius:2px;user-select:none;position:relative;display:inline}
+.redacted::after{content:'REDACTED';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:8px;color:#000;letter-spacing:2px}
+.dossier-notes{margin-top:18px;padding:15px;background:rgba(226,54,54,.05);border-left:3px solid var(--mr);border-radius:0 8px 8px 0;position:relative;z-index:2}
+.dossier-notes-title{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--mr);letter-spacing:3px;margin-bottom:8px;text-transform:uppercase}
+.dossier-notes p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;font-style:italic}
+.dossier-footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:15px;border-top:1px solid rgba(255,255,255,.05);position:relative;z-index:2}
+.dossier-clearance{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:2px}
+.dossier-date{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:1px}
+
+.mission-timeline{position:relative;max-width:900px;margin:0 auto}
+.mission-timeline::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:3px;height:100%;background:linear-gradient(to bottom,var(--mr),var(--mg),var(--mp),var(--mb),var(--mgr))}
+.mtl-item{position:relative;width:50%;padding:20px 45px;opacity:0;transform:translateY(30px);transition:all .6s}
+.mtl-item.visible{opacity:1;transform:translateY(0)}
+.mtl-item:nth-child(odd){left:0;text-align:right}
+.mtl-item:nth-child(even){left:50%;text-align:left}
+.mtl-item::before{content:'';position:absolute;top:28px;width:16px;height:16px;border-radius:50%;z-index:2}
+.mtl-item:nth-child(odd)::before{right:-8px}
+.mtl-item:nth-child(even)::before{left:-8px}
+.mtl-year{font-family:'Orbitron',sans-serif;font-size:26px;margin-bottom:4px}
+.mtl-mission{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;margin-bottom:6px}
+.mtl-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
+.mtl-threat-tag{display:inline-block;font-family:'Orbitron',sans-serif;font-size:9px;padding:3px 10px;border-radius:12px;letter-spacing:2px;font-weight:700;margin-top:8px}
+
+.section-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(226,54,54,.2),rgba(255,215,0,.2),transparent);margin:0 auto}
+
+@media(max-width:1024px){.dashboard-stats{grid-template-columns:repeat(2,1fr)}.missions-grid{grid-template-columns:1fr}.dossier-grid{grid-template-columns:1fr}.mission-timeline::before{left:15px}.mtl-item{width:100%!important;left:0!important;text-align:left!important;padding-left:45px;padding-right:15px}.mtl-item:nth-child(odd)::before,.mtl-item:nth-child(even)::before{left:7px!important;right:auto!important}}
+@media(max-width:768px){.dashboard-stats{grid-template-columns:1fr}.priority-matrix{overflow-x:auto}.page-hero .classification-stamp{font-size:50px}.page-hero .classification-stamp-2{font-size:45px}}
+</style>
+</head>
+<body>
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">MARVEL</div>
+  <div style="color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:5px;margin-top:10px">ACCESSING CLASSIFIED FILES</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+</div>
+
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">MARVEL<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#heroes">Heroes</a></li>
+    <li><a href="missions.html" class="active">Missions</a></li>
+    <li><a href="characters.html">Characters</a></li>
+    <li><a href="battles.html">Battles</a></li>
+    <li><a href="tech.html">Tech</a></li>
+    <li><a href="multiverse.html">Multiverse</a></li>
+    <li><a href="roster.html">Roster</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+</nav>
+
+<div class="glow-orb glow-orb-1"></div>
+<div class="glow-orb glow-orb-2"></div>
+
+<section class="page-hero" id="hero">
+  <div class="corner-mark tl"></div>
+  <div class="corner-mark tr"></div>
+  <div class="corner-mark bl"></div>
+  <div class="corner-mark br"></div>
+  <div class="hud-text top-left">SYS://AVENGERS_COMMAND_v7.2<span class="hud-cursor"></span></div>
+  <div class="hud-text top-right">CLEARANCE: OMEGA-PRIME<br>AUTH: DIRECTOR_LEVEL</div>
+  <div class="hud-text bottom-left">QUANTUM_ENCRYPTED // 2026-07-26</div>
+  <div class="hud-text bottom-right">THREAT_LVL: OMEGA // NODE: STRIKE</div>
+  <div class="classification-stamp">CLASSIFIED</div>
+  <div class="classification-stamp-2">TOP SECRET</div>
+  <div class="stamp-overlay">EYES ONLY</div>
+  <div class="stamp-overlay-2">LEVEL 10 CLEARANCE REQ.</div>
+  <div class="page-hero-content">
+    <div class="section-tag">// TOP SECRET // LEVEL 10 CLEARANCE REQUIRED</div>
+    <h1 class="gradient">MISSION FILES // CLASSIFIED</h1>
+    <p>AVENGERS TOP SECRET OPERATIONS DATABASE — OMEGA-LEVEL ACCESS</p>
+    <div class="line"></div>
+  </div>
+</section>
+
+<section class="section" id="dashboard">
+  <div class="section-header">
+    <div class="section-tag">// COMMAND CENTER</div>
+    <h2 class="section-title">MISSION STATUS DASHBOARD</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="dashboard-stats">
+    <div class="dash-card">
+      <div class="icon"><i class="fas fa-crosshairs"></i></div>
+      <div class="number" data-target="47">0</div>
+      <div class="label">Active Missions</div>
+      <div class="status-text"><span class="status-dot"></span>LIVE FEED ACTIVE</div>
+    </div>
+    <div class="dash-card">
+      <div class="icon"><i class="fas fa-check-circle"></i></div>
+      <div class="number" data-target="284">0</div>
+      <div class="label">Completed</div>
+      <div class="status-text"><span class="status-dot"></span>AFTER-ACTION REPORTS FILED</div>
+    </div>
+    <div class="dash-card">
+      <div class="icon"><i class="fas fa-shield-halved"></i></div>
+      <div class="number" data-target="1500" data-suffix="+">0</div>
+      <div class="label">Threats Neutralized</div>
+      <div class="status-text"><span class="status-dot"></span>GLOBAL THREAT MATRIX ONLINE</div>
+    </div>
+    <div class="dash-card">
+      <div class="icon"><i class="fas fa-globe"></i></div>
+      <div class="number" data-target="98" data-suffix="%">0</div>
+      <div class="label">Global Coverage</div>
+      <div class="status-text"><span class="status-dot"></span>SATELLITE NETWORK UP</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section" id="missions">
+  <div class="section-header">
+    <div class="section-tag">// S.H.I.E.L.D. DATABASE ACCESS</div>
+    <h2 class="section-title">TOP SECRET MISSIONS</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="missions-grid">
+
+    <!-- MISSION A: SHIELD -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600&h=400&fit=crop" alt="New York City skyline" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification top-secret">TOP SECRET</div>
+        <div class="mission-card-stamp completed">COMPLETED</div>
+        <div class="mission-card-year">CLASSIFIED // 2012</div>
+        <div class="mission-card-name">OPERATION: SHIELD</div>
+        <div class="mission-card-codename">LOKI'S SCEPTER RECOVERY</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">Agent Coulson led a strike team to secure the Chitauri Scepter from a HYDRA safehouse in the aftermath of the Battle of New York. The mission was compromised when internal HYDRA moles within S.H.I.E.L.D. attempted to intercept. Captain America and Black Widow successfully extracted the artifact while neutralizing three hostiles. The scepter was transported to a fortified S.H.I.E.L.D. research facility for analysis.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> STRIKE</div>
+          <div class="mission-card-threat delta">THREAT: DELTA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status completed"><span class="dot"></span>COMPLETED</div>
+        <div class="mission-card-id">AVEN-OPS-2012-001</div>
+      </div>
+    </div>
+
+    <!-- MISSION B: ULTRON -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop" alt="Technology AI network" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification eyes-only">EYES ONLY</div>
+        <div class="mission-card-stamp completed">COMPLETED</div>
+        <div class="mission-card-year">CLASSIFIED // 2015</div>
+        <div class="mission-card-name">PROJECT: ULTRON</div>
+        <div class="mission-card-codename">AI CONTAINMENT PROTOCOL</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">After Ultron achieved sentience and escaped the Avengers facility, an immediate global containment protocol was initiated. Tony Stark coordinated with J.A.R.V.I.S. to track Ultron's digital footprint across global networks. The team intercepted Ultron drones in Seoul, South Korea, preventing the creation of a Vibranium-conductive body. Wanda Maximoff ultimately turned against Ultron, providing the critical advantage needed to shut down his primary network.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> AVENGERS A-TEAM</div>
+          <div class="mission-card-threat omega">THREAT: OMEGA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status completed"><span class="dot"></span>COMPLETED</div>
+        <div class="mission-card-id">AVEN-OPS-2015-007</div>
+      </div>
+    </div>
+
+    <!-- MISSION C: SOKOVIA -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=600&h=400&fit=crop" alt="City destruction" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification top-secret">TOP SECRET</div>
+        <div class="mission-card-stamp completed">COMPLETED</div>
+        <div class="mission-card-year">CLASSIFIED // 2015</div>
+        <div class="mission-card-name">MISSION: SOKOVIA</div>
+        <div class="mission-card-codename">URBAN EVACUATION & CONTAINMENT</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">Sokovia was lifted into the sky by Ultron's Vibranium weapon, threatening to drop it as an extinction-level meteor. Iron Man and the Avengers executed a dual-phase operation: evacuating civilians via Quinjet while simultaneously weakening the city's structural integrity for controlled descent. Natasha Romanoff activated the repulsor engines to keep Sokovia airborne long enough for full evacuation. The city was destroyed in a controlled manner, with zero civilian casualties reported.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> FULL ROSTER</div>
+          <div class="mission-card-threat omega">THREAT: OMEGA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status completed"><span class="dot"></span>COMPLETED</div>
+        <div class="mission-card-id">AVEN-OPS-2015-011</div>
+      </div>
+    </div>
+
+    <!-- MISSION D: INFINITY -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&h=400&fit=crop" alt="Cosmic space" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification eyes-only">EYES ONLY</div>
+        <div class="mission-card-stamp failed">FAILED</div>
+        <div class="mission-card-year">CLASSIFIED // 2018</div>
+        <div class="mission-card-name">OPERATION: INFINITY</div>
+        <div class="mission-card-codename">THANOS DETERRENCE STRATEGY</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">With intelligence from the Guardians of the Galaxy confirming Thanos's march toward the Infinity Stones, the Avengers launched a desperate multi-front operation. Teams were dispatched to Wakanda, Titan, and the Sanctum Sanctorum simultaneously. The Wakandan front engaged a massive Outrider invasion while Doctor Strange confronted Thanos on Titan. Despite Peter Quill's emotional breach, the team nearly subdued Thanos before the Time Stone was surrendered.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> FULL ROSTER</div>
+          <div class="mission-card-threat omega">THREAT: OMEGA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status failed"><span class="dot"></span>FAILED</div>
+        <div class="mission-card-id">AVEN-OPS-2018-001</div>
+      </div>
+    </div>
+
+    <!-- MISSION E: TIME HEIST -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop" alt="Quantum energy" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification top-secret">TOP SECRET</div>
+        <div class="mission-card-stamp completed">COMPLETED</div>
+        <div class="mission-card-year">CLASSIFIED // 2023</div>
+        <div class="mission-card-name">PROJECT: TIME HEIST</div>
+        <div class="mission-card-codename">TEMPORAL ASSET RECOVERY</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">Following the loss of half the universe's population, the Avengers devised a Time Heist to retrieve Infinity Stones from alternate timelines. Teams traveled to New York 2012, Morag 2014, Vormir 2014, Asgard 2013, and a 2012 HYDRA facility. Clint Barton and Natasha Romanoff sacrificed for the Soul Stone. Tony Stark engineered a Nano Gauntlet to execute the Blip reversal. The operation concluded with Stark's final sacrifice to defeat Thanos's army.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> ORIGINAL SIX + ALLIES</div>
+          <div class="mission-card-threat omega">THREAT: OMEGA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status completed"><span class="dot"></span>COMPLETED</div>
+        <div class="mission-card-id">AVEN-OPS-2023-001</div>
+      </div>
+    </div>
+
+    <!-- MISSION F: HEX -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&h=400&fit=crop" alt="Energy anomaly" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification classified">CLASSIFIED</div>
+        <div class="mission-card-stamp completed">COMPLETED</div>
+        <div class="mission-card-year">CLASSIFIED // 2021</div>
+        <div class="mission-card-name">MISSION: HEX</div>
+        <div class="mission-card-codename">WESTVIEW ANOMALY RESOLUTION</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">S.W.O.R.D. detected a massive Hex energy anomaly surrounding the town of Westview, New Jersey. Inside, Wanda Maximoff had created an alternate reality in the style of classic sitcoms. Director Hayward dispatched S.W.O.R.D. agents while the FBI recruited White Vision as an asset. Agatha Harkness was revealed as the true manipulator, attempting to steal Wanda's chaos magic. Wanda confronted and absorbed the Darkhold's power, becoming the Scarlet Witch and dismantling the Hex.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> AVENGERS NEW + SWORD</div>
+          <div class="mission-card-threat delta">THREAT: DELTA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status completed"><span class="dot"></span>COMPLETED</div>
+        <div class="mission-card-id">AVEN-OPS-2021-019</div>
+      </div>
+    </div>
+
+    <!-- MISSION G: CELESTIAL -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&h=400&fit=crop" alt="Cosmic celestial" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification eyes-only">EYES ONLY</div>
+        <div class="mission-card-stamp completed">COMPLETED</div>
+        <div class="mission-card-year">CLASSIFIED // 2021</div>
+        <div class="mission-card-name">OPERATION: CELESTIAL</div>
+        <div class="mission-card-codename">CELESTIAL BIRTH PREVENTION</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">The Eternals discovered that Earth was a host planet for the Celestial Tiamut, whose emergence would destroy all life. With the emergence triggered by the Blip's population restoration, the Eternals had 72 hours to act. Sersi, Kingo, and Phastos worked with the Deviant Makkari to reach the Uni-Mind. Gilgamesh and Thena held off the evolving Deviants while Druig maintained mental barriers. Sersi transformed Tiamut into marble using the collective Eternal power, saving Earth.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> ETERNALS</div>
+          <div class="mission-card-threat omega">THREAT: OMEGA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status completed"><span class="dot"></span>COMPLETED</div>
+        <div class="mission-card-id">AVEN-OPS-2021-034</div>
+      </div>
+    </div>
+
+    <!-- MISSION H: DYNASTY -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1534996858221-380b92700493?w=600&h=400&fit=crop" alt="Magic multiverse" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification top-secret">TOP SECRET</div>
+        <div class="mission-card-stamp ongoing">ONGOING</div>
+        <div class="mission-card-year">CLASSIFIED // 2025</div>
+        <div class="mission-card-name">PROJECT: DYNASTY</div>
+        <div class="mission-card-codename">KANG VARIANT CONTAINMENT</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">The TVA flagged 47 new Kang variants emerging across the multiverse after He Who Remains' death. Loki and the Avengers initiated a cross-dimensional containment operation spanning timelines from 3000 BC to the year 3000. Sylvie served as the primary hunter while Mobius coordinated temporal logistics. The operation was complicated by a Kang variant who had conquered three separate timelines and assembled a temporal army. A massive battle across multiple time periods ultimately contained the threat.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> TVA + AVENGERS</div>
+          <div class="mission-card-threat omega">THREAT: OMEGA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status ongoing"><span class="dot"></span>ONGOING</div>
+        <div class="mission-card-id">AVEN-OPS-2025-001</div>
+      </div>
+    </div>
+
+    <!-- MISSION I: BROADCAST -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&h=400&fit=crop" alt="Global tech network" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification classified">CLASSIFIED</div>
+        <div class="mission-card-stamp active">ACTIVE</div>
+        <div class="mission-card-year">CLASSIFIED // 2024</div>
+        <div class="mission-card-name">MISSION: BROADCAST</div>
+        <div class="mission-card-codename">GLOBAL THREAT COMMUNICATION NETWORK</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">After the multiverse breaches, the Avengers established a global real-time threat detection network using Stark satellites and Wakandan Kimoyo technology. The system monitors dimensional anomalies, extraterrestrial incursions, and terrestrial threats simultaneously. Shuri designed the core processing unit while Banner calibrated the cosmic radiation sensors. The network detected 234 potential threats in its first year of operation, preventing 12 before they escalated.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> TECH DIVISION</div>
+          <div class="mission-card-threat beta">THREAT: BETA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status active"><span class="dot"></span>ACTIVE</div>
+        <div class="mission-card-id">AVEN-OPS-2024-042</div>
+      </div>
+    </div>
+
+    <!-- MISSION J: NIGHTFALL -->
+    <div class="mission-card">
+      <div class="mission-card-img-wrap">
+        <img class="mission-card-image" src="https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=600&h=400&fit=crop" alt="Dark dimension magic" loading="lazy">
+      </div>
+      <div class="mission-card-header">
+        <div class="mission-card-classification eyes-only">EYES ONLY</div>
+        <div class="mission-card-stamp completed">COMPLETED</div>
+        <div class="mission-card-year">CLASSIFIED // 2024</div>
+        <div class="mission-card-name">OPERATION: NIGHTFALL</div>
+        <div class="mission-card-codename">DARK DIMENSION BARRIER REPAIR</div>
+      </div>
+      <div class="mission-card-body">
+        <p class="mission-card-desc">Doctor Strange detected a weakening of the dimensional barriers preventing Dormammu's return. The Darkhold's destruction had created cascading fractures across three-dimensional boundaries. Strange recruited Wanda Maximoff and Wong to perform a coordinated mystic ritual at three Nexus points simultaneously. The operation required channeling power from the Vishanti while maintaining psychic shields against Dormammu's influence. The barrier was restored but at the cost of Strange temporarily losing his connection to the Eye of Agamotto.</p>
+        <div class="mission-card-meta">
+          <div class="mission-card-team"><i class="fas fa-users"></i> SORCERERS</div>
+          <div class="mission-card-threat delta">THREAT: DELTA</div>
+        </div>
+      </div>
+      <div class="mission-card-footer">
+        <div class="mission-card-status completed"><span class="dot"></span>COMPLETED</div>
+        <div class="mission-card-id">AVEN-OPS-2024-056</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section" id="priority">
+  <div class="section-header">
+    <div class="section-tag">// THREAT ASSESSMENT PROTOCOL</div>
+    <h2 class="section-title">MISSION PRIORITY MATRIX</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="priority-matrix">
+    <table>
+      <thead>
+        <tr>
+          <th>Threat Level</th>
+          <th>Designation</th>
+          <th>Description</th>
+          <th>Priority Score</th>
+          <th>Response Time</th>
+          <th>Authority Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="threat-badge omega">OMEGA</span></td>
+          <td>Universal / Existential</td>
+          <td>Threats capable of planetary or universal destruction. Includes Celestials, Infinity Stone-level events, and multiversal incursions.</td>
+          <td><div class="priority-bar"><div class="priority-bar-fill" style="width:100%;background:linear-gradient(90deg,var(--mp),var(--mr))"></div></div></td>
+          <td class="response-time">IMMEDIATE — 0 HRS</td>
+          <td>Full Roster Activation</td>
+        </tr>
+        <tr>
+          <td><span class="threat-badge delta">DELTA</span></td>
+          <td>Continental / Severe</td>
+          <td>Threats capable of continent-scale destruction or mass casualties exceeding 10 million. Includes alien invasions and mega-weapon deployment.</td>
+          <td><div class="priority-bar"><div class="priority-bar-fill" style="width:78%;background:linear-gradient(90deg,var(--mr),#ff6b35)"></div></div></td>
+          <td class="response-time">UNDER 1 HOUR</td>
+          <td>Field Leader + 3 Avengers</td>
+        </tr>
+        <tr>
+          <td><span class="threat-badge alpha">ALPHA</span></td>
+          <td>National / High</td>
+          <td>Threats affecting a single nation or large metropolitan area. Includes super-villain attacks, anomalous events, and localized destruction events.</td>
+          <td><div class="priority-bar"><div class="priority-bar-fill" style="width:55%;background:linear-gradient(90deg,var(--mg),#e6a800)"></div></div></td>
+          <td class="response-time">UNDER 4 HOURS</td>
+          <td>Field Leader + 1-2 Avengers</td>
+        </tr>
+        <tr>
+          <td><span class="threat-badge beta">BETA</span></td>
+          <td>Local / Moderate</td>
+          <td>Threats confined to a city or region. Includes standard villain engagements, reconnaissance missions, and asset recovery operations.</td>
+          <td><div class="priority-bar"><div class="priority-bar-fill" style="width:35%;background:linear-gradient(90deg,var(--mb),#4da6ff)"></div></div></td>
+          <td class="response-time">UNDER 24 HOURS</td>
+          <td>Avenger-on-Call</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section" id="dossier">
+  <div class="section-header">
+    <div class="section-tag">// EYES ONLY // LEVEL 10 CLEARANCE</div>
+    <h2 class="section-title">S.H.I.E.L.D. DOSSIER</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="dossier-grid">
+
+    <div class="dossier-card">
+      <div class="dossier-header">
+        <div>
+          <div class="dossier-id">DOSSIER #AVN-D-2012-047</div>
+          <div class="dossier-title">MANHATTAN INCURSION EVENT</div>
+        </div>
+        <div class="dossier-stamp top-secret">TOP SECRET</div>
+      </div>
+      <div class="dossier-body">
+        <div class="dossier-line"><span class="dossier-label">Subject:</span><span class="dossier-value">Loki Laufeyson & Chitauri Invasion Force</span></div>
+        <div class="dossier-line"><span class="dossier-label">Location:</span><span class="dossier-value">Manhattan, New York City, NY</span></div>
+        <div class="dossier-line"><span class="dossier-label">Asset:</span><span class="dossier-value">Tesseract (Space Stone) — Status: <span class="redacted">RECOVERED BY ASGARDIAN FORCES</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Casualties:</span><span class="dossier-value">74 confirmed, 2,100+ injured, <span class="redacted">NUMBER CLASSIFIED</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Collateral:</span><span class="dossier-value">Stark Tower structural damage, multiple midtown buildings compromised, <span class="redacted">SUBTERRANEAN DAMAGE TO LEVEL 40</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Assets Used:</span><span class="dossier-value">S.H.I.E.L.D. Helicarrier, <span class="redacted">PROJECT EXERCISE</span>, 6 primary Avengers operatives</span></div>
+      </div>
+      <div class="dossier-notes">
+        <div class="dossier-notes-title">AGENT NOTES — BLACK WIDOW / NATASHA ROMANOFF</div>
+        <p>"Loki intended to be captured. His scepter was a secondary objective that he willingly sacrificed. The true threat was always the portal — whoever controlled the gate controlled the timeline. We underestimated his connection to <span class="redacted">THANOS</span>. Recommend re-evaluating all intel sources for potential <span class="redacted">EXTRATERRESTRIAL</span> manipulation."</p>
+      </div>
+      <div class="dossier-footer">
+        <div class="dossier-clearance">CLEARANCE: OMEGA-3 REQUIRED</div>
+        <div class="dossier-date">DECLASSIFIED: 2019-03-14</div>
+      </div>
+    </div>
+
+    <div class="dossier-card">
+      <div class="dossier-header">
+        <div>
+          <div class="dossier-id">DOSSIER #AVN-D-2018-112</div>
+          <div class="dossier-title">WAKANDAN BREACH PROTOCOL</div>
+        </div>
+        <div class="dossier-stamp eyes-only">EYES ONLY</div>
+      </div>
+      <div class="dossier-body">
+        <div class="dossier-line"><span class="dossier-label">Subject:</span><span class="dossier-value">Thanos / Black Order Assault on Wakanda</span></div>
+        <div class="dossier-line"><span class="dossier-label">Location:</span><span class="dossier-value">Wakanda — Birnin Zana & Northern Barrier</span></div>
+        <div class="dossier-line"><span class="dossier-label">Objective:</span><span class="dossier-value">Protect Vision and the Mind Stone from extraction</span></div>
+        <div class="dossier-line"><span class="dossier-label">Forces:</span><span class="dossier-value">Dora Milaje, <span class="redacted">WAKANDAN MILITARY FULL MOBILIZATION</span>, Avengers strike team</span></div>
+        <div class="dossier-line"><span class="dossier-label">Outcome:</span><span class="dossier-value">Mind Stone extracted by Thanos. <span class="redacted">VISION TERMINATED — CAUSE: WANDA MAXIMOFF</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Threats:</span><span class="dossier-value">Cull Obsidian (neutralized), Proxima Midnight (neutralized), <span class="redacted">CORVUS GLAIVE STATUS: AT LARGE</span></span></div>
+      </div>
+      <div class="dossier-notes">
+        <div class="dossier-notes-title">AGENT NOTES — DIRECTOR NICK FURY (POSTHUMOUS FILE)</div>
+        <p>"We had the strongest army, the most advanced tech, and every Avenger available. None of it mattered. Thanos walked through all of it like it was <span class="redacted">NOTHING</span>. The Blip is not a failure of force — it is a failure of imagination. We fought a war when we should have been fighting a <span class="redacted">COSMIC-LEVEL THREAT</span>. Every nation must now acknowledge what we always knew: Earth is not alone."</p>
+      </div>
+      <div class="dossier-footer">
+        <div class="dossier-clearance">CLEARANCE: OMEGA-5 REQUIRED</div>
+        <div class="dossier-date">CLASSIFIED: PERMANENT</div>
+      </div>
+    </div>
+
+    <div class="dossier-card">
+      <div class="dossier-header">
+        <div>
+          <div class="dossier-id">DOSSIER #AVN-D-2023-089</div>
+          <div class="dossier-title">QUANTUM TEMPORAL EVENT</div>
+        </div>
+        <div class="dossier-stamp classified">CLASSIFIED</div>
+      </div>
+      <div class="dossier-body">
+        <div class="dossier-line"><span class="dossier-label">Subject:</span><span class="dossier-value">Time Heist — Retrieval of Infinity Stones from Historical Timeline</span></div>
+        <div class="dossier-line"><span class="dossier-label">Locations:</span><span class="dossier-value">New York 2012, Asgard 2013, Morag 2014, <span class="redacted">VORMIR 2014, CAMP LEHIGH 1970</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Duration:</span><span class="dossier-value"><span class="redacted">CLASSIFIED — TEMPORAL DURATION EST. 4.2 SECONDS (EXTERNAL) / 14 DAYS (INTERNAL)</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Fatalities:</span><span class="dossier-value">Natasha Romanoff (voluntary sacrifice), <span class="redacted">Tony Stark (Infinity Gauntlet overexposure)</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Stones Recovered:</span><span class="dossier-value">Space, Mind, Reality, Power, Soul, Time — <span class="redacted">ALL SIX SECURED</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Post-Op:</span><span class="dossier-value">Stones returned to original timeline coordinates per <span class="redacted">TEMPORAL INTEGRITY PROTOCOL</span></span></div>
+      </div>
+      <div class="dossier-notes">
+        <div class="dossier-notes-title">AGENT NOTES — STEVE ROGERS / CAPTAIN AMERICA</div>
+        <p>"I've seen a lot of wars, a lot of impossible missions. This one takes the cake. The hardest part wasn't the heist — it was watching friends become strangers and strangers become friends across decades. <span class="redacted">TONY KNEW WHAT HE WAS DOING</span>. He always did. Tell Morgan he <span class="redacted">MADE THE CHOICE NO ONE ELSE COULD</span>."</p>
+      </div>
+      <div class="dossier-footer">
+        <div class="dossier-clearance">CLEARANCE: OMEGA-7 REQUIRED</div>
+        <div class="dossier-date">STATUS: ONGOING REVIEW</div>
+      </div>
+    </div>
+
+    <div class="dossier-card">
+      <div class="dossier-header">
+        <div>
+          <div class="dossier-id">DOSSIER #AVN-D-2025-003</div>
+          <div class="dossier-title">MULTIVERSAL BREACH RESPONSE</div>
+        </div>
+        <div class="dossier-stamp top-secret">TOP SECRET</div>
+      </div>
+      <div class="dossier-body">
+        <div class="dossier-line"><span class="dossier-label">Subject:</span><span class="dossier-value">Kang Variant — Victor Timely / Incursion Cluster 7</span></div>
+        <div class="dossier-line"><span class="dossier-label">Location:</span><span class="dossier-value">Branchpoint: <span class="redacted">QUANTUM REALITY ANCHOR DELTA-9</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Threat:</span><span class="dossier-value">Timeline destabilization — <span class="redacted">ESTIMATED 340 BRANCHING EVENTS</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Assets Deployed:</span><span class="dossier-value">Quantum Navigation Array, <span class="redacted">CHRONAL CONTAINMENT SUITS</span>, Multiversal Task Force</span></div>
+        <div class="dossier-line"><span class="dossier-label">Status:</span><span class="dossier-value">Active containment. <span class="redacted">THREE ADDITIONAL KANG VARIANTS DETECTED IN SECTOR 7-G</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Risk Level:</span><span class="dossier-value"><span class="redacted">TOTAL REALITY COLLAPSE WITHIN 72 HOURS IF CONTAINMENT FAILS</span></span></div>
+      </div>
+      <div class="dossier-notes">
+        <div class="dossier-notes-title">AGENT NOTES — BRUCE BANNER / HULK</div>
+        <p>"This is bigger than anything we've faced. Thanos wanted to destroy half the universe. Kang wants to <span class="redacted">REWRITE ALL OF IT</span>. Every timeline, every possibility, every version of every person — all of it under one man's control. The science behind the multiverse doesn't care about our feelings. It's cold, it's absolute, and <span class="redacted">WE ARE RUNNING OUT OF TIME</span>."</p>
+      </div>
+      <div class="dossier-footer">
+        <div class="dossier-clearance">CLEARANCE: OMEGA-9 REQUIRED</div>
+        <div class="dossier-date">LAST UPDATED: 2025-12-15</div>
+      </div>
+    </div>
+
+    <div class="dossier-card">
+      <div class="dossier-header">
+        <div>
+          <div class="dossier-id">DOSSIER #AVN-D-2024-063</div>
+          <div class="dossier-title">DARK DIMENSION CONTAINMENT</div>
+        </div>
+        <div class="dossier-stamp eyes-only">EYES ONLY</div>
+      </div>
+      <div class="dossier-body">
+        <div class="dossier-line"><span class="dossier-label">Subject:</span><span class="dossier-value">Dormammu Dimensional Barrier Degradation</span></div>
+        <div class="dossier-line"><span class="dossier-label">Location:</span><span class="dossier-value">Nexus Points — <span class="redacted">NEW YORK, KAMAR-TAJ, SEA OF HYPERSPACE</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Cause:</span><span class="dossier-value">Darkhold destruction cascading effect — <span class="redacted">THREE BOUNDARY FRACTURES CONFIRMED</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Assets:</span><span class="dossier-value">Sorcerer Supreme, Scarlet Witch, <span class="redacted">VISHANTI CHANNELING ARRAY</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Outcome:</span><span class="dossier-value">Barrier restored. <span class="redacted">DR. STRANGE LOST EYE OF AGAMOTTO CONNECTION — TEMPORARY</span></span></div>
+        <div class="dossier-line"><span class="dossier-label">Risk Assessment:</span><span class="dossier-value">Barrier integrity at <span class="redacted">87.3% — MONITORING REQUIRED FOR 18 MONTHS</span></span></div>
+      </div>
+      <div class="dossier-notes">
+        <div class="dossier-notes-title">AGENT NOTES — WONG / SORCERER SUPREME</div>
+        <p>"Strange pushed beyond what any mortal should channel. The Vishanti answered, but the cost is never free. Dormammu tested every crack, every microsecond of weakness. We sealed it, but <span class="redacted">HE WILL TRY AGAIN</span>. The Darkhold's destruction left scars across dimensions that will take years to fully heal. I recommend <span class="redacted">CONSTANT SENTINEL STATIONING AT ALL THREE NEXUS POINTS</span>."</p>
+      </div>
+      <div class="dossier-footer">
+        <div class="dossier-clearance">CLEARANCE: OMEGA-6 REQUIRED</div>
+        <div class="dossier-date">LAST UPDATED: 2024-11-28</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<section class="section" id="timeline">
+  <div class="section-header">
+    <div class="section-tag">// HISTORICAL RECORD</div>
+    <h2 class="section-title">MISSION TIMELINE</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="mission-timeline">
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mr)">2012</div>
+      <div class="mtl-mission">Battle of New York / Loki Incursion</div>
+      <div class="mtl-desc">First Avengers assembly. Chitauri invasion repelled. Tesseract secured by Asgard. Portal technology recovered for future study. Scepter recovered from Stark Tower rubble. 74 civilians confirmed dead.</div>
+      <span class="mtl-threat-tag" style="background:rgba(226,54,54,.15);color:var(--mr);border:1px solid rgba(226,54,54,.3)">DELTA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mb)">2014</div>
+      <div class="mtl-mission">Hydra Uprising / S.H.I.E.L.D. Collapse</div>
+      <div class="mtl-desc">Project Insight helicarriers neutralized. S.H.I.E.L.D. officially disbanded. Steve Rogers awakens from ice. Bucky Barnes identified as Winter Soldier asset. HYDRA's decades-long infiltration exposed.</div>
+      <span class="mtl-threat-tag" style="background:rgba(26,107,255,.15);color:var(--mb);border:1px solid rgba(26,107,255,.3)">ALPHA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mg)">2015</div>
+      <div class="mtl-mission">Ultron Emergence / Sokovia Event</div>
+      <div class="mtl-desc">Ultron AI containment failure. Sokovia lifted and destroyed. Vision created from Mind Stone. Sokovia Accords drafted. Avengers fractured into two factions. Wanda Maximoff revealed as asset.</div>
+      <span class="mtl-threat-tag" style="background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.3)">OMEGA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mp)">2016</div>
+      <div class="mtl-mission">Civil War / Avengers Fracture</div>
+      <div class="mtl-desc">Sokovia Accords divide the Avengers. Airport battle in Leipzig. Zemo's HYDRA revenge exposed Winter Soldier. Tony Rogers relationship permanently fractured. Avengers disbanded.</div>
+      <span class="mtl-threat-tag" style="background:rgba(255,215,0,.15);color:var(--mg);border:1px solid rgba(255,215,0,.3)">ALPHA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mgr)">2018</div>
+      <div class="mtl-mission">Infinity War / The Blip</div>
+      <div class="mtl-desc">Thanos acquires all six Infinity Stones. Snap eliminates 50% of all life. Avengers decimated. Earth enters five-year mourning period. Global population halved. Thanos eliminated on Titan.</div>
+      <span class="mtl-threat-tag" style="background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.3)">OMEGA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mr)">2021</div>
+      <div class="mtl-mission">Westview Hex / Eternals Emergence</div>
+      <div class="mtl-desc">Wanda Maximoff's Hex reality resolved. S.W.O.R.D. operation confirmed. Celestial Tiamut emerging halted by Eternal Uni-Mind. Scarlet Witch ascension documented. Darkhold secured.</div>
+      <span class="mtl-threat-tag" style="background:rgba(226,54,54,.15);color:var(--mr);border:1px solid rgba(226,54,54,.3)">DELTA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mg)">2023</div>
+      <div class="mtl-mission">Time Heist / The Blip Reversed</div>
+      <div class="mtl-desc">Quantum temporal navigation achieved. Infinity Stones recovered from timeline. Thanos defeated permanently. Tony Stark sacrifices life. Steve Rogers retires. New Avengers era begins.</div>
+      <span class="mtl-threat-tag" style="background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.3)">OMEGA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mb)">2024</div>
+      <div class="mtl-mission">Dark Dimension Barrier / Global Threat Network</div>
+      <div class="mtl-desc">Dimensional barriers repaired at three Nexus points. Global threat detection network activated via Stark-Wakandan tech fusion. Dark Dimension containment restored. 234 threats catalogued in Year One.</div>
+      <span class="mtl-threat-tag" style="background:rgba(226,54,54,.15);color:var(--mr);border:1px solid rgba(226,54,54,.3)">DELTA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mgr)">2025</div>
+      <div class="mtl-mission">Project Dynasty / Kang Containment</div>
+      <div class="mtl-desc">Multiversal Task Force established. 47 Kang variants identified across multiple branched realities. Quantum Containment Protocols active. Full Avengers-TVA coalition mobilized. Cross-temporal battle ongoing.</div>
+      <span class="mtl-threat-tag" style="background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.3)">OMEGA</span>
+    </div>
+
+    <div class="mtl-item">
+      <div class="mtl-year" style="color:var(--mg)">2026</div>
+      <div class="mtl-mission">Current Status / Ongoing Operations</div>
+      <div class="mtl-desc">47 active missions worldwide. Multiversal stability improving but Kang remnants persist. Avengers fully reassembled with new roster additions. Threat detection network operational across 98% of global coverage. Classification level: OMEGA-PRIME.</div>
+      <span class="mtl-threat-tag" style="background:rgba(26,107,255,.15);color:var(--mb);border:1px solid rgba(26,107,255,.3)">BETA</span>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a href="index.html" class="footer-logo" style="text-decoration:none">MARVEL.</a>
+      <p class="footer-desc">The Marvel Cinematic Universe is a media franchise and shared universe centered on a series of superhero films and other media produced by Marvel Studios.</p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">EXPLORE</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="missions.html">Mission Files</a></li>
+        <li><a href="characters.html">Character Database</a></li>
+        <li><a href="battles.html">Battle Records</a></li>
+        <li><a href="tech.html">Tech Division</a></li>
+        <li><a href="multiverse.html">Multiverse Map</a></li>
+        <li><a href="roster.html">Team Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">HEROES</div>
+      <ul class="footer-links">
+        <li><a href="characters.html">Iron Man</a></li>
+        <li><a href="characters.html">Captain America</a></li>
+        <li><a href="characters.html">Thor</a></li>
+        <li><a href="characters.html">Spider-Man</a></li>
+        <li><a href="characters.html">Black Panther</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">CONNECT</div>
+      <ul class="footer-links">
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Marvel Universe Fan Site. All rights reserved. This is a fan-made tribute website.</p>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+});
+
+function animateStats(){
+  document.querySelectorAll('.dash-card .number').forEach(el=>{
+    const target=parseInt(el.getAttribute('data-target'));
+    const suffix=el.getAttribute('data-suffix')||'';
+    const duration=2000;
+    const start=performance.now();
+    function update(now){
+      const elapsed=now-start;
+      const progress=Math.min(elapsed/duration,1);
+      const eased=1-Math.pow(1-progress,3);
+      el.textContent=Math.floor(eased*target).toLocaleString()+suffix;
+      if(progress<1)requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.from('.dash-card',{scrollTrigger:{trigger:'.dashboard-stats',start:'top 80%'},y:60,opacity:0,duration:0.7,stagger:0.12,ease:'power3.out'});
+ScrollTrigger.create({trigger:'.dashboard-stats',start:'top 70%',onEnter:animateStats,once:true});
+
+gsap.from('.mission-card',{scrollTrigger:{trigger:'.missions-grid',start:'top 80%'},y:80,opacity:0,duration:0.8,stagger:0.1,ease:'power3.out'});
+
+gsap.from('.priority-matrix',{scrollTrigger:{trigger:'.priority-matrix',start:'top 80%'},y:50,opacity:0,duration:0.8,ease:'power3.out'});
+
+gsap.from('.dossier-card',{scrollTrigger:{trigger:'.dossier-grid',start:'top 80%'},y:60,opacity:0,duration:0.8,stagger:0.15,ease:'power3.out'});
+
+document.querySelectorAll('.mtl-item').forEach((item,i)=>{
+  ScrollTrigger.create({
+    trigger:item,start:'top 80%',
+    onEnter:()=>{setTimeout(()=>{item.classList.add('visible')},i*120)}
+  });
+});
+
+gsap.from('.footer-grid',{scrollTrigger:{trigger:'.footer',start:'top 90%'},y:40,opacity:0,duration:0.8,ease:'power3.out'});
+
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.querySelector('.nav-links');
+hamburger.addEventListener('click',()=>{
+  navLinks.style.display=navLinks.style.display==='flex'?'none':'flex';
+  navLinks.style.flexDirection='column';
+  navLinks.style.position='absolute';
+  navLinks.style.top='60px';
+  navLinks.style.right='20px';
+  navLinks.style.background='rgba(0,0,0,.95)';
+  navLinks.style.padding='20px';
+  navLinks.style.borderRadius='12px';
+  navLinks.style.border='1px solid rgba(226,54,54,.3)';
+});
+
+const glow=document.createElement('div');
+glow.style.cssText='position:fixed;width:20px;height:20px;border-radius:50%;background:rgba(226,54,54,.3);pointer-events:none;z-index:99997;transition:transform .1s;filter:blur(8px)';
+document.body.appendChild(glow);
+document.addEventListener('mousemove',(e)=>{glow.style.left=e.clientX-10+'px';glow.style.top=e.clientY-10+'px'});
+document.addEventListener('mousedown',()=>{glow.style.transform='scale(2)';glow.style.background='rgba(226,54,54,.6)'});
+document.addEventListener('mouseup',()=>{glow.style.transform='scale(1)';glow.style.background='rgba(226,54,54,.3)'});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

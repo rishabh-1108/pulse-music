@@ -1,0 +1,911 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Records | Marvel Universe</title>
+<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+@keyframes grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-10%)}20%{transform:translate(-15%,5%)}30%{transform:translate(7%,-25%)}40%{transform:translate(-5%,25%)}50%{transform:translate(-15%,10%)}60%{transform:translate(15%,0%)}70%{transform:translate(0%,15%)}80%{transform:translate(3%,35%)}90%{transform:translate(-10%,10%)}}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:99998;opacity:.5;animation:grain 8s steps(10) infinite}
+.page-hero{background:linear-gradient(180deg,rgba(30,0,0,.95),rgba(0,0,0,.98))}
+.page-hero::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(226,54,54,.03) 2px,rgba(226,54,54,.03) 4px);pointer-events:none;z-index:1}
+.page-hero h1{font-size:clamp(50px,10vw,130px);letter-spacing:8px}
+.military-stamps{display:flex;gap:20px;margin-top:25px;justify-content:center;flex-wrap:wrap}
+.stamp{font-family:'Bebas Neue',cursive;font-size:13px;padding:6px 18px;border:2px solid;transform:rotate(-3deg);letter-spacing:3px;opacity:.7;position:relative}
+.stamp-red{color:#e23636;border-color:#e23636;transform:rotate(-5deg)}
+.stamp-gold{color:#ffd700;border-color:#ffd700;transform:rotate(2deg)}
+.stamp-green{color:#2ecc71;border-color:#2ecc71;transform:rotate(-2deg)}
+.stamp::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,.02) 3px,rgba(255,255,255,.02) 6px);pointer-events:none}
+.classified-badge{display:inline-block;font-family:'Orbitron',sans-serif;font-size:14px;color:var(--mg);border:2px solid var(--mg);padding:8px 30px;letter-spacing:6px;margin-top:20px;animation:badge-pulse 2s ease-in-out infinite;position:relative;overflow:hidden}
+.classified-badge::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,215,0,.1),transparent);animation:badge-sweep 3s ease-in-out infinite}
+@keyframes badge-pulse{0%,100%{box-shadow:0 0 10px rgba(255,215,0,.2)}50%{box-shadow:0 0 30px rgba(255,215,0,.4)}}
+@keyframes badge-sweep{0%{left:-100%}100%{left:200%}}
+.hero-warning-line{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:15px;font-family:'Orbitron',sans-serif;font-size:11px;color:rgba(226,54,54,.6);letter-spacing:3px;flex-wrap:wrap}
+.hero-warning-line .dot{width:6px;height:6px;background:var(--mr);border-radius:50%;animation:dot-blink 1s ease-in-out infinite}
+@keyframes dot-blink{0%,100%{opacity:1}50%{opacity:.2}}
+.stats-dashboard{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;max-width:1400px;margin:0 auto}
+.dash-card{position:relative;background:rgba(255,255,255,.02);border:1px solid rgba(226,54,54,.15);padding:30px 20px;text-align:center;overflow:hidden;transition:all .4s;clip-path:polygon(0 0,calc(100% - 15px) 0,100% 15px,100% 100%,15px 100%,0 calc(100% - 15px))}
+.dash-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--mr),var(--mg),var(--mr),transparent);opacity:0;transition:opacity .4s}
+.dash-card:hover::before{opacity:1}
+.dash-card::after{content:'';position:absolute;top:0;right:0;width:40px;height:40px;border-bottom:1px solid rgba(226,54,54,.3);border-left:1px solid rgba(226,54,54,.3);opacity:.5}
+.dash-card:hover{border-color:rgba(226,54,54,.4);background:rgba(226,54,54,.03);transform:translateY(-5px);box-shadow:0 15px 40px rgba(0,0,0,.5)}
+.dash-card .dash-icon{font-size:28px;margin-bottom:10px;color:var(--mr);text-shadow:0 0 20px rgba(226,54,54,.4)}
+.dash-card .dash-number{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--mg);margin-bottom:5px}
+.dash-card .dash-label{font-family:'Orbitron',sans-serif;font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;text-transform:uppercase}
+.dash-card .dash-sub{font-size:11px;color:rgba(226,54,54,.5);margin-top:5px;font-family:'Orbitron',sans-serif;letter-spacing:1px}
+.dash-card.dash-warning .dash-icon{color:var(--mg)}
+.dash-card.dash-warning .dash-number{color:var(--mgr)}
+.dash-card.dash-warning{border-color:rgba(255,215,0,.15)}
+.dash-card.dash-warning::before{background:linear-gradient(90deg,transparent,var(--mg),var(--mgr),var(--mg),transparent)}
+.battle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(580px,1fr));gap:30px;max-width:1500px;margin:0 auto}
+.battle-card{position:relative;background:rgba(10,10,10,.8);border:1px solid rgba(226,54,54,.12);overflow:hidden;transition:all .5s}
+.battle-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(226,54,54,.03),transparent);pointer-events:none;z-index:1}
+.battle-card:hover{border-color:rgba(226,54,54,.4);box-shadow:0 0 50px rgba(226,54,54,.1)}
+.battle-card-img{width:100%;height:240px;object-fit:cover;filter:brightness(.7) saturate(.8);transition:all .5s}
+.battle-card:hover .battle-card-img{filter:brightness(.85) saturate(1);transform:scale(1.05)}
+.battle-card-img-wrap{overflow:hidden;position:relative}
+.battle-card-img-wrap::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:60%;background:linear-gradient(transparent,rgba(0,0,0,.95))}
+.battle-classification{position:absolute;top:15px;right:15px;font-family:'Orbitron',sans-serif;font-size:10px;padding:4px 12px;border-radius:3px;letter-spacing:2px;z-index:3;backdrop-filter:blur(10px)}
+.class-high{background:rgba(226,54,54,.2);color:var(--mr);border:1px solid rgba(226,54,54,.4)}
+.class-critical{background:rgba(255,215,0,.15);color:var(--mg);border:1px solid rgba(255,215,0,.4);animation:crit-flash 2s infinite}
+.class-extreme{background:rgba(155,89,182,.15);color:var(--mp);border:1px solid rgba(155,89,182,.4)}
+@keyframes crit-flash{0%,100%{opacity:1}50%{opacity:.6}}
+.battle-card-body{padding:25px;position:relative;z-index:2}
+.battle-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:15px}
+.battle-card-name{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:2px;line-height:1}
+.battle-card-year{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--mg);margin-top:5px}
+.battle-card-location{font-family:'Orbitron',sans-serif;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1px;margin-top:3px}
+.battle-card-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;font-size:13px}
+.battle-meta-item{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.6)}
+.battle-meta-item i{color:var(--mr);font-size:12px;width:14px;text-align:center}
+.battle-meta-item span{font-weight:600}
+.battle-narrative{font-size:14px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:15px;border-left:2px solid rgba(226,54,54,.3);padding-left:15px}
+.battle-damage-row{display:flex;align-items:center;justify-content:space-between}
+.damage-meter{display:flex;align-items:center;gap:8px}
+.damage-meter-label{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:1px}
+.damage-bars{display:flex;gap:3px}
+.damage-bar{width:20px;height:8px;background:rgba(255,255,255,.08);border-radius:1px;transition:all .3s}
+.damage-bar.active{background:var(--mr);box-shadow:0 0 8px rgba(226,54,54,.4)}
+.damage-bar.active.amber{background:var(--mg);box-shadow:0 0 8px rgba(255,215,0,.4)}
+.battle-outcome{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:2px;padding:4px 12px;border-radius:3px;text-transform:uppercase}
+.outcome-victory{background:rgba(46,204,113,.15);color:var(--mgr);border:1px solid rgba(46,204,113,.3)}
+.outcome-defeat{background:rgba(226,54,54,.15);color:var(--mr);border:1px solid rgba(226,54,54,.3)}
+.outcome-pyrrhic{background:rgba(255,215,0,.15);color:var(--mg);border:1px solid rgba(255,215,0,.3)}
+.war-map-section{background:linear-gradient(180deg,rgba(0,0,0,.98),rgba(10,0,0,.95));position:relative;overflow:hidden}
+.war-map-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(226,54,54,.04),transparent 60%)}
+.war-map{position:relative;max-width:1200px;margin:0 auto;height:500px;border:1px solid rgba(226,54,54,.1);background:rgba(0,0,0,.5);overflow:hidden}
+.war-map::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(226,54,54,.02) 40px,rgba(226,54,54,.02) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(226,54,54,.02) 40px,rgba(226,54,54,.02) 41px);pointer-events:none}
+.war-map-title{position:absolute;top:15px;left:20px;font-family:'Orbitron',sans-serif;font-size:12px;color:rgba(226,54,54,.6);letter-spacing:3px;z-index:3}
+.war-map-label{position:absolute;bottom:15px;right:20px;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:2px;z-index:3}
+.map-marker{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer;z-index:4;transition:transform .3s}
+.map-marker:hover{transform:scale(1.3)}
+.map-dot{width:12px;height:12px;border-radius:50%;background:var(--mr);box-shadow:0 0 15px rgba(226,54,54,.6);animation:marker-pulse 2s ease-in-out infinite;position:relative}
+.map-dot::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(226,54,54,.3);animation:marker-ring 2s ease-in-out infinite}
+.map-dot::after{content:'';position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(226,54,54,.15);animation:marker-ring 2s ease-in-out infinite .3s}
+@keyframes marker-pulse{0%,100%{box-shadow:0 0 15px rgba(226,54,54,.6)}50%{box-shadow:0 0 30px rgba(226,54,54,.9),0 0 60px rgba(226,54,54,.3)}}
+@keyframes marker-ring{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.5);opacity:0}}
+.map-label-text{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.5);letter-spacing:1px;margin-top:8px;white-space:nowrap;text-shadow:0 0 10px rgba(0,0,0,.8);background:rgba(0,0,0,.6);padding:2px 8px;border-radius:2px;opacity:0;transition:opacity .3s}
+.map-marker:hover .map-label-text{opacity:1}
+.map-marker.gold .map-dot{background:var(--mg);box-shadow:0 0 15px rgba(255,215,0,.6)}
+.map-marker.gold .map-dot::before{border-color:rgba(255,215,0,.3)}
+.map-marker.gold .map-dot::after{border-color:rgba(255,215,0,.15)}
+.map-marker.purple .map-dot{background:var(--mp);box-shadow:0 0 15px rgba(155,89,182,.6)}
+.map-marker.purple .map-dot::before{border-color:rgba(155,89,182,.3)}
+.map-marker.purple .map-dot::after{border-color:rgba(155,89,182,.15)}
+.map-marker.blue .map-dot{background:var(--mb);box-shadow:0 0 15px rgba(26,107,255,.6)}
+.map-marker.blue .map-dot::before{border-color:rgba(26,107,255,.3)}
+.map-marker.blue .map-dot::after{border-color:rgba(26,107,255,.15)}
+.map-continent{position:absolute;border:1px solid rgba(255,255,255,.04);border-radius:30% 60% 40% 50%;background:rgba(255,255,255,.01)}
+.map-connection{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(226,54,54,.15),transparent);transform-origin:left center;z-index:1}
+.reports-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:25px;max-width:1400px;margin:0 auto}
+.report-card{position:relative;background:rgba(15,5,5,.9);border:1px solid rgba(226,54,54,.15);padding:30px;overflow:hidden}
+.report-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='grid' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 20 0 L 0 0 0 20' fill='none' stroke='rgba(226,54,54,0.03)' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)'/%3E%3C/svg%3E");pointer-events:none}
+.report-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;position:relative;z-index:1}
+.report-number{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--mr);letter-spacing:2px}
+.report-date{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1px}
+.report-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;margin-bottom:15px;position:relative;z-index:1}
+.report-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--mr),transparent);margin-bottom:15px}
+.report-field{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;position:relative;z-index:1}
+.report-field-label{color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+.report-field-value{color:rgba(255,255,255,.7);font-weight:600}
+.report-redacted{height:16px;background:#1a1a1a;margin:5px 0;border-radius:2px;position:relative;z-index:1;overflow:hidden}
+.report-redacted::after{content:'REDACTED';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,255,255,.15);letter-spacing:3px}
+.report-stamp{position:absolute;bottom:20px;right:20px;font-family:'Bebas Neue',cursive;font-size:24px;padding:5px 20px;border:3px solid;transform:rotate(-12deg);opacity:.6;letter-spacing:3px;z-index:2}
+.stamp-recovering{color:var(--mg);border-color:var(--mg)}
+.stamp-rebuilt{color:var(--mgr);border-color:var(--mgr)}
+.stamp-destroyed{color:var(--mr);border-color:var(--mr)}
+.stamp-classified{color:var(--mp);border-color:var(--mp)}
+.stamp-redacted{color:var(--mr);border-color:var(--mr)}
+.timeline-h-section{overflow:hidden;position:relative}
+.timeline-h-section::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,#000,transparent 5%,transparent 95%,#000);z-index:3;pointer-events:none}
+.timeline-h-wrap{overflow-x:auto;overflow-y:hidden;padding:40px 0 60px;-ms-overflow-style:none;scrollbar-width:none;scroll-behavior:smooth}
+.timeline-h-wrap::-webkit-scrollbar{display:none}
+.timeline-h{display:flex;gap:0;width:max-content;position:relative}
+.timeline-h::before{content:'';position:absolute;top:50%;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--mr),var(--mg),var(--mr),transparent);transform:translateY(-50%);z-index:0}
+.tl-h-item{position:relative;display:flex;flex-direction:column;align-items:center;min-width:280px;padding:0 20px;z-index:1}
+.tl-h-item:nth-child(odd){padding-top:0;padding-bottom:220px;align-self:flex-start}
+.tl-h-item:nth-child(even){padding-bottom:0;padding-top:220px;align-self:flex-end}
+.tl-h-dot{width:20px;height:20px;border-radius:50%;background:var(--mr);box-shadow:0 0 20px rgba(226,54,54,.6);position:absolute;left:50%;transform:translateX(-50%);z-index:2;border:3px solid #000}
+.tl-h-card{background:rgba(20,5,5,.9);border:1px solid rgba(226,54,54,.15);padding:20px;width:250px;transition:all .4s}
+.tl-h-card:hover{border-color:rgba(226,54,54,.4);transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.tl-h-year{font-family:'Orbitron',sans-serif;font-size:24px;color:var(--mg);margin-bottom:5px}
+.tl-h-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;margin-bottom:8px}
+.tl-h-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.5}
+.tl-h-connector{position:absolute;left:50%;width:2px;background:rgba(226,54,54,.3);z-index:1}
+.tl-h-item:nth-child(odd) .tl-h-connector{bottom:0;height:calc(50% + 10px)}
+.tl-h-item:nth-child(even) .tl-h-connector{top:0;height:calc(50% + 10px)}
+.timeline-h-scroll-hint{text-align:center;font-family:'Orbitron',sans-serif;font-size:11px;color:rgba(255,255,255,.2);letter-spacing:3px;margin-top:10px}
+.timeline-h-scroll-hint i{margin-right:8px;animation:scroll-hint 1.5s ease-in-out infinite}
+@keyframes scroll-hint{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+.scan-line{position:fixed;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(226,54,54,.15),transparent);z-index:99997;pointer-events:none;animation:scan 8s linear infinite}
+@keyframes scan{0%{top:-2px}100%{top:100vh}}
+@media(max-width:1100px){.battle-grid{grid-template-columns:1fr}.stats-dashboard{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.stats-dashboard{grid-template-columns:repeat(2,1fr)}.battle-grid{grid-template-columns:1fr}.reports-grid{grid-template-columns:1fr}.war-map{height:350px}.tl-h-item{min-width:220px}.tl-h-card{width:200px;padding:15px}.nav-links{display:none!important}.nav-hamburger{display:block}.military-stamps{gap:10px}.stamp{font-size:11px;padding:4px 12px}}
+</style>
+</head>
+<body>
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">MARVEL</div>
+  <div style="color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:5px;margin-top:10px">ACCESSING WAR ROOM DATABASE</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+</div>
+<div class="scan-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">MARVEL<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#heroes">Heroes</a></li>
+    <li><a href="missions.html">Missions</a></li>
+    <li><a href="characters.html">Characters</a></li>
+    <li><a href="battles.html" class="active">Battles</a></li>
+    <li><a href="tech.html">Tech</a></li>
+    <li><a href="multiverse.html">Multiverse</a></li>
+    <li><a href="roster.html">Roster</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <h1>BATTLE RECORDS<span class="gradient">// CLASSIFIED</span></h1>
+    <p>THE WARS THAT SHAPED THE UNIVERSE</p>
+    <div class="line"></div>
+    <div class="classified-badge">LEVEL 7 CLEARANCE REQUIRED</div>
+    <div class="military-stamps">
+      <span class="stamp stamp-red">TOP SECRET</span>
+      <span class="stamp stamp-gold">AVENGERS COMMS</span>
+      <span class="stamp stamp-green">DECLASSIFIED 2026</span>
+    </div>
+    <div class="hero-warning-line">
+      <span class="dot"></span>
+      <span>SECURE CHANNEL ESTABLISHED</span>
+      <span class="dot"></span>
+      <span>AVENGERS COMMS ACTIVE</span>
+      <span class="dot"></span>
+      <span>LEVEL 7 CLEARANCE</span>
+      <span class="dot"></span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// WAR ROOM ANALYTICS</div>
+    <h2 class="section-title">CONFLICT DASHBOARD</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="stats-dashboard">
+    <div class="dash-card">
+      <div class="dash-icon"><i class="fas fa-crosshairs"></i></div>
+      <div class="dash-number" data-target="156">0</div>
+      <div class="dash-label">Total Battles</div>
+      <div class="dash-sub">3 ACTIVE</div>
+    </div>
+    <div class="dash-card dash-warning">
+      <div class="dash-icon"><i class="fas fa-city"></i></div>
+      <div class="dash-number" data-target="47">0</div>
+      <div class="dash-label">Cities Damaged</div>
+      <div class="dash-sub">12 RECOVERING</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-icon"><i class="fas fa-heart-pulse"></i></div>
+      <div class="dash-number" data-target="28" data-suffix="B+">0</div>
+      <div class="dash-label">Lives Saved</div>
+      <div class="dash-sub">UNIVERSE-WIDE</div>
+    </div>
+    <div class="dash-card dash-warning">
+      <div class="dash-icon"><i class="fas fa-gem"></i></div>
+      <div class="dash-number">6/6</div>
+      <div class="dash-label">Infinity Stones</div>
+      <div class="dash-sub">RECOVERED</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-icon"><i class="fas fa-timeline"></i></div>
+      <div class="dash-number" data-target="14">0</div>
+      <div class="dash-label">Timeline Branches</div>
+      <div class="dash-sub">ALL SEALED</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// ENGAGEMENT LOGS</div>
+    <h2 class="section-title">MAJOR BATTLES</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="battle-grid">
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&h=400&fit=crop" alt="Battle of New York" loading="lazy">
+        <span class="battle-classification class-high">HIGH THREAT</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF NEW YORK</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2012</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Manhattan, New York City</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Avengers (Assembled)</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Loki + Chitauri Army</span></div>
+          <div class="battle-meta-item"><i class="fas fa-building"></i> <span>73 Blocks Evacuated</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>~1,200 Civilian Casualties</span></div>
+        </div>
+        <div class="battle-narrative">Loki opened a portal above Stark Tower using the Tesseract, allowing a Chitauri army to pour into Manhattan in relentless waves. The Avengers assembled for the first time, fighting back-to-back across the devastated cityscape. Tony Stark lured a nuclear missile through the portal while the team defended the portal device atop Stark Tower. The Chitauri were defeated when Stark destroyed their command ship, severing the alien connection. The battle marked the birth of Earth's mightiest superhero team and changed the world forever.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar"></div></div>
+          </div>
+          <div class="battle-outcome outcome-victory">AVENGERS VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&h=400&fit=crop" alt="Battle of Sokovia" loading="lazy">
+        <span class="battle-classification class-critical">CRITICAL</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF SOKOVIA</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2015</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Sokovia (Floating City)</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Avengers + Ultron Defectors</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Ultron's Sentinels</span></div>
+          <div class="battle-meta-item"><i class="fas fa-city"></i> <span>Entire City Airlifted</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>177 Civilian Casualties</span></div>
+        </div>
+        <div class="battle-narrative">Ultron lifted the entire city of Sokovia into the sky, turning it into a meteor weapon aimed at humanity's extinction. Iron Man and the Avengers coordinated civilian evacuation while battling waves of Ultron sentry robots across the floating wreckage. Natasha Romanoff activated repulsor engines built into the city's core to keep it airborne. Vision confronted Ultron's digital consciousness directly while Quicksilver made the ultimate sacrifice protecting civilians. The city was destroyed in a controlled descent, saving all remaining civilians but costing Sokovia its homeland.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div></div>
+          </div>
+          <div class="battle-outcome outcome-pyrrhic">PYRRHIC VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1508344928928-7165b67de128?w=800&h=400&fit=crop" alt="Battle of Wakanda" loading="lazy">
+        <span class="battle-classification class-critical">CRITICAL</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF WAKANDA</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2018</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Wakanda, East Africa</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Avengers + Wakandan Army</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Thanos + Outrider Army</span></div>
+          <div class="battle-meta-item"><i class="fas fa-shield"></i> <span>Vibranium Barrier Deployed</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>~4,200 Wakandan Casualties</span></div>
+        </div>
+        <div class="battle-narrative">The last line of defense for the Mind Stone, Wakanda faced the full might of Thanos' army as Outriders breached the Vibranium barrier in overwhelming numbers. T'Challa led the combined Wakandan forces alongside Captain America, Black Widow, and Bruce Banner in the Hulkbuster armor. Thor arrived mid-battle wielding Stormbreaker, turning the tide with devastating lightning strikes across the front lines. Despite every effort including Vision's destruction to deny Thanos the Mind Stone, the Mad Titan completed his Infinity Gauntlet. The snap erased half of all life in the universe, leaving the survivors shattered.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div></div>
+          </div>
+          <div class="battle-outcome outcome-defeat">TOTAL DEFEAT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop" alt="Battle of Titan" loading="lazy">
+        <span class="battle-classification class-high">HIGH THREAT</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF TITAN</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2018</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Titan (Thanos' Homeworld)</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Iron Man, Spider-Man, Strange, Guardians</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Thanos (w/ 4 Stones)</span></div>
+          <div class="battle-meta-item"><i class="fas fa-planet-ringed"></i> <span>Dead Planet, No Civilians</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>0 Civilian Casualties</span></div>
+        </div>
+        <div class="battle-narrative">On the ruined surface of Thanos' dead homeworld, Iron Man, Spider-Man, Doctor Strange, and the Guardians launched a coordinated ambush against the Mad Titan. The team fought with extraordinary precision, nearly removing the Infinity Gauntlet until Star-Lord's rage broke their coordinated hold. Thanos overwhelmed the exhausted heroes, demonstrating the devastating power of the completed Power, Space, Reality, and Soul Stones. Doctor Strange surrendered the Time Stone in a mysterious bargain, prophesying that it was the only way. The defeat on Titan set the stage for the final reckoning.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar"></div><div class="damage-bar"></div></div>
+          </div>
+          <div class="battle-outcome outcome-defeat">STRATEGIC DEFEAT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop" alt="Battle of Earth Endgame" loading="lazy">
+        <span class="battle-classification class-extreme">EXTREME</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF EARTH — ENDGAME</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2023</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Avengers Compound, Upstate New York</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>All Avengers + Allied Forces</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Thanos + 2014 Army</span></div>
+          <div class="battle-meta-item"><i class="fas fa-bolt"></i> <span>Time Heist Activated</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>2 Confirmed Hero Deaths</span></div>
+        </div>
+        <div class="battle-narrative">The most epic battle in human history unfolded when a time-displaced 2014 Thanos destroyed the Avengers Compound and waged war against every hero assembled. The Quantum Realm time heist brought back fallen allies while the original Avengers held the line in desperate defense of the Nano Gauntlet. Captain America wielded Mjolnir as portals opened to reveal restored armies from every corner of the universe. Iron Man made the ultimate sacrifice, stealing the Infinity Stones and snapping Thanos' forces to dust at the cost of his own life. The universe was saved at an immeasurable price.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div></div>
+          </div>
+          <div class="battle-outcome outcome-victory">AVENGERS VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&h=400&fit=crop" alt="Battle of Xandar" loading="lazy">
+        <span class="battle-classification class-critical">CRITICAL</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF XANDAR</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2014</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Xandar, Nova Empire Capital</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Nova Corps + Guardians</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Ronan the Accuser + Kree Fleet</span></div>
+          <div class="battle-meta-item"><i class="fas fa-bomb"></i> <span>Planet-Killer Bomb Deployed</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>~2 Million Displaced</span></div>
+        </div>
+        <div class="battle-narrative">Ronan the Accuser, empowered by the Power Stone, turned the full might of the Kree Empire against Xandar after the Guardians' failed interception. The Nova Corps fleet was decimated in minutes as Ronan's Dark Aster descended through the atmosphere preparing to obliterate the planet. Star-Lord's audacious dance-off distraction combined with the Guardians sharing the Power Stone's burden destroyed Ronan's hammer. Xandar was saved by the narrowest of margins, but the victory proved temporary when Thanos later devastated the planet to claim the Power Stone.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar"></div></div>
+          </div>
+          <div class="battle-outcome outcome-victory">ALLIED VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=800&h=400&fit=crop" alt="Battle of Kamar-Taj" loading="lazy">
+        <span class="battle-classification class-extreme">EXTREME</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF KAMAR-TAJ</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2022</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Kamar-Taj, Nepal</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Sorcerers + Doctor Strange</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Scarlet Witch (Possessed)</span></div>
+          <div class="battle-meta-item"><i class="fas fa-book-open"></i> <span>Darkhold Rituals Active</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>~30 Sorcerer Casualties</span></div>
+        </div>
+        <div class="battle-narrative">Kamar-Taj, the ancient sanctuary of the sorcerers, faced its most devastating assault when the Scarlet Witch corrupted by the Darkhold waged a one-woman siege to capture America Chavez. The defensive wards were shattered as Wanda's dreamwalking power tore through every enchantment the Masters of the Mystic Arts had ever constructed. Hundreds of sorcerers fell defending their home as Wanda tore through the halls with terrifying precision. Doctor Strange confronted alternate versions of himself while Wanda's grief was revealed as the root of her corruption. The Darkhold was ultimately destroyed and Wanda found redemption at the cost of her own life.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar"></div></div>
+          </div>
+          <div class="battle-outcome outcome-pyrrhic">PYRRHIC VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1534996858221-380b92700493?w=800&h=400&fit=crop" alt="Battle of the Quantum Realm" loading="lazy">
+        <span class="battle-classification class-extreme">EXTREME</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF THE QUANTUM REALM</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2023</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Quantum Realm (Subatomic Dimension)</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Ant-Man, Wasp, Avengers</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Kang the Conqueror</span></div>
+          <div class="battle-meta-item"><i class="fas fa-atom"></i> <span>Quantum Fluctuations Detected</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>Dimensional Collapse Risk</span></div>
+        </div>
+        <div class="battle-narrative">Deep within the Quantum Realm, Ant-Man and the Wasp discovered a hidden civilization oppressed by Kang the Conqueror, a time-displaced variant with technology far beyond anything on Earth. Kang's ability to manipulate probability and his quantum-powered army made him one of the most dangerous threats the Avengers had ever faced. The battle saw reality itself bending as quantum fluctuations destabilized the entire battlefield. Scott Lang barely escaped total molecular disintegration as the subatomic dimension threatened to collapse. The defeat of Kang sent shockwaves through the multiverse.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div></div>
+          </div>
+          <div class="battle-outcome outcome-pyrrhic">PYRRHIC VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=400&fit=crop" alt="Battle of the Celestial Moon" loading="lazy">
+        <span class="battle-classification class-critical">CRITICAL</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">BATTLE OF THE CELESTIAL MOON</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2021</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Titan's Moon, Saturn Orbit</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Eternals + Guardians</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Abandoned Celestial Tech</span></div>
+          <div class="battle-meta-item"><i class="fas fa-moon"></i> <span>Orbital Bombardment</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>Colony Evacuated</span></div>
+        </div>
+        <div class="battle-narrative">A dormant Celestial technology awakened on Titan's moon, threatening to destabilize Saturn's entire orbital system. The Eternals were called upon alongside the Guardians of the Galaxy to neutralize the rogue cosmic entity. Phastos led the engineering effort to contain the Celestial energy while Ikaris engaged the threat directly in aerial combat across the cratered surface. The battle caused massive tidal disruptions on Titan itself, forcing a complete evacuation of hidden colonies. The Celestial tech was silenced when Sersi channeled the Uni-Mind to transform the threat into inert cosmic dust.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar active"></div><div class="damage-bar"></div></div>
+          </div>
+          <div class="battle-outcome outcome-victory">ALLIED VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-card">
+      <div class="battle-card-img-wrap">
+        <img class="battle-card-img" src="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=800&h=400&fit=crop" alt="Siege of the Dark Dimension" loading="lazy">
+        <span class="battle-classification class-extreme">EXTREME</span>
+      </div>
+      <div class="battle-card-body">
+        <div class="battle-card-header">
+          <div>
+            <div class="battle-card-name">SIEGE OF THE DARK DIMENSION</div>
+            <div class="battle-card-year"><i class="fas fa-calendar"></i> 2024</div>
+            <div class="battle-card-location"><i class="fas fa-location-dot"></i> Dark Dimension (Inter-Dimensional)</div>
+          </div>
+        </div>
+        <div class="battle-card-meta">
+          <div class="battle-meta-item"><i class="fas fa-shield-halved"></i> <span>Doctor Strange + Wong</span></div>
+          <div class="battle-meta-item"><i class="fas fa-skull"></i> <span>Dormammu's Lieutenants</span></div>
+          <div class="battle-meta-item"><i class="fas fa-book-skull"></i> <span>Dimensional Barriers Breached</span></div>
+          <div class="battle-meta-item"><i class="fas fa-users"></i> <span>Reality Warping Detected</span></div>
+        </div>
+        <div class="battle-narrative">The barriers between dimensions fractured as Dormammu dispatched his lieutenants to prepare Earth for his return. Doctor Strange and Wong led a coalition of sorcerers into the Dark Dimension itself for the first time in recorded history. The battlefield defied physics as gravity, time, and space shifted without warning under the Dark Dimension's influence. Strange used the Vishanti's remaining power to create safe corridors while Wong held the dimensional gate open against relentless assault. The siege was repelled but the Dark Dimension's tendrils continued to probe Earth's defenses.</div>
+        <div class="battle-damage-row">
+          <div class="damage-meter">
+            <div class="damage-meter-label">DAMAGE</div>
+            <div class="damage-bars"><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar active amber"></div><div class="damage-bar"></div></div>
+          </div>
+          <div class="battle-outcome outcome-pyrrhic">PYRRHIC VICTORY</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section war-map-section">
+  <div class="section-header">
+    <div class="section-tag">// GLOBAL THREAT MATRIX</div>
+    <h2 class="section-title">WAR ROOM MAP</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="war-map">
+    <div class="war-map-title"><i class="fas fa-satellite-dish"></i> LIVE BATTLE TRACKING</div>
+    <div class="war-map-label">CLASSIFIED // LEVEL 7</div>
+
+    <div class="map-continent" style="top:20%;left:12%;width:22%;height:35%;border-radius:40% 60% 50% 40%"></div>
+    <div class="map-continent" style="top:15%;left:40%;width:18%;height:45%;border-radius:50% 40% 60% 30%"></div>
+    <div class="map-continent" style="top:25%;left:62%;width:25%;height:40%;border-radius:30% 50% 40% 60%"></div>
+    <div class="map-continent" style="top:55%;left:22%;width:20%;height:35%;border-radius:50% 40% 30% 60%"></div>
+    <div class="map-continent" style="top:60%;left:55%;width:15%;height:25%;border-radius:40% 50% 50% 40%"></div>
+
+    <div class="map-connection" style="top:30%;left:20%;width:200px;transform:rotate(25deg)"></div>
+    <div class="map-connection" style="top:50%;left:42%;width:150px;transform:rotate(-15deg)"></div>
+    <div class="map-connection" style="top:65%;left:32%;width:180px;transform:rotate(10deg)"></div>
+    <div class="map-connection" style="top:35%;left:55%;width:120px;transform:rotate(-30deg)"></div>
+
+    <div class="map-marker" style="top:32%;left:22%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">NEW YORK CITY<br><span style="color:var(--mr)">2012 — CHITAURI</span></div>
+    </div>
+    <div class="map-marker gold" style="top:28%;left:48%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">SOKOVIA<br><span style="color:var(--mg)">2015 — ULTRON</span></div>
+    </div>
+    <div class="map-marker" style="top:55%;left:50%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">WAKANDA<br><span style="color:var(--mr)">2018 — THANOS</span></div>
+    </div>
+    <div class="map-marker blue" style="top:30%;left:25%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">AVENGERS COMPOUND<br><span style="color:var(--mb)">2023 — ENDGAME</span></div>
+    </div>
+    <div class="map-marker purple" style="top:42%;left:65%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">KAMAR-TAJ<br><span style="color:var(--mp)">2022 — WANDA</span></div>
+    </div>
+    <div class="map-marker" style="top:38%;left:45%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">XANDAR<br><span style="color:var(--mr)">2014 — RONAN</span></div>
+    </div>
+    <div class="map-marker gold" style="top:72%;left:40%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">QUANTUM REALM<br><span style="color:var(--mg)">2023 — KANG</span></div>
+    </div>
+    <div class="map-marker purple" style="top:22%;left:78%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">TITAN<br><span style="color:var(--mp)">2018 — THANOS</span></div>
+    </div>
+    <div class="map-marker" style="top:25%;left:68%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">CELESTIAL MOON<br><span style="color:var(--mr)">2021 — CELESTIAL</span></div>
+    </div>
+    <div class="map-marker blue" style="top:45%;left:72%">
+      <div class="map-dot"></div>
+      <div class="map-label-text">DARK DIMENSION<br><span style="color:var(--mb)">2024 — DORMAMMU</span></div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">// OFFICIAL DOCUMENTS</div>
+    <h2 class="section-title">DAMAGE ASSESSMENT</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="reports-grid">
+
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-number">REPORT #NYC-2012-001</div>
+        <div class="report-date">DEC 14, 2012</div>
+      </div>
+      <div class="report-title">NEW YORK BREACH ASSESSMENT</div>
+      <div class="report-divider"></div>
+      <div class="report-field"><div class="report-field-label">Location</div><div class="report-field-value">Manhattan, 42nd-59th St</div></div>
+      <div class="report-field"><div class="report-field-label">Threat Class</div><div class="report-field-value" style="color:var(--mr)">EXTRATERRESTRIAL — SEVERE</div></div>
+      <div class="report-field"><div class="report-field-label">Duration</div><div class="report-field-value">4 hrs 17 min</div></div>
+      <div class="report-redacted"></div>
+      <div class="report-field"><div class="report-field-label">Structural Damage</div><div class="report-field-value">$160B Estimated</div></div>
+      <div class="report-redacted"></div>
+      <div class="report-field"><div class="report-field-label">Recovery Priority</div><div class="report-field-value" style="color:var(--mg)">IMMEDIATE</div></div>
+      <div class="report-stamp stamp-rebuilt">REBUILT</div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-number">REPORT #SKV-2015-017</div>
+        <div class="report-date">MAR 02, 2016</div>
+      </div>
+      <div class="report-title">SOKOVIA CATASTROPHE REPORT</div>
+      <div class="report-divider"></div>
+      <div class="report-field"><div class="report-field-label">Location</div><div class="report-field-value">Novi Grad, Sokovia</div></div>
+      <div class="report-field"><div class="report-field-label">Threat Class</div><div class="report-field-value" style="color:var(--mg)">ARTIFICIAL INTELLIGENCE — CATASTROPHIC</div></div>
+      <div class="report-field"><div class="report-field-label">Duration</div><div class="report-field-value">12 hrs 43 min</div></div>
+      <div class="report-redacted"></div>
+      <div class="report-redacted"></div>
+      <div class="report-field"><div class="report-field-label">Population Impact</div><div class="report-field-value">City Eradicated — 0 Survivors on Site</div></div>
+      <div class="report-field"><div class="report-field-label">UN Status</div><div class="report-field-value" style="color:var(--mr)">SOKOVIA ACCORDS SIGNED</div></div>
+      <div class="report-stamp stamp-destroyed">DESTROYED</div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-number">REPORT #WAK-2018-042</div>
+        <div class="report-date">JUN 15, 2019</div>
+      </div>
+      <div class="report-title">WAKANDAN INVASION ANALYSIS</div>
+      <div class="report-divider"></div>
+      <div class="report-field"><div class="report-field-label">Location</div><div class="report-field-value">Wakanda Northern Border</div></div>
+      <div class="report-field"><div class="report-field-label">Threat Class</div><div class="report-field-value" style="color:var(--mp)">COSMIC — EXTINCTION LEVEL</div></div>
+      <div class="report-field"><div class="report-field-label">Duration</div><div class="report-field-value">3 hrs 22 min</div></div>
+      <div class="report-redacted"></div>
+      <div class="report-field"><div class="report-field-label">Vibranium Shield</div><div class="report-field-value">Breach Confirmed — Repaired</div></div>
+      <div class="report-field"><div class="report-field-label">Post-Battle Status</div><div class="report-field-value" style="color:var(--mr)">SNAP EVENT — 50% POPULATION LOST</div></div>
+      <div class="report-stamp stamp-recovering">RECOVERING</div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-number">REPORT #TTN-2018-063</div>
+        <div class="report-date">NOV 22, 2018</div>
+      </div>
+      <div class="report-title">TITAN ENGAGEMENT REPORT</div>
+      <div class="report-divider"></div>
+      <div class="report-field"><div class="report-field-label">Location</div><div class="report-field-value">Titan — Outer Galaxy</div></div>
+      <div class="report-field"><div class="report-field-label">Threat Class</div><div class="report-field-value" style="color:var(--mr)">COSMIC — OMEGA LEVEL</div></div>
+      <div class="report-field"><div class="report-field-label">Duration</div><div class="report-field-value">2 hrs 8 min</div></div>
+      <div class="report-redacted"></div>
+      <div class="report-redacted"></div>
+      <div class="report-field"><div class="report-field-label">Casualties</div><div class="report-field-value" style="color:var(--mr)">50% UNIVERSE-WIDE (POST-SNAP)</div></div>
+      <div class="report-field"><div class="report-field-label">Status</div><div class="report-field-value" style="color:var(--mp)">STONE SURRENDERED — TIME</div></div>
+      <div class="report-stamp stamp-classified">CLASSIFIED</div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <div class="report-number">REPORT #END-2023-001</div>
+        <div class="report-date">OCT 01, 2023</div>
+      </div>
+      <div class="report-title">FINAL BATTLE — CLASSIFIED</div>
+      <div class="report-divider"></div>
+      <div class="report-field"><div class="report-field-label">Location</div><div class="report-field-value">Avengers Compound Ruins</div></div>
+      <div class="report-field"><div class="report-field-label">Threat Class</div><div class="report-field-value" style="color:var(--mr)">UNIVERSAL — OMEGA LEVEL</div></div>
+      <div class="report-field"><div class="report-field-label">Duration</div><div class="report-field-value">1 hr 58 min</div></div>
+      <div class="report-redacted"></div>
+      <div class="report-redacted"></div>
+      <div class="report-redacted"></div>
+      <div class="report-field"><div class="report-field-label">Hero Casualties</div><div class="report-field-value" style="color:var(--mr)">1 CONFIRMED (STARK, T.)</div></div>
+      <div class="report-stamp stamp-redacted">REDACTED</div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section timeline-h-section">
+  <div class="section-header">
+    <div class="section-tag">// CHRONOLOGICAL DEPLOYMENT</div>
+    <h2 class="section-title">BATTLE TIMELINE</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="timeline-h-wrap" id="tl-h-wrap">
+    <div class="timeline-h">
+      <div class="tl-h-item">
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2012</div>
+          <div class="tl-h-name">Battle of New York</div>
+          <div class="tl-h-desc">The Avengers unite for the first time to repel a Chitauri invasion through a Tesseract-powered portal above Stark Tower.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2014</div>
+          <div class="tl-h-name">Battle of Xandar</div>
+          <div class="tl-h-desc">Ronan the Accuser threatens to destroy Xandar with the Power Stone. The Guardians intervene at the last moment.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2015</div>
+          <div class="tl-h-name">Battle of Sokovia</div>
+          <div class="tl-h-desc">Ultron lifts an entire city into the sky as a weapon. The Avengers evacuate civilians and destroy the floating city.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2018</div>
+          <div class="tl-h-name">Battle of Titan</div>
+          <div class="tl-h-desc">The Avengers and Guardians ambush Thanos on his dead homeworld. Strange surrenders the Time Stone in a mysterious bargain.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2018</div>
+          <div class="tl-h-name">Battle of Wakanda</div>
+          <div class="tl-h-desc">The last stand for the Mind Stone. Thanos completes the Gauntlet and executes the Snap, erasing half of all life.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2021</div>
+          <div class="tl-h-name">Battle of the Celestial Moon</div>
+          <div class="tl-h-desc">Dormant Celestial tech awakens on Titan's moon. The Eternals and Guardians race to prevent orbital catastrophe.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2022</div>
+          <div class="tl-h-name">Battle of Kamar-Taj</div>
+          <div class="tl-h-desc">The Scarlet Witch assaults the sorcerer sanctuary seeking America Chavez. The Darkhold is ultimately destroyed.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2023</div>
+          <div class="tl-h-name">Battle of the Quantum Realm</div>
+          <div class="tl-h-desc">Kang the Conqueror is discovered and defeated in the subatomic dimension, triggering a multiversal alert.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2023</div>
+          <div class="tl-h-name">Battle of Earth — Endgame</div>
+          <div class="tl-h-desc">Every hero assembles for the final confrontation. Iron Man sacrifices himself to snap away Thanos' army.</div>
+        </div>
+      </div>
+      <div class="tl-h-item">
+        <div class="tl-h-dot"></div>
+        <div class="tl-h-connector"></div>
+        <div class="tl-h-card">
+          <div class="tl-h-year">2024</div>
+          <div class="tl-h-name">Siege of the Dark Dimension</div>
+          <div class="tl-h-desc">Doctor Strange leads an expedition into the Dark Dimension to repel Dormammu's forces and reinforce dimensional barriers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="timeline-h-scroll-hint"><i class="fas fa-arrow-right"></i> SCROLL TO EXPLORE TIMELINE</div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a href="index.html" class="footer-logo" style="text-decoration:none">MARVEL.</a>
+      <p class="footer-desc">The Marvel Cinematic Universe is a media franchise and shared universe centered on a series of superhero films and other media produced by Marvel Studios.</p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">EXPLORE</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="missions.html">Mission Files</a></li>
+        <li><a href="characters.html">Character Database</a></li>
+        <li><a href="battles.html">Battle Records</a></li>
+        <li><a href="tech.html">Tech Division</a></li>
+        <li><a href="multiverse.html">Multiverse Map</a></li>
+        <li><a href="roster.html">Team Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">HEROES</div>
+      <ul class="footer-links">
+        <li><a href="characters.html">Iron Man</a></li>
+        <li><a href="characters.html">Captain America</a></li>
+        <li><a href="characters.html">Thor</a></li>
+        <li><a href="characters.html">Spider-Man</a></li>
+        <li><a href="characters.html">Black Panther</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">CONNECT</div>
+      <ul class="footer-links">
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Marvel Universe Fan Site. All rights reserved. This is a fan-made tribute website.</p>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+window.addEventListener('scroll',()=>{
+  document.querySelector('nav').classList.toggle('scrolled',window.scrollY>50);
+});
+document.querySelector('nav').style.cssText+='background:rgba(0,0,0,.8);backdrop-filter:blur(20px);box-shadow:0 2px 30px rgba(226,54,54,.15)';
+
+function animateDashStats(){
+  document.querySelectorAll('.dash-number[data-target]').forEach(el=>{
+    if(el.dataset.animated)return;
+    el.dataset.animated='true';
+    const target=parseInt(el.getAttribute('data-target'));
+    const suffix=el.getAttribute('data-suffix')||'';
+    const duration=2000;
+    const start=performance.now();
+    function update(now){
+      const elapsed=now-start;
+      const progress=Math.min(elapsed/duration,1);
+      const eased=1-Math.pow(1-progress,3);
+      el.textContent=Math.floor(eased*target)+suffix;
+      if(progress<1)requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+ScrollTrigger.create({trigger:'.stats-dashboard',start:'top 70%',onEnter:animateDashStats,once:true});
+
+gsap.from('.page-hero-content',{y:60,opacity:0,duration:1.2,ease:'power3.out'});
+gsap.from('.classified-badge',{y:30,opacity:0,duration:1,ease:'power3.out',delay:0.4});
+gsap.from('.military-stamps .stamp',{y:20,opacity:0,duration:0.6,stagger:0.15,ease:'power3.out',delay:0.6});
+
+gsap.utils.toArray('.section-header').forEach(h=>{
+  gsap.from(h,{scrollTrigger:{trigger:h,start:'top 85%'},y:50,opacity:0,duration:1,ease:'power3.out'});
+});
+
+gsap.from('.dash-card',{scrollTrigger:{trigger:'.stats-dashboard',start:'top 80%'},y:60,opacity:0,duration:0.6,stagger:0.1,ease:'power3.out'});
+
+gsap.from('.battle-card',{scrollTrigger:{trigger:'.battle-grid',start:'top 80%'},y:80,opacity:0,duration:0.8,stagger:0.15,ease:'power3.out'});
+
+gsap.from('.map-marker',{scrollTrigger:{trigger:'.war-map',start:'top 80%'},scale:0,opacity:0,duration:0.5,stagger:0.1,ease:'back.out(1.7)'});
+
+gsap.from('.report-card',{scrollTrigger:{trigger:'.reports-grid',start:'top 80%'},y:60,opacity:0,duration:0.7,stagger:0.12,ease:'power3.out'});
+
+gsap.from('.tl-h-card',{scrollTrigger:{trigger:'.timeline-h-section',start:'top 75%'},y:40,opacity:0,duration:0.6,stagger:0.1,ease:'power3.out'});
+
+gsap.from('.footer-grid',{scrollTrigger:{trigger:'.footer',start:'top 90%'},y:40,opacity:0,duration:0.8,ease:'power3.out'});
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,702 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avengers Assemble | Marvel Universe</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--mr:#e23636;--md:#0a0a0a;--mg:#ffd700;--mb:#1a6bff;--mp:#9b59b6;--mgr:#2ecc71;--gr:0 0 30px rgba(226,54,54,0.6);--gg:0 0 30px rgba(255,215,0,0.6);--gb:0 0 30px rgba(26,107,255,0.6)}
+html{scroll-behavior:smooth;overflow-x:hidden;overflow-y:auto}
+body{font-family:'Rajdhani',sans-serif;background:#000;color:#fff;overflow-x:hidden;overflow-y:auto;min-height:100vh}
+::selection{background:var(--mr);color:#fff}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#0a0a0a}::-webkit-scrollbar-thumb{background:linear-gradient(var(--mr),var(--mg));border-radius:4px}
+#three-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;will-change:transform}
+
+.preloader{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s,visibility .8s}
+.preloader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.preloader-logo{font-family:'Bebas Neue',cursive;font-size:80px;color:var(--mr);text-shadow:var(--gr);animation:pg 1.5s infinite}
+.preloader-bar{width:300px;height:4px;background:#222;border-radius:2px;margin-top:20px;overflow:hidden}
+.preloader-fill{height:100%;background:linear-gradient(90deg,var(--mr),var(--mg),var(--mr));background-size:200%;animation:sh 1.5s infinite;border-radius:2px;transition:width .3s}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes pg{0%,100%{text-shadow:0 0 20px rgba(226,54,54,.5)}50%{text-shadow:0 0 60px rgba(226,54,54,1),0 0 120px rgba(226,54,54,.5)}}
+
+nav{position:fixed;top:0;left:0;width:100%;z-index:9999;padding:15px 50px;display:flex;align-items:center;justify-content:space-between;transition:all .4s;backdrop-filter:blur(0px)}
+nav.scrolled{background:rgba(0,0,0,.95);backdrop-filter:blur(20px);box-shadow:0 2px 30px rgba(226,54,54,.2);padding:10px 50px}
+.nav-logo{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--mr);text-shadow:var(--gr);cursor:pointer;letter-spacing:3px}
+.nav-logo span{color:var(--mg)}
+.nav-links{display:flex;gap:30px;list-style:none}
+.nav-links a{color:#ccc;text-decoration:none;font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:2px;transition:all .3s;position:relative;padding:5px 0}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--mr);transition:width .3s}
+.nav-links a:hover{color:var(--mr);text-shadow:var(--gr)}.nav-links a:hover::after{width:100%}
+.nav-hamburger{display:none;font-size:28px;color:var(--mr);cursor:pointer}
+
+.hero-section{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:1}
+.hero-bg-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at center,transparent 0%,rgba(0,0,0,.7) 70%);z-index:2}
+.hero-content{text-align:center;z-index:3;perspective:1000px}
+.hero-title{font-family:'Bebas Neue',cursive;font-size:clamp(60px,12vw,160px);line-height:.9;margin-bottom:10px;transform-style:preserve-3d;animation:hf 6s ease-in-out infinite}
+.hero-title .avengers{color:#fff;text-shadow:0 0 40px rgba(255,255,255,.3)}
+.hero-title .assemble{display:block;background:linear-gradient(135deg,var(--mr),var(--mg));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(226,54,54,.5));font-size:1.2em}
+@keyframes hf{0%,100%{transform:rotateX(0) rotateY(0)}25%{transform:rotateX(2deg) rotateY(3deg)}75%{transform:rotateX(-2deg) rotateY(-3deg)}}
+.hero-subtitle{font-family:'Orbitron',sans-serif;font-size:clamp(14px,2vw,22px);color:rgba(255,255,255,.7);letter-spacing:10px;text-transform:uppercase;margin-bottom:40px;animation:fiu 1s .5s both}
+.hero-cta{display:inline-flex;gap:20px;animation:fiu 1s .8s both}
+.btn-m{padding:15px 40px;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;border:none;cursor:pointer;position:relative;overflow:hidden;text-transform:uppercase;transition:all .4s;text-decoration:none}
+.btn-p{background:var(--mr);color:#fff;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);box-shadow:var(--gr)}
+.btn-p:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(226,54,54,.8)}
+.btn-s{background:transparent;color:#fff;border:2px solid var(--mg);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.btn-s:hover{background:var(--mg);color:#000;box-shadow:var(--gg)}
+@keyframes fiu{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+
+.scroll-ind{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;animation:bnc 2s infinite}
+.scroll-ind span{font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.5);text-transform:uppercase}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--mr),transparent);animation:sla 2s infinite}
+@keyframes bnc{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
+@keyframes sla{0%{opacity:1;height:40px}100%{opacity:0;height:0}}
+
+.section{position:relative;z-index:1;padding:100px 50px}
+.section-header{text-align:center;margin-bottom:80px}
+.section-tag{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--mr);letter-spacing:5px;text-transform:uppercase;margin-bottom:10px}
+.section-title{font-family:'Bebas Neue',cursive;font-size:clamp(40px,6vw,80px);background:linear-gradient(135deg,#fff,rgba(255,255,255,.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:15px}
+.section-line{width:80px;height:3px;background:linear-gradient(90deg,var(--mr),var(--mg));margin:0 auto}
+
+.heroes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:30px;max-width:1400px;margin:0 auto;perspective:1000px}
+.hero-card{position:relative;height:480px;border-radius:20px;overflow:hidden;cursor:pointer;transform-style:preserve-3d;transition:transform .6s,box-shadow .6s}
+.hero-card:hover{transform:rotateY(5deg) rotateX(5deg) scale(1.02)}
+.hero-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.95) 100%);z-index:2}
+.hero-card-img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.hero-card:hover .hero-card-img{transform:scale(1.1)}
+.hero-card-info{position:absolute;bottom:0;left:0;width:100%;padding:30px;z-index:3;transform:translateY(20px);transition:transform .4s}
+.hero-card:hover .hero-card-info{transform:translateY(0)}
+.hero-card-name{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:2px;margin-bottom:5px}
+.hero-card-real{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:10px}
+.hero-card-desc{font-size:14px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:15px;opacity:0;transition:opacity .4s .1s}
+.hero-card:hover .hero-card-desc{opacity:1}
+.hero-card-powers{display:flex;gap:8px;flex-wrap:wrap}
+.power-tag{padding:4px 12px;font-size:11px;border-radius:20px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.hero-card .glow-border{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:20px;border:2px solid transparent;transition:border-color .4s;z-index:4;pointer-events:none}
+.hero-card[data-c="red"]:hover .glow-border{border-color:var(--mr);box-shadow:inset 0 0 30px rgba(226,54,54,.2),var(--gr)}
+.hero-card[data-c="blue"]:hover .glow-border{border-color:var(--mb);box-shadow:inset 0 0 30px rgba(26,107,255,.2),var(--gb)}
+.hero-card[data-c="gold"]:hover .glow-border{border-color:var(--mg);box-shadow:inset 0 0 30px rgba(255,215,0,.2),var(--gg)}
+.hero-card[data-c="green"]:hover .glow-border{border-color:var(--mgr);box-shadow:inset 0 0 30px rgba(46,204,113,.2),0 0 30px rgba(46,204,113,.6)}
+.hero-card[data-c="purple"]:hover .glow-border{border-color:var(--mp);box-shadow:inset 0 0 30px rgba(155,89,182,.2),0 0 30px rgba(155,89,182,.6)}
+
+.timeline-section{background:linear-gradient(180deg,rgba(10,10,10,.95),rgba(20,0,0,.95))}
+.timeline{position:relative;max-width:1000px;margin:0 auto}
+.timeline::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:3px;height:100%;background:linear-gradient(to bottom,var(--mr),var(--mg),var(--mb),var(--mp))}
+.timeline-item{position:relative;width:50%;padding:20px 40px;opacity:0;transform:translateY(30px);transition:all .6s}
+.timeline-item.visible{opacity:1;transform:translateY(0)}
+.timeline-item:nth-child(odd){left:0;text-align:right}
+.timeline-item:nth-child(even){left:50%;text-align:left}
+.timeline-item::before{content:'';position:absolute;top:30px;width:20px;height:20px;border-radius:50%;background:var(--mr);box-shadow:var(--gr);z-index:2}
+.timeline-item:nth-child(odd)::before{right:-10px}
+.timeline-item:nth-child(even)::before{left:-10px}
+.timeline-year{font-family:'Orbitron',sans-serif;font-size:28px;color:var(--mg);margin-bottom:5px}
+.timeline-movie{font-family:'Bebas Neue',cursive;font-size:28px;margin-bottom:8px}
+.timeline-desc{font-size:14px;color:rgba(255,255,255,.6);line-height:1.6}
+.timeline-phase{padding:3px 12px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;display:inline-block;margin-bottom:10px}
+
+.movies-showcase{max-width:1400px;margin:0 auto}
+.movie-row{display:flex;gap:20px;overflow-x:auto;padding:20px 0;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none}
+.movie-row::-webkit-scrollbar{display:none}
+.movie-card{min-width:300px;height:450px;border-radius:16px;overflow:hidden;position:relative;scroll-snap-align:start;cursor:pointer;transition:transform .4s;flex-shrink:0}
+.movie-card:hover{transform:scale(1.05)}
+.movie-card img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.movie-card:hover img{transform:scale(1.1)}
+.movie-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:60%;background:linear-gradient(transparent,rgba(0,0,0,.95))}
+.movie-card-info{position:absolute;bottom:20px;left:20px;right:20px;z-index:2}
+.movie-card-title{font-family:'Bebas Neue',cursive;font-size:24px;margin-bottom:5px}
+.movie-card-year{color:var(--mg);font-size:14px;font-weight:600}
+.movie-rating{position:absolute;top:15px;right:15px;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);padding:5px 12px;border-radius:20px;font-size:13px;z-index:2;border:1px solid rgba(255,215,0,.3)}
+.movie-rating i{color:var(--mg);margin-right:4px}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);width:70px;height:70px;background:rgba(226,54,54,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:3;transition:all .4s;box-shadow:var(--gr)}
+.play-btn i{color:#fff;font-size:24px;margin-left:4px}
+.movie-card:hover .play-btn{transform:translate(-50%,-50%) scale(1)}
+
+.stats-section{background:linear-gradient(135deg,rgba(226,54,54,.1),rgba(0,0,0,.95));position:relative;overflow:hidden}
+.stats-section::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(226,54,54,.05),transparent,rgba(255,215,0,.05),transparent);animation:rbg 20s linear infinite}
+@keyframes rbg{to{transform:rotate(360deg)}}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.stat-card{text-align:center;padding:40px 20px;background:rgba(255,255,255,.03);border-radius:20px;border:1px solid rgba(255,255,255,.05);backdrop-filter:blur(10px);transition:all .4s;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--mr),transparent);transform:scaleX(0);transition:transform .4s}
+.stat-card:hover::before{transform:scaleX(1)}
+.stat-card:hover{transform:translateY(-10px);border-color:rgba(226,54,54,.3);box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.stat-icon{font-size:40px;margin-bottom:15px;background:linear-gradient(135deg,var(--mr),var(--mg));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-number{font-family:'Orbitron',sans-serif;font-size:48px;font-weight:900;color:var(--mg);margin-bottom:5px}
+.stat-label{font-size:14px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:2px}
+
+.video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:25px;max-width:1400px;margin:0 auto}
+.video-card{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;aspect-ratio:16/9;background:#111}
+.video-card img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.video-card:hover img{transform:scale(1.08)}
+.video-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:50%;background:linear-gradient(transparent,rgba(0,0,0,.9))}
+.video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;background:rgba(226,54,54,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .4s;backdrop-filter:blur(5px);border:2px solid rgba(255,255,255,.2)}
+.video-play i{color:#fff;font-size:28px;margin-left:5px}
+.video-card:hover .video-play{transform:translate(-50%,-50%) scale(1.15);box-shadow:var(--gr)}
+.video-info{position:absolute;bottom:15px;left:20px;z-index:2}
+.video-title{font-family:'Bebas Neue',cursive;font-size:22px}
+.video-meta{font-size:13px;color:rgba(255,255,255,.5)}
+.video-duration{position:absolute;top:15px;right:15px;background:rgba(0,0,0,.8);padding:3px 10px;border-radius:4px;font-size:12px;font-weight:700;z-index:2}
+
+.gallery-section{overflow:hidden}
+.gallery-track{display:flex;gap:20px;animation:gsc 40s linear infinite;width:max-content}
+.gallery-track:hover{animation-play-state:paused}
+.gallery-item{width:400px;height:280px;border-radius:12px;overflow:hidden;flex-shrink:0;position:relative}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.gallery-item:hover img{transform:scale(1.1)}
+.gallery-item::after{content:'';position:absolute;inset:0;border:2px solid transparent;border-radius:12px;transition:border-color .4s}
+.gallery-item:hover::after{border-color:var(--mr);box-shadow:inset 0 0 30px rgba(226,54,54,.3)}
+@keyframes gsc{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.avengers-section{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.avengers-bg{position:absolute;inset:0;background:radial-gradient(circle at center,rgba(226,54,54,.15),transparent 70%);z-index:0}
+.avengers-content{position:relative;z-index:2;text-align:center;perspective:1000px}
+.avengers-text{font-family:'Bebas Neue',cursive;font-size:clamp(80px,15vw,200px);line-height:.85;background:linear-gradient(135deg,var(--mr),var(--mg),var(--mr));background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gs 3s ease infinite;filter:drop-shadow(0 0 40px rgba(226,54,54,.4))}
+@keyframes gs{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.avengers-sub{font-family:'Orbitron',sans-serif;font-size:clamp(16px,2vw,24px);color:rgba(255,255,255,.6);letter-spacing:15px;margin-top:20px}
+.shield-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;border:2px solid rgba(226,54,54,.2);border-radius:50%;animation:rp 3s ease-in-out infinite}
+.shield-ring:nth-child(2){width:400px;height:400px;animation-delay:.5s;border-color:rgba(255,215,0,.15)}
+.shield-ring:nth-child(3){width:500px;height:500px;animation-delay:1s;border-color:rgba(26,107,255,.1)}
+@keyframes rp{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
+
+.footer{position:relative;z-index:1;background:linear-gradient(180deg,#000,rgba(20,0,0,.98));border-top:1px solid rgba(226,54,54,.2);padding:60px 50px 30px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1400px;margin:0 auto 40px}
+.footer-logo{font-family:'Bebas Neue',cursive;font-size:48px;color:var(--mr);text-shadow:var(--gr);margin-bottom:15px}
+.footer-desc{color:rgba(255,255,255,.5);font-size:14px;line-height:1.8;max-width:350px}
+.footer-heading{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--mg);margin-bottom:15px;letter-spacing:2px}
+.footer-links{list-style:none}.footer-links li{margin-bottom:10px}
+.footer-links a{color:rgba(255,255,255,.5);text-decoration:none;font-size:14px;transition:all .3s}
+.footer-links a:hover{color:var(--mr);padding-left:5px}
+.footer-social{display:flex;gap:15px;margin-top:20px}
+.footer-social a{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;transition:all .3s;border:1px solid rgba(255,255,255,.1)}
+.footer-social a:hover{background:var(--mr);box-shadow:var(--gr);transform:translateY(-3px)}
+.footer-bottom{text-align:center;padding-top:30px;border-top:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.3);font-size:13px;max-width:1400px;margin:0 auto}
+
+.floating-shapes{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.shape{position:absolute;border-radius:50%;opacity:.05;animation:fs linear infinite}
+@keyframes fs{0%{transform:translateY(100vh) rotate(0)}100%{transform:translateY(-100px) rotate(720deg)}}
+.glow-orb{position:fixed;width:300px;height:300px;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.glow-orb-1{top:20%;left:10%;background:rgba(226,54,54,.08);animation:of 8s ease-in-out infinite}
+.glow-orb-2{bottom:20%;right:10%;background:rgba(255,215,0,.06);animation:of 10s ease-in-out infinite 2s}
+.glow-orb-3{top:60%;left:50%;background:rgba(26,107,255,.05);animation:of 12s ease-in-out infinite 4s}
+@keyframes of{0%,100%{transform:translate(0,0)}33%{transform:translate(30px,-30px)}66%{transform:translate(-20px,20px)}}
+
+@media(max-width:1024px){.heroes-grid{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.stats-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.timeline-item{width:100%!important;left:0!important;text-align:left!important;padding-left:50px}.timeline::before{left:15px}.timeline-item::before{left:5px!important;right:auto!important}}
+@media(max-width:768px){nav{padding:10px 20px}.nav-links{display:none}.nav-hamburger{display:block}.section{padding:60px 20px}.hero-cta{flex-direction:column;align-items:center}.video-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="preloader" id="preloader">
+  <div class="preloader-logo">MARVEL</div>
+  <div style="color:rgba(255,255,255,.4);font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:5px;margin-top:10px">INITIALIZING QUANTUM REALM</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+</div>
+
+<canvas id="three-bg"></canvas>
+
+<div class="floating-shapes" id="floating-shapes"></div>
+<div class="glow-orb glow-orb-1"></div>
+<div class="glow-orb glow-orb-2"></div>
+<div class="glow-orb glow-orb-3"></div>
+
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">MARVEL<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="#heroes">Heroes</a></li>
+    <li><a href="missions.html">Missions</a></li>
+    <li><a href="characters.html">Characters</a></li>
+    <li><a href="battles.html">Battles</a></li>
+    <li><a href="tech.html">Tech</a></li>
+    <li><a href="multiverse.html">Multiverse</a></li>
+    <li><a href="roster.html">Roster</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+</nav>
+
+<section class="hero-section" id="home">
+  <div class="hero-bg-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-title">
+      <span class="avengers">AVENGERS</span>
+      <span class="assemble">ASSEMBLE</span>
+    </div>
+    <p class="hero-subtitle">Earth's Mightiest Heroes</p>
+    <div class="hero-cta">
+      <a href="#heroes" class="btn-m btn-p"><i class="fas fa-bolt"></i> &nbsp;EXPLORE HEROES</a>
+      <a href="#movies" class="btn-m btn-s"><i class="fas fa-play"></i> &nbsp;WATCH NOW</a>
+    </div>
+  </div>
+  <div class="scroll-ind">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="section" id="heroes">
+  <div class="section-header">
+    <div class="section-tag">// MARVEL CINEMATIC UNIVERSE</div>
+    <h2 class="section-title">CHOOSE YOUR HERO</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="heroes-grid" id="heroes-grid"></div>
+</section>
+
+<section class="section timeline-section" id="timeline">
+  <div class="section-header">
+    <div class="section-tag">// THE SAGA BEGINS</div>
+    <h2 class="section-title">MCU TIMELINE</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="timeline" id="timeline-container"></div>
+</section>
+
+<section class="section" id="movies">
+  <div class="section-header">
+    <div class="section-tag">// NOW PLAYING</div>
+    <h2 class="section-title">MARVEL MOVIES</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="movies-showcase">
+    <h3 style="font-family:'Bebas Neue',cursive;font-size:28px;margin-bottom:20px;color:var(--mg)"><i class="fas fa-star"></i> AVENGERS COLLECTION</h3>
+    <div class="movie-row" id="avengers-movies"></div>
+    <h3 style="font-family:'Bebas Neue',cursive;font-size:28px;margin:30px 0 20px;color:var(--mr)"><i class="fas fa-fire"></i> SPIDER-VERSE</h3>
+    <div class="movie-row" id="spider-movies"></div>
+    <h3 style="font-family:'Bebas Neue',cursive;font-size:28px;margin:30px 0 20px;color:var(--mb)"><i class="fas fa-shield-halved"></i> CAPTAIN SAGA</h3>
+    <div class="movie-row" id="captain-movies"></div>
+  </div>
+</section>
+
+<section class="section stats-section">
+  <div class="section-header">
+    <div class="section-tag">// BY THE NUMBERS</div>
+    <h2 class="section-title">MARVEL EMPIRE</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-film"></i></div>
+      <div class="stat-number" data-target="33">0</div>
+      <div class="stat-label">MCU Movies</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-number" data-target="90">0</div>
+      <div class="stat-label">Superheroes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+      <div class="stat-number" data-target="29">0</div>
+      <div class="stat-label">Billion Box Office</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-tv"></i></div>
+      <div class="stat-number" data-target="15">0</div>
+      <div class="stat-label">TV Series</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="videos">
+  <div class="section-header">
+    <div class="section-tag">// ACTION PACKED</div>
+    <h2 class="section-title">EPIC TRAILERS</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="video-grid" id="video-grid"></div>
+</section>
+
+<section class="section gallery-section" id="gallery">
+  <div class="section-header">
+    <div class="section-tag">// ULTIMATE COLLECTION</div>
+    <h2 class="section-title">4K GALLERY</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="gallery-track" id="gallery-track"></div>
+</section>
+
+<section class="avengers-section">
+  <div class="shield-ring"></div>
+  <div class="shield-ring"></div>
+  <div class="shield-ring"></div>
+  <div class="avengers-bg"></div>
+  <div class="avengers-content">
+    <div class="avengers-text">AVENGERS</div>
+    <div class="avengers-sub">ASSEMBLE</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">MARVEL.</div>
+      <p class="footer-desc">The Marvel Cinematic Universe is a media franchise and shared universe centered on a series of superhero films and other media produced by Marvel Studios.</p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">EXPLORE</div>
+      <ul class="footer-links">
+        <li><a href="missions.html">Mission Files</a></li>
+        <li><a href="characters.html">Character Database</a></li>
+        <li><a href="battles.html">Battle Records</a></li>
+        <li><a href="tech.html">Tech Division</a></li>
+        <li><a href="multiverse.html">Multiverse Map</a></li>
+        <li><a href="roster.html">Team Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">HEROES</div>
+      <ul class="footer-links">
+        <li><a href="characters.html">Iron Man</a></li>
+        <li><a href="characters.html">Captain America</a></li>
+        <li><a href="characters.html">Thor</a></li>
+        <li><a href="characters.html">Spider-Man</a></li>
+        <li><a href="characters.html">Black Panther</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">CONNECT</div>
+      <ul class="footer-links">
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Marvel Universe Fan Site. All rights reserved. This is a fan-made tribute website.</p>
+  </div>
+</footer>
+<script>
+const P={mr:'#e23636',mg:'#ffd700',mb:'#1a6bff',mp:'#9b59b6',mgr:'#2ecc71'};
+
+let pp=0;
+const pf=document.getElementById('preloader-fill');
+const preloaderEl=document.getElementById('preloader');
+function hidePreloader(){if(preloaderEl)preloaderEl.classList.add('hidden')}
+const iv=setInterval(()=>{
+  pp+=Math.random()*18+5;
+  if(pp>=100){pp=100;clearInterval(iv);setTimeout(hidePreloader,300)}
+  if(pf)pf.style.width=pp+'%';
+},120);
+setTimeout(hidePreloader,4000);
+
+(function(){
+  const c=document.getElementById('three-bg');
+  const renderer=new THREE.WebGLRenderer({canvas:c,alpha:true,antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.z=30;
+
+  const pCount=2000;
+  const pGeo=new THREE.BufferGeometry();
+  const pPos=new Float32Array(pCount*3);
+  const pCol=new Float32Array(pCount*3);
+  const pVel=new Float32Array(pCount*3);
+  const colors=[new THREE.Color(P.mr),new THREE.Color(P.mg),new THREE.Color(P.mb),new THREE.Color(P.mp)];
+  
+  for(let i=0;i<pCount;i++){
+    pPos[i*3]=(Math.random()-0.5)*100;
+    pPos[i*3+1]=(Math.random()-0.5)*100;
+    pPos[i*3+2]=(Math.random()-0.5)*100;
+    pVel[i*3]=(Math.random()-0.5)*0.02;
+    pVel[i*3+1]=(Math.random()-0.5)*0.02;
+    pVel[i*3+2]=(Math.random()-0.5)*0.02;
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    pCol[i*3]=col.r;pCol[i*3+1]=col.g;pCol[i*3+2]=col.b;
+  }
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  pGeo.setAttribute('color',new THREE.BufferAttribute(pCol,3));
+  const pMat=new THREE.PointsMaterial({size:0.15,vertexColors:true,transparent:true,opacity:0.8,blending:THREE.AdditiveBlending});
+  const particles=new THREE.Points(pGeo,pMat);
+  scene.add(particles);
+
+  const icoGeo=new THREE.IcosahedronGeometry(8,1);
+  const icoMat=new THREE.MeshBasicMaterial({color:new THREE.Color(P.mr),wireframe:true,transparent:true,opacity:0.15});
+  const ico=new THREE.Mesh(icoGeo,icoMat);
+  scene.add(ico);
+
+  const tkGeo=new THREE.TorusKnotGeometry(5,1.5,100,16);
+  const tkMat=new THREE.MeshBasicMaterial({color:new THREE.Color(P.mg),wireframe:true,transparent:true,opacity:0.08});
+  const tk=new THREE.Mesh(tkGeo,tkMat);
+  tk.position.set(15,-10,-20);
+  scene.add(tk);
+
+  const tGeo=new THREE.TorusGeometry(6,0.5,16,100);
+  const tMat=new THREE.MeshBasicMaterial({color:new THREE.Color(P.mb),wireframe:true,transparent:true,opacity:0.1});
+  const torus=new THREE.Mesh(tGeo,tMat);
+  torus.position.set(-15,8,-15);
+  scene.add(torus);
+
+  let mx=0,my=0;
+  document.addEventListener('mousemove',(e)=>{
+    mx=(e.clientX/window.innerWidth-0.5)*2;
+    my=(e.clientY/window.innerHeight-0.5)*2;
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    const t=Date.now()*0.001;
+    const pos=pGeo.attributes.position.array;
+    for(let i=0;i<pCount;i++){
+      pos[i*3]+=pVel[i*3];
+      pos[i*3+1]+=pVel[i*3+1];
+      pos[i*3+2]+=pVel[i*3+2];
+      if(Math.abs(pos[i*3])>50)pVel[i*3]*=-1;
+      if(Math.abs(pos[i*3+1])>50)pVel[i*3+1]*=-1;
+      if(Math.abs(pos[i*3+2])>50)pVel[i*3+2]*=-1;
+    }
+    pGeo.attributes.position.needsUpdate=true;
+    ico.rotation.x=t*0.1;ico.rotation.y=t*0.15;
+    tk.rotation.x=t*0.2;tk.rotation.y=t*0.1;
+    torus.rotation.x=t*0.3;torus.rotation.z=t*0.2;
+    camera.position.x+=(mx*3-camera.position.x)*0.02;
+    camera.position.y+=(-my*3-camera.position.y)*0.02;
+    camera.lookAt(scene.position);
+    renderer.render(scene,camera);
+  }
+  animate();
+
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
+})();
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+});
+
+(function(){
+  const fs=document.getElementById('floating-shapes');
+  for(let i=0;i<15;i++){
+    const s=document.createElement('div');
+    s.className='shape';
+    const sz=Math.random()*20+5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:${Object.values(P)[Math.floor(Math.random()*5)]};animation-duration:${Math.random()*20+10}s;animation-delay:${Math.random()*10}s`;
+    fs.appendChild(s);
+  }
+})();
+
+const heroes=[
+  {name:'IRON MAN',real:'Tony Stark',desc:'Genius, billionaire, playboy, philanthropist. The suit makes the hero.',img:'https://images.unsplash.com/photo-1508344928928-7165b67de128?w=600&h=800&fit=crop',color:'red',powers:['ARC REACTOR','FLIGHT','SUPER STRENGTH']},
+  {name:'CAPTAIN AMERICA',real:'Steve Rogers',desc:'The First Avenger. A super soldier out of time, but never out of fight.',img:'https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?w=600&h=800&fit=crop',color:'blue',powers:['VIBRANIUM SHIELD','SUPER SOLDIER','LEADER']},
+  {name:'THOR',real:'God of Thunder',desc:'The Asgardian god with the power of storms at his fingertips.',img:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&h=800&fit=crop',color:'gold',powers:['MJOLNIR','LIGHTNING','IMMORTALITY']},
+  {name:'SPIDER-MAN',real:'Peter Parker',desc:'Your friendly neighborhood Spider-Man. With great power comes great responsibility.',img:'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&h=800&fit=crop',color:'red',powers:['WEB SHOOTERS','SPIDER SENSE','WALL CRAWLING']},
+  {name:'BLACK PANTHER',real:'T\'Challa',desc:'King of Wakanda. The most technologically advanced nation on Earth.',img:'https://images.unsplash.com/photo-1534996858221-380b92700493?w=600&h=800&fit=crop',color:'purple',powers:['VIBRANIUM SUIT','KING\'S POWERS','STEALTH']},
+  {name:'HULK',real:'Bruce Banner',desc:'The angrier he gets, the stronger he becomes. Hulk SMASH!',img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&h=800&fit=crop',color:'green',powers:['SUPER STRENGTH','REGENERATION','RAGE']},
+  {name:'DOCTOR STRANGE',real:'Stephen Strange',desc:'The Sorcerer Supreme. Master of the mystic arts.',img:'https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=600&h=800&fit=crop',color:'blue',powers:['MAGIC','TIME STONE','DIMENSIONS']},
+  {name:'SCARLET WITCH',real:'Wanda Maximoff',desc:'Chaos magic wielder. Possesses reality-warping powers.',img:'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&h=800&fit=crop',color:'red',powers:['CHAOS MAGIC','REALITY WARPING','TELEKINESIS']},
+  {name:'WOLVERINE',real:'Logan',desc:'The best there is at what he does. Adamantium claws and healing factor.',img:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=800&fit=crop',color:'gold',powers:['ADAMANTIUM CLAWS','HEALING','BERSERKER']}
+];
+
+const hg=document.getElementById('heroes-grid');
+heroes.forEach(h=>{
+  const card=document.createElement('div');
+  card.className='hero-card';
+  card.setAttribute('data-c',h.color);
+  const pc=h.color==='red'?'rgba(226,54,54,.15)':h.color==='blue'?'rgba(26,107,255,.15)':h.color==='gold'?'rgba(255,215,0,.15)':h.color==='green'?'rgba(46,204,113,.15)':'rgba(155,89,182,.15)';
+  const tc=h.color==='red'?P.mr:h.color==='blue'?P.mb:h.color==='gold'?P.mg:h.color==='green'?P.mgr:P.mp;
+  card.innerHTML=`<img class="hero-card-img" src="${h.img}" alt="${h.name}" loading="lazy"><div class="hero-card-info"><div class="hero-card-name">${h.name}</div><div class="hero-card-real">${h.real}</div><div class="hero-card-desc">${h.desc}</div><div class="hero-card-powers">${h.powers.map(p=>`<span class="power-tag" style="background:${pc};color:${tc}">${p}</span>`).join('')}</div></div><div class="glow-border"></div>`;
+  hg.appendChild(card);
+});
+
+document.querySelectorAll('.hero-card').forEach(card=>{
+  card.addEventListener('mousemove',(e)=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-0.5;
+    const y=(e.clientY-r.top)/r.height-0.5;
+    card.style.transform=`rotateY(${x*15}deg) rotateX(${-y*15}deg) scale(1.02)`;
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='rotateY(0) rotateX(0) scale(1)'});
+});
+
+const timelineData=[
+  {year:'2008',movie:'Iron Man',desc:'Tony Stark builds the first Iron Man suit and becomes a superhero.',phase:'Phase 1',pc:P.mr},
+  {year:'2011',movie:'Captain America: The First Avenger',desc:'Steve Rogers transforms into Captain America during WWII.',phase:'Phase 1',pc:P.mb},
+  {year:'2012',movie:'The Avengers',desc:'Earth\'s Mightiest Heroes unite for the first time to stop Loki.',phase:'Phase 1',pc:P.mg},
+  {year:'2014',movie:'Guardians of the Galaxy',desc:'A group of misfits become unlikely heroes protecting the galaxy.',phase:'Phase 2',pc:P.mr},
+  {year:'2016',movie:'Captain America: Civil War',desc:'The Avengers are divided over government oversight.',phase:'Phase 3',pc:P.mb},
+  {year:'2018',movie:'Avengers: Infinity War',desc:'Thanos begins his quest to collect all six Infinity Stones.',phase:'Phase 3',pc:P.mp},
+  {year:'2019',movie:'Avengers: Endgame',desc:'The ultimate battle to save the universe. Avengers Assemble!',phase:'Phase 3',pc:P.mg},
+  {year:'2021',movie:'Spider-Man: No Way Home',desc:'The multiverse is unleashed with universe-shattering consequences.',phase:'Phase 4',pc:P.mr}
+];
+
+const tc=document.getElementById('timeline-container');
+timelineData.forEach((item,i)=>{
+  const el=document.createElement('div');
+  el.className='timeline-item';
+  el.innerHTML=`<div class="timeline-phase" style="background:${item.pc}22;color:${item.pc}">${item.phase}</div><div class="timeline-year">${item.year}</div><div class="timeline-movie">${item.movie}</div><div class="timeline-desc">${item.desc}</div>`;
+  tc.appendChild(el);
+});
+
+const avengersMovies=[
+  {title:'The Avengers',year:'2012',rating:'8.0',img:'https://images.unsplash.com/photo-1508344928928-7165b67de128?w=600&h=900&fit=crop'},
+  {title:'Age of Ultron',year:'2015',rating:'7.3',img:'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=600&h=900&fit=crop'},
+  {title:'Infinity War',year:'2018',rating:'8.4',img:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&h=900&fit=crop'},
+  {title:'Endgame',year:'2019',rating:'8.4',img:'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=900&fit=crop'},
+  {title:'Multiverse of Madness',year:'2022',rating:'6.9',img:'https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=600&h=900&fit=crop'}
+];
+
+const spiderMovies=[
+  {title:'Homecoming',year:'2017',rating:'7.4',img:'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600&h=900&fit=crop'},
+  {title:'Far From Home',year:'2019',rating:'7.5',img:'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=600&h=900&fit=crop'},
+  {title:'No Way Home',year:'2021',rating:'8.2',img:'https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=600&h=900&fit=crop'},
+  {title:'Across Spider-Verse',year:'2023',rating:'8.7',img:'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&h=900&fit=crop'}
+];
+
+const captainMovies=[
+  {title:'The First Avenger',year:'2011',rating:'6.9',img:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=900&fit=crop'},
+  {title:'The Winter Soldier',year:'2014',rating:'7.8',img:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=900&fit=crop'},
+  {title:'Civil War',year:'2016',rating:'7.8',img:'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&h=900&fit=crop'}
+];
+
+function renderMovies(arr,id){
+  const row=document.getElementById(id);
+  arr.forEach(m=>{
+    const card=document.createElement('div');
+    card.className='movie-card';
+    card.innerHTML=`<img src="${m.img}" alt="${m.title}" loading="lazy"><div class="movie-rating"><i class="fas fa-star"></i>${m.rating}</div><div class="play-btn"><i class="fas fa-play"></i></div><div class="movie-card-info"><div class="movie-card-title">${m.title}</div><div class="movie-card-year">${m.year}</div></div>`;
+    row.appendChild(card);
+  });
+}
+renderMovies(avengersMovies,'avengers-movies');
+renderMovies(spiderMovies,'spider-movies');
+renderMovies(captainMovies,'captain-movies');
+
+const videos=[
+  {title:'Avengers Endgame - Official Trailer',meta:'Marvel Entertainment',duration:'2:25',img:'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=450&fit=crop'},
+  {title:'Spider-Man No Way Home Trailer',meta:'Sony Pictures',duration:'2:58',img:'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&h=450&fit=crop'},
+  {title:'Doctor Strange in the Multiverse',meta:'Marvel Studios',duration:'2:36',img:'https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=800&h=450&fit=crop'},
+  {title:'Guardians of the Galaxy Vol. 3',meta:'Marvel Studios',duration:'3:02',img:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&h=450&fit=crop'},
+  {title:'Black Panther: Wakanda Forever',meta:'Marvel Studios',duration:'2:44',img:'https://images.unsplash.com/photo-1534996858221-380b92700493?w=800&h=450&fit=crop'},
+  {title:'Thor: Love and Thunder',meta:'Marvel Studios',duration:'2:32',img:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=450&fit=crop'}
+];
+
+const vg=document.getElementById('video-grid');
+videos.forEach(v=>{
+  const card=document.createElement('div');
+  card.className='video-card';
+  card.innerHTML=`<img src="${v.img}" alt="${v.title}" loading="lazy"><div class="video-play"><i class="fas fa-play"></i></div><div class="video-duration">${v.duration}</div><div class="video-info"><div class="video-title">${v.title}</div><div class="video-meta">${v.meta}</div></div>`;
+  vg.appendChild(card);
+});
+
+const galleryImages=[
+  'https://images.unsplash.com/photo-1508344928928-7165b67de128?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1534996858221-380b92700493?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=800&h=560&fit=crop',
+  'https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=800&h=560&fit=crop'
+];
+
+const gt=document.getElementById('gallery-track');
+const allImages=[...galleryImages,...galleryImages];
+allImages.forEach(src=>{
+  const item=document.createElement('div');
+  item.className='gallery-item';
+  item.innerHTML=`<img src="${src}" alt="Marvel Gallery" loading="lazy">`;
+  gt.appendChild(item);
+});
+
+function animateStats(){
+  document.querySelectorAll('.stat-number').forEach(el=>{
+    const target=parseInt(el.getAttribute('data-target'));
+    const duration=2000;
+    const start=performance.now();
+    function update(now){
+      const elapsed=now-start;
+      const progress=Math.min(elapsed/duration,1);
+      const eased=1-Math.pow(1-progress,3);
+      el.textContent=Math.floor(eased*target)+(target>20?'B+':'+');
+      if(target===29)el.textContent='$'+Math.floor(eased*target)+'B+';
+      if(progress<1)requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.to('.hero-content',{scrollTrigger:{trigger:'.hero-section',start:'top top',end:'bottom top',scrub:true},y:-100,opacity:0});
+
+gsap.utils.toArray('.section-header').forEach(h=>{
+  gsap.from(h,{scrollTrigger:{trigger:h,start:'top 85%'},y:50,opacity:0,duration:1,ease:'power3.out'});
+});
+
+gsap.from('.hero-card',{scrollTrigger:{trigger:'.heroes-grid',start:'top 80%'},y:80,opacity:0,duration:0.8,stagger:0.15,ease:'power3.out'});
+
+document.querySelectorAll('.timeline-item').forEach((item,i)=>{
+  ScrollTrigger.create({
+    trigger:item,start:'top 80%',
+    onEnter:()=>{setTimeout(()=>{item.classList.add('visible')},i*100)}
+  });
+});
+
+ScrollTrigger.create({trigger:'.stats-section',start:'top 70%',onEnter:animateStats,once:true});
+
+gsap.from('.stat-card',{scrollTrigger:{trigger:'.stats-grid',start:'top 80%'},y:60,opacity:0,duration:0.6,stagger:0.12,ease:'power3.out'});
+
+gsap.from('.video-card',{scrollTrigger:{trigger:'.video-grid',start:'top 80%'},y:50,opacity:0,duration:0.6,stagger:0.1,ease:'power3.out'});
+
+gsap.from('.avengers-text',{scrollTrigger:{trigger:'.avengers-section',start:'top 80%',end:'center center',scrub:true},scale:0.5,opacity:0});
+gsap.from('.avengers-sub',{scrollTrigger:{trigger:'.avengers-section',start:'top 70%'},y:30,opacity:0,duration:1,ease:'power3.out',delay:0.3});
+
+gsap.utils.toArray('.movie-row').forEach(row=>{
+  gsap.from(row,{scrollTrigger:{trigger:row,start:'top 85%'},x:100,opacity:0,duration:1,ease:'power3.out'});
+});
+
+gsap.from('.footer-grid',{scrollTrigger:{trigger:'.footer',start:'top 90%'},y:40,opacity:0,duration:0.8,ease:'power3.out'});
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',(e)=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.querySelector('.nav-links');
+hamburger.addEventListener('click',()=>{
+  navLinks.style.display=navLinks.style.display==='flex'?'none':'flex';
+  navLinks.style.flexDirection='column';
+  navLinks.style.position='absolute';
+  navLinks.style.top='60px';
+  navLinks.style.right='20px';
+  navLinks.style.background='rgba(0,0,0,.95)';
+  navLinks.style.padding='20px';
+  navLinks.style.borderRadius='12px';
+  navLinks.style.border='1px solid rgba(226,54,54,.3)';
+});
+
+const glow=document.createElement('div');
+glow.style.cssText='position:fixed;width:20px;height:20px;border-radius:50%;background:rgba(226,54,54,.3);pointer-events:none;z-index:99997;transition:transform .1s;filter:blur(8px)';
+document.body.appendChild(glow);
+document.addEventListener('mousemove',(e)=>{glow.style.left=e.clientX-10+'px';glow.style.top=e.clientY-10+'px'});
+document.addEventListener('mousedown',()=>{glow.style.transform='scale(2)';glow.style.background='rgba(226,54,54,.6)'});
+document.addEventListener('mouseup',()=>{glow.style.transform='scale(1)';glow.style.background='rgba(226,54,54,.3)'});
+</script>
+</body>
+</html>
