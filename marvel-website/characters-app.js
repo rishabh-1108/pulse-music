@@ -7,6 +7,8 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isMobile = window.innerWidth < 768;
   var isTablet = window.innerWidth < 1024;
+  var touchFlip = (window.ontouchstart !== undefined) && !(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+  var identityFlips = [];
 
   var TEAM_META = {
     avengers: { label: 'Avengers', cls: 'avengers', icon: 'fa-shield-halved' },
@@ -76,13 +78,23 @@
       card.setAttribute('tabindex', '0');
       card.setAttribute('aria-label', 'Open ' + c.name + ' archive');
       card.style.setProperty('--acc', c.accent);
+      var imgMarkup = '<img src="' + c.heroImage + '" alt="' + c.name + '" loading="lazy" decoding="async">';
+      if (c.identityImage) {
+        imgMarkup = '<div class="flip3d' + (reduced ? ' reduced' : '') + '" role="img" aria-label="' + c.name + ' — identity: ' + (c.identityName || c.realName) + '">' +
+          '<div class="flip3d-inner">' +
+          '<div class="flip3d-face flip3d-front"><img src="' + c.heroImage + '" alt="' + c.name + '" loading="lazy" decoding="async"></div>' +
+          '<div class="flip3d-face flip3d-back"><img src="' + c.identityImage + '" alt="' + (c.identityName || c.realName) + '" loading="lazy" decoding="async"></div>' +
+          '</div>' +
+          '<span class="flip3d-glow" aria-hidden="true"></span>' +
+          '<span class="flip3d-scan" aria-hidden="true"></span>' +
+          '</div>';
+      }
       card.innerHTML =
         '<div class="card-hud">SUBJECT: ' + c.name + ' // FILE: ' + c.num + '</div>' +
         '<div class="char-card-inner">' +
         '<div class="char-card-front">' +
         '<div class="card-content">' +
-        '<div class="card-image-wrap">' +
-        '<img src="' + c.image + '" alt="' + c.name + '" loading="lazy" decoding="async">' +
+        '<div class="card-image-wrap">' + imgMarkup +
         '<span class="card-number">' + c.num + '</span>' +
         '<span class="card-status-badge status-' + c.status + '">' + c.statusLabel + '</span>' +
         '</div>' +
@@ -130,6 +142,8 @@
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArchive(c.id, card); }
       });
       grid.appendChild(card);
+      var flipEl = card.querySelector('.flip3d');
+      if (flipEl) bindIdentityFlip(flipEl, card);
     });
     bindTilt();
     animateStatBarsSoon();
@@ -151,6 +165,45 @@
         card.style.transform = 'perspective(1200px) rotateY(0) rotateX(0) scale(1)';
       });
     });
+  }
+
+  function bindIdentityFlip(flip, card) {
+    var flipped = false;
+    var flipTimer = null;
+    function setFlip(on) {
+      if (flipped === on) return;
+      flipped = on;
+      flip.classList.toggle('flipped', on);
+      if (reduced) return;
+      flip.classList.add('flipping');
+      clearTimeout(flipTimer);
+      flipTimer = setTimeout(function () { flip.classList.remove('flipping'); }, 900);
+    }
+    flip._reset = function () { setFlip(false); };
+    flip._flipped = function () { return flipped; };
+    if (touchFlip) {
+      flip.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setFlip(!flipped);
+      });
+    } else {
+      flip.addEventListener('mouseenter', function () { setFlip(true); });
+      flip.addEventListener('mouseleave', function () { setFlip(false); });
+      card.addEventListener('focus', function () { setFlip(true); });
+      card.addEventListener('blur', function () { setFlip(false); });
+    }
+    flip.addEventListener('mousemove', function (e) {
+      var r = flip.getBoundingClientRect();
+      if (!r.width) return;
+      flip.style.setProperty('--gx', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+      flip.style.setProperty('--gy', (((e.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
+    });
+    identityFlips.push(flip);
+  }
+
+  function resetFlips() {
+    identityFlips.forEach(function (f) { if (f._reset) f._reset(); });
   }
 
   function animateStatBarsSoon() {
@@ -188,6 +241,7 @@
     if (!overlay) return;
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    resetFlips();
     renderArchive();
     if (!reduced) {
       overlay.style.opacity = '0';
@@ -249,7 +303,7 @@
       '<div class="av-sweep"></div>' +
       '<div class="av-hud-top">SCAN: ' + c.id.toUpperCase() + ' // ' + c.universe.toUpperCase() + '</div>' +
       '<div class="av-hud-bottom" id="avCoords">LAT: 0.0000 // LON: 0.0000</div>' +
-      '<img class="av-img" src="' + c.image + '" alt="' + c.name + '" loading="lazy" decoding="async">' +
+      '<img class="av-img" src="' + c.heroImage + '" alt="' + c.name + '" loading="lazy" decoding="async">' +
       '<canvas class="archive-particles" aria-hidden="true"></canvas>';
 
     particlesCanvas = visualInner.querySelector('.archive-particles');
@@ -275,7 +329,7 @@
       '<div class="al-title"><i class="fas fa-shield-halved"></i> RELATED CHARACTERS</div>' +
       '<div class="al-related-row">' +
       related.map(function (rc) {
-        return '<button class="al-related" data-related="' + rc.id + '" type="button"><img src="' + rc.image + '" alt="' + rc.name + '" loading="lazy"><span>' + rc.name + '</span></button>';
+        return '<button class="al-related" data-related="' + rc.id + '" type="button"><img src="' + rc.heroImage + '" alt="' + rc.name + '" loading="lazy"><span>' + rc.name + '</span></button>';
       }).join('') +
       '</div></div>' +
       '<div class="al-section">' +
@@ -407,7 +461,7 @@
     function render() {
       var res = D.search(input.value);
       var groups = [
-        { label: 'CHARACTERS', items: res.characters.map(function (c) { return { kind: 'character', id: c.id, img: c.image, name: c.name, sub: c.realName, cat: 'CHARACTER' }; }) },
+        { label: 'CHARACTERS', items: res.characters.map(function (c) { return { kind: 'character', id: c.id, img: c.heroImage, name: c.name, sub: c.realName, cat: 'CHARACTER' }; }) },
         { label: 'MOVIES', items: res.movies.map(function (m) { return { kind: 'movie', id: m.id, img: '', name: m.title, sub: m.year + ' // ' + m.phase, cat: m.tag }; }) },
         { label: 'UNIVERSES', items: res.universes.map(function (u) { return { kind: 'universe', id: u.id, img: '', name: u.name, sub: u.tag, cat: 'UNIVERSE', color: u.color, icon: u.icon }; }) }
       ].filter(function (g) { return g.items.length > 0; });

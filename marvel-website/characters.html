@@ -99,6 +99,24 @@
 
 .card-number{position:absolute;top:15px;left:15px;z-index:3;font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.3);letter-spacing:2px}
 
+/* ===== Hero -> Identity 3D Flip ===== */
+.flip3d{position:absolute;inset:0;perspective:1200px;overflow:hidden}
+.flip3d-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.22,.68,.24,1);will-change:transform}
+.flip3d.flipped .flip3d-inner{transform:rotateY(180deg)}
+.flip3d-face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(2px)}
+.flip3d-back{transform:rotateY(180deg) translateZ(2px)}
+.flip3d-glow{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .5s ease;background:radial-gradient(90% 70% at var(--gx,50%) var(--gy,20%),rgba(255,255,255,.16),transparent 60%);mix-blend-mode:screen}
+.flip3d:hover .flip3d-glow,.flip3d.flipped .flip3d-glow{opacity:1}
+.flip3d-scan{position:absolute;left:0;right:0;height:34%;top:-45%;z-index:3;pointer-events:none;opacity:0;background:linear-gradient(to bottom,transparent,rgba(226,54,54,.16) 50%,transparent)}
+.flip3d.flipping .flip3d-scan{opacity:1;animation:flip-scan .8s ease}
+@keyframes flip-scan{0%{top:-45%}100%{top:115%}}
+.flip3d.reduced .flip3d-inner{transform:none!important;transition:none!important}
+.flip3d.reduced .flip3d-face{transition:opacity .3s ease!important}
+.flip3d.reduced .flip3d-back{transform:none;opacity:0}
+.flip3d.reduced.flipped .flip3d-front{opacity:0}
+.flip3d.reduced.flipped .flip3d-back{opacity:1}
+.flip3d.reduced .flip3d-scan,.flip3d.reduced .flip3d-glow{display:none}
+
 .card-identity{padding:0 25px;margin-top:-40px;position:relative;z-index:3}
 .card-alias{font-family:'Bebas Neue',cursive;font-size:42px;line-height:1;letter-spacing:3px;background:linear-gradient(135deg,#fff,rgba(255,255,255,.7));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .card-realname{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:8px;letter-spacing:1px}
