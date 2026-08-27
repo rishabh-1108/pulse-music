@@ -1,0 +1,23 @@
+{
+  "name": "pulse-music",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=apps/server\" \"npm run dev --workspace=apps/web\"",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/server && npm run build --workspace=apps/web",
+    "lint": "npm run lint --workspace=apps/web",
+    "db:generate": "npm run db:generate --workspace=apps/server",
+    "db:push": "npm run db:push --workspace=apps/server",
+    "db:migrate": "npm run db:migrate --workspace=apps/server",
+    "db:seed": "npm run db:seed --workspace=apps/server",
+    "db:reset": "npm run db:reset --workspace=apps/server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
