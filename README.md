@@ -208,6 +208,42 @@ pulse-music/
 └── package.json
 ```
 
+## Deployment
+
+This is a full-stack monorepo. The two parts deploy to different hosting because Vercel runs Node serverless functions but **cannot host a persistent Express server or PostgreSQL**.
+
+### Frontend (Web) — Vercel
+
+- The Next.js app is at `apps/web`; the root `vercel.json` points Vercel there automatically.
+- Set `NEXT_PUBLIC_API_URL` to the **public URL of the deployed API** (e.g. `https://api.your-domain.com/api/v1`).
+- Optional: `NEXT_PUBLIC_APP_NAME`.
+
+### Backend (API) — Render / Railway / Fly.io
+
+- Deploy `apps/server` as a Node service, or use the provided `Dockerfile` / `docker-compose.yml` (`server` service).
+- Set these env vars (names only — fill real values in your hosting provider's dashboard; **never commit secrets**):
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | Access-token signing secret |
+| `JWT_REFRESH_SECRET` | Refresh-token signing secret |
+| `JWT_EXPIRES_IN` | e.g. `15m` |
+| `JWT_REFRESH_EXPIRES_IN` | e.g. `7d` |
+| `CLIENT_URL` | Public web URL (CORS) |
+| `CORS_ORIGIN` | Web origin allowed for CORS |
+| `PORT` | e.g. `5000` |
+| `NODE_ENV` | `production` |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_CALLBACK_URL` | Optional OAuth |
+| `CLOUDINARY_*`, `AWS_*`, `STRIPE_SECRET_KEY` | Optional media/payments |
+
+### Database — Neon / Supabase / Railway
+
+- Provision a PostgreSQL 16 instance and use its connection string as `DATABASE_URL`.
+- Run `cd apps/server && npx prisma generate && npx prisma db push && npm run db:seed` (CI or locally).
+
+After both are deployed, set the web app's `NEXT_PUBLIC_API_URL` to the API URL and redeploy.
+
 ## License
 
 MIT
